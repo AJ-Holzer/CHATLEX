@@ -21,7 +21,7 @@ feel free to open an issue in the GitHub repository.
 | Data                    | Your data will be stored __locally only__, encrypted                           | ❌          |
 | Platforms               | Windows                                                                        | ❌          |
 | Data transmition        | The data will be sent over the Tor network to anonymize the traffic            | ❌          |
-| Data recovery           | Nobody will be able to recover your data if you forget your password           | ✔️          |
+| Data recovery           | Nobody will be able to recover your data if you forget your password           | ❌          |
 | Open source             | Transparent codebase for public scrutiny and trust                             | ✔️          |
 | Key derivation          | The code uses Argon2 to derive a new key to encrypt the messages               | ❌          |
 
