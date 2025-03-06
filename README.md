@@ -32,3 +32,4 @@ feel free to open an issue in the GitHub repository.
 - File sharing
 - Image sharing
 - Android/iOS Development
+- Linux Development
