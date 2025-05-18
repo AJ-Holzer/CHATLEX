@@ -10,7 +10,7 @@ class Config:
         # Constants for Argon2 key derivation
         self.ARGON2_TIME_COST   =    40   # Increase for more security (more iterations)
         self.ARGON2_MEMORY_COST = 65536   # 64 MB
-        self.ARGON2_PARALLELISM =     2   # 
+        self.ARGON2_PARALLELISM =     2
         self.ARGON2_HASH_LEN    =    32   # 256-bit key
         
         # General colors
