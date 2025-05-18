@@ -101,7 +101,7 @@ class UI(ft.Tabs):
             on_change=on_setting_changed,
         )
         
-        logout_on_lost_focus_switch: ft.Switch = ft.Switch(
+        logout_on_lost_focus_switch: ft.CupertinoSwitch = ft.CupertinoSwitch(
             # label=CText(page=self._page, value="Logout on lost focus"),
             label_position=ft.LabelPosition.LEFT,
             value=get_key_or_default(page=self._page, default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT, key_name=config.CS_LOGOUT_ON_LOST_FOCUS),
