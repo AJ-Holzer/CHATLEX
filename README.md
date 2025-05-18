@@ -33,3 +33,10 @@ feel free to open an issue in the GitHub repository.
 - Android Development
 - Linux Development
 - Windows Development
+
+## Fonts
+The fonts used in this project are sourced from [Google Fonts](https://fonts.google.com/).
+
+**Currently supported fonts:**
+- Baloo Bhaijaan
+- Varela Round
