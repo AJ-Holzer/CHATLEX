@@ -15,13 +15,17 @@ from env.func.get_session_key import get_key_or_default
 # Config
 from env.config import config
 
-class CText(ft.Text):
-    
-    def __init__(self, page: ft.Page, value: str = "", color: Optional[ft.ColorValue] = None, **kwargs: Any) -> None:
+class CText(ft.Text):    
+    def __init__(self, page: ft.Page, value: str = "", size_deviation: int = 0, color: Optional[ft.ColorValue] = None, **kwargs: Any) -> None:
         font_family: str = get_key_or_default(page=page, default=config.FONT_FAMILY_DEFAULT, key_name=config.CS_FONT_FAMILY)
-        size: int = get_key_or_default(page=page, default=config.FONT_SIZE_DEFAULT, key_name=config.CS_FONT_SIZE)
-        super().__init__(value=value, font_family=font_family, size=size, color=color, **kwargs)  # type:ignore
+        size: int = get_key_or_default(page=page, default=config.FONT_SIZE_DEFAULT, key_name=config.CS_FONT_SIZE) + size_deviation
+        if "font_family" not in kwargs:
+            kwargs["font_family"] = font_family
+        if "size" not in kwargs:
+            kwargs["size"] = size
+        super().__init__(value=value, color=color, **kwargs)  # type:ignore
         self._page: ft.Page = page
+
 class Chat:
     def __init__(self, username: str, contact_uid: str, page: ft.Page) -> None:
         self._username: str = username
@@ -113,9 +117,10 @@ class MsgBubble:
         )
 
         # Timestamp and optional sender name (currently only timestamp is used)
-        metadata = ft.Text(
-            time.strftime("%Y-%m-%d %H:%M", time.localtime(self._timestamp)),
-            size=10,
+        metadata = CText(
+            page=self._page,
+            value=time.strftime("%Y-%m-%d %H:%M", time.localtime(self._timestamp)),
+            size_deviation=-5,
             italic=True,
         )
 
@@ -166,7 +171,6 @@ class Contact:
         self,
         page: ft.Page,
         username: str,
-        size: int,
         contact_uid: str,
         tab_change_function: Callable[[int], None],
         chat_tab: ft.Tab,
@@ -185,8 +189,7 @@ class Contact:
         self._icon_min_size     : int                   = icon_min_size
         self._is_online         : bool                  = is_online
         self._padding           : int                   = padding
-        self._size              : int                   = size
-        self._text_widget       : ft.Text               = ft.Text(value=username, size=size)
+        self._text_widget       : ft.Text               = CText(page=self._page, value=username)
         self._username          : str                   = username
         self._initials          : str                   = retrieve_initials(text=username)
         self.tab_change_function: Callable[[int], None] = tab_change_function
@@ -194,7 +197,7 @@ class Contact:
         self._icon_background  : ft.CircleAvatar  = (
             icon
             or ft.CircleAvatar(
-                content=ft.Text(self._initials),
+                content=CText(page=self._page, value=self._initials),
                 max_radius=icon_min_size,
                 bgcolor=icon_color,
                 color=ft.Colors.WHITE,
@@ -314,7 +317,7 @@ class Contact:
         
         # Create a new icon instead of reusing the original
         new_icon = ft.CircleAvatar(
-            content=ft.Text(retrieve_initials(text=self._username), size=80),
+            content=CText(page=self._page, value=retrieve_initials(text=self._username), size=80),
             max_radius=100,
             bgcolor=self._icon_color,
             color=ft.Colors.WHITE,

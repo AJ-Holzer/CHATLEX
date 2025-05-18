@@ -8,7 +8,7 @@ from env.func.get_session_key import get_key_or_default
 from env.config import config
 
 # Classes
-from env.classes.widgets import Contact
+from env.classes.widgets import Contact, CText
 from env.classes.faker import Faker
 
 fake = Faker()
@@ -72,17 +72,14 @@ class UI(ft.Tabs):
         # https://flet.dev/docs/controls/dropdown                   # Drop-down menu for language and font settings
 
         def on_setting_changed(e: ft.ControlEvent) -> None:
-            self._page.open(ft.SnackBar(ft.Text("Restart application to apply changes!"), duration=2000))
+            self._page.open(ft.SnackBar(CText(page=self._page, value="Restart application to apply changes!"), duration=2000))
             self._page.update()  # type:ignore
             
             # Update client storage
             self._page.client_storage.set(config.CS_FONT_SIZE, font_size_slider.value)
             self._page.client_storage.set(config.CS_FONT_FAMILY, font_family_dropdown.value)
 
-        font_size_label: ft.Text = ft.Text(
-            "Font size",
-            style=ft.TextStyle(font_family=self.default_font, size=self.default_font_size)
-        )
+        font_size_label: ft.Text = CText(page=self._page, value="Font size", style=ft.TextStyle(font_family=self.default_font, size=self.default_font_size))
 
         font_size_slider: ft.Slider = ft.Slider(
             min=config.FONT_MIN_SIZE,
@@ -119,7 +116,7 @@ class UI(ft.Tabs):
         # https://flet.dev/docs/reference/types/badge                    # Use to show unread messages (number)
         # https://flet.dev/docs/cookbook/large-lists                     # Use for displaying many contacts --> runs smoothly
         
-        contacts: list[Contact] = [Contact(page=self._page, username=fake.name, size=self.default_font_size, contact_uid="10000", tab_change_function=self.switch_to_tab, chat_tab=self._chat_tab, contact_info_tab=self._contact_info_tab, is_online=random.choice([True, False])) for _ in range(100)]
+        contacts: list[Contact] = [Contact(page=self._page, username=fake.name, contact_uid="10000", tab_change_function=self.switch_to_tab, chat_tab=self._chat_tab, contact_info_tab=self._contact_info_tab, is_online=random.choice([True, False])) for _ in range(100)]
 
         contacts_lv: ft.ReorderableListView = ft.ReorderableListView(
             controls=[contact.build() for contact in contacts],
@@ -142,8 +139,8 @@ class UI(ft.Tabs):
         # https://flet.dev/docs/controls/textfield#multiline-textfields  # For msg input
         # https://flet.dev/docs/cookbook/large-lists                     # Use for displaying many message bubbles --> runs smoothly
         # https://flet.dev/docs/cookbook/encrypting-sensitive-data       # Maybe use this encryption method if aes-256 isn't available everywhere
-        
-        text_hint: ft.Text = ft.Text("Select a contact to chat!", font_family=self.default_font, style=ft.TextStyle(size=self.default_font_size + 0))
+
+        text_hint: ft.Text = CText(page=self._page, value="Select a contact to chat!", font_family=self.default_font, style=ft.TextStyle(size=self.default_font_size + 0))
         
         return ft.Container(
             ft.Row(
@@ -158,9 +155,9 @@ class UI(ft.Tabs):
 
     def contact_info_page(self) -> ft.Container:
         # https://flet.dev/docs/controls/circleavatar                    # Showing the profile image of the current user
-        
-        text_hint: ft.Text = ft.Text("Select a contact to view Info!", font_family=self.default_font, style=ft.TextStyle(size=self.default_font_size + 0))
-        
+
+        text_hint: ft.Text = CText(page=self._page, value="Select a contact to view Info!", font_family=self.default_font, style=ft.TextStyle(size=self.default_font_size + 0))
+
         return ft.Container(
             ft.Row(
                 controls=[text_hint],
@@ -171,20 +168,25 @@ class UI(ft.Tabs):
         )
 
     def about_page(self) -> ft.Container:
-        header_about: ft.Text = ft.Text("About This App", font_family=self.default_font, style=ft.TextStyle(size=self.default_font_size + 15))
-        description_about: ft.Text = ft.Text(
+        header_about: ft.Text = CText(page=self._page, value="About This App", size_deviation=15, font_family=self.default_font)
+        description_about: ft.Text = CText(
+            page=self._page,
+            value=(
             "This application was built using Python and the Flet framework.\n"
             "It aims to provide a clean, efficient, and modern user experience "
-            "while showcasing the power of security and sleek UI.",
+            "while showcasing the power of security and sleek UI."),
             style=ft.TextStyle(font_family=self.default_font, size=self.default_font_size),
         )
         divider: ft.Divider = ft.Divider(height=1)
-        header_developer_info: ft.Text = ft.Text(
-            "Developer Info",
-            style=ft.TextStyle(font_family=self.default_font, size=self.default_font_size + 5, weight=ft.FontWeight.BOLD),
+        header_developer_info: ft.Text = CText(
+            page=self._page,
+            value="Developer Info",
+            size_deviation=5,
+            style=ft.TextStyle(weight=ft.FontWeight.BOLD),
         )
-        description_developer_info: ft.Text = ft.Text(
-            "Created by ",
+        description_developer_info: ft.Text = CText(
+            page=self._page,
+            value="Created by ",
             spans=[
             ft.TextSpan(
                 "AJ-Holzer",
