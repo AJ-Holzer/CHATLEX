@@ -16,17 +16,35 @@ from env.func.get_session_key import get_key_or_default
 from env.config import config
 
 class CText(ft.Text):    
-    def __init__(self, page: ft.Page, value: str = "", size_deviation: int = 0, color: Optional[ft.ColorValue] = None, **kwargs: Any) -> None:
+    """Enhanced text element inheriting from ft.Text, bound to a specific ft.Page instance.  Provides convenient defaults for font settings based on page configuration.
+
+    Attributes:
+        _page(ft.Page): Reference to the ft.Page instance this text element belongs to.
+        value(str): The text content of this element.
+        color(Optional[ft.ColorValue]): Color of the text. Defaults to None.
+    """
+    def __init__(self, page: ft.Page, value: str = "", use_default_size: bool = True, size_deviation: int = 0, color: Optional[ft.ColorValue] = None, **kwargs: Any) -> None:
         font_family: str = get_key_or_default(page=page, default=config.FONT_FAMILY_DEFAULT, key_name=config.CS_FONT_FAMILY)
         size: int = get_key_or_default(page=page, default=config.FONT_SIZE_DEFAULT, key_name=config.CS_FONT_SIZE) + size_deviation
         if "font_family" not in kwargs:
             kwargs["font_family"] = font_family
         if "size" not in kwargs:
-            kwargs["size"] = size
+            if use_default_size:
+                kwargs["size"] = size
         super().__init__(value=value, color=color, **kwargs)  # type:ignore
         self._page: ft.Page = page
 
 class Chat:
+    """Represents a chat interface with message sending and display capabilities.
+
+    Attributes:
+        _username(str): Username associated with the chat.
+        _contact_uid(str): Unique identifier of the contact in the chat.
+        _page(ft.Page): Flutter page object on which the chat UI is rendered.
+        _msg_list(ft.ListView): ListView to display chat messages.
+        _msg_input(ft.TextField): TextField for user message input.
+        _send_button(ft.IconButton): Button to send messages.
+    """
     def __init__(self, username: str, contact_uid: str, page: ft.Page) -> None:
         self._username: str = username
         self._contact_uid: str = contact_uid
@@ -94,6 +112,16 @@ class Chat:
         )
 
 class MsgBubble:
+    """Represents a message bubble in a chat interface.
+
+    Attributes:
+        _sender(SenderType): Indicates whether the message was sent by the user (SELF) or another sender.
+        _message(str): The text content of the message.
+        _timestamp(float): Timestamp indicating when the message was sent.
+        _page(ft.Page): Flutter page object to render the message bubble.
+        _bg_color(ft.ColorValue): Background color of the message bubble, determined by the sender.
+        _alignment(ft.MainAxisAlignment): Alignment of the message bubble, determined by the sender.
+    """
     def __init__(self, page: ft.Page, message: str, timestamp: float, sender: SenderType = SenderType.SELF) -> None:
         self._sender: SenderType = sender
         self._message: str = message
@@ -136,6 +164,13 @@ class MsgBubble:
         )
 
 class ContactInfo:
+    """Represents contact information, including icon and username.
+
+    Attributes:
+        _contact_icon(ft.CircleAvatar): Contact's profile picture.
+        _username(str): Contact's username.
+        _contact_name(ft.Text): Contact's name displayed as text.
+    """
     def __init__(self, icon: ft.CircleAvatar, username: str) -> None:
         self._contact_icon: ft.CircleAvatar = icon
         self._username: str = username
@@ -167,6 +202,26 @@ class ContactInfo:
         )
 
 class Contact:
+    """Represents a contact in a chat application.
+
+    Attributes:
+        _page(ft.Page): The FlutterFlow Page object.
+        _chat_tab(ft.Tab): The chat tab.
+        _contact_info_tab(ft.Tab): The contact info tab.
+        _contact_uid(str): Unique identifier for the contact.
+        _icon_color(ft.ColorValue): Color of the contact icon.
+        _icon_min_size(int): Minimum size of the contact icon.
+        _is_online(bool): Indicates if the contact is online.
+        _padding(int): Padding around the contact widget.
+        _text_widget(ft.Text): Text widget displaying the contact's username.
+        _username(str): Username of the contact.
+        _initials(str): Initials of the contact's username.
+        tab_change_function(Callable[[int], None]): Function to switch between tabs.
+        _icon_background(ft.CircleAvatar): Background of the contact icon.
+        _icon_foreground(ft.CircleAvatar): Foreground indicator for online/offline status.
+        _icon(ft.Stack): Stack containing the icon and online status indicator.
+        _container(ft.Container): Container holding the contact information.
+    """
     def __init__(
         self,
         page: ft.Page,

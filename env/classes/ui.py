@@ -79,7 +79,7 @@ class UI(ft.Tabs):
             self._page.client_storage.set(config.CS_FONT_SIZE, font_size_slider.value)
             self._page.client_storage.set(config.CS_FONT_FAMILY, font_family_dropdown.value)
 
-        font_size_label: ft.Text = CText(page=self._page, value="Font size", style=ft.TextStyle(font_family=self.default_font, size=self.default_font_size))
+        font_size_label: ft.Text = CText(page=self._page, value="Font Settings", style=ft.TextStyle(font_family=self.default_font, size=self.default_font_size))
 
         font_size_slider: ft.Slider = ft.Slider(
             min=config.FONT_MIN_SIZE,
