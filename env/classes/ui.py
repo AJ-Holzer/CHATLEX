@@ -116,14 +116,14 @@ class UI(ft.Tabs):
         # https://flet.dev/docs/reference/types/badge                    # Use to show unread messages (number)
         # https://flet.dev/docs/cookbook/large-lists                     # Use for displaying many contacts --> runs smoothly
 
-        # <<--- TESTING PURPOSE START --->>#
+        # <<--- TESTING PURPOSE START --->> #
         # TODO: Retrieve contacts from db when initialized!
         contacts: list[Contact] = [Contact(page=self._page, username=fake.name, contact_uid="10000", tab_change_function=self.switch_to_tab, chat_tab=self._chat_tab, contact_info_tab=self._contact_info_tab, is_online=random.choice([True, False])) for _ in range(100)]
         contacts_lv: ft.ReorderableListView = ft.ReorderableListView(
             controls=[contact.build() for contact in contacts],
             expand=True
         )
-        # <<--- TESTING PURPOSE END --->>#
+        # <<--- TESTING PURPOSE END --->> #
 
         return ft.Container(
             content=ft.Column(
