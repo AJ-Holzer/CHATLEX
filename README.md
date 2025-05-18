@@ -15,12 +15,12 @@ feel free to open an issue in the GitHub repository.
 ## Features
 | Features                | Description                                                                    | Implemented |
 | ----------------------- | ------------------------------------------------------------------------------ | ----------- |
-| Dezentralized messenger | No server between your messages                                                | ✔️          |
+| Decentralized messenger | No server between your messages                                                | ✔️          |
 | Encryption              | AES-265, ECDHE, Kyber                                                          | ❌          |
 | Password generation     | A key will be derived with salt and pepper to make the entered password unique | ❌          |
 | Data                    | Your data will be stored __locally only__, encrypted                           | ❌          |
-| Platforms               | Windows                                                                        | ❌          |
-| Data transmition        | The data will be sent over the Tor network to anonymize the traffic            | ❌          |
+| Platforms               | Android                                                                        | ✔️          |
+| Data transmission       | The data will be sent over the Tor network to anonymize the traffic            | ❌          |
 | Open source             | Transparent codebase for public scrutiny and trust                             | ✔️          |
 | Key derivation          | The code uses Argon2 to derive a new key to encrypt the messages               | ❌          |
 
@@ -30,5 +30,6 @@ feel free to open an issue in the GitHub repository.
 - Group chats
 - File sharing
 - Image sharing
-- Android/iOS Development
+- Android Development
 - Linux Development
+- Windows Development
