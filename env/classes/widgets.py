@@ -60,7 +60,13 @@ class Chat:
         )
 
         # Create message input TextField
-        self._msg_input = ft.TextField(expand=True, hint_text="Type a message...")
+        self._msg_input = ft.TextField(
+            expand=True,
+            hint_text="Type a message...",
+            multiline=True,
+            min_lines=1,
+            max_lines=5
+        )
         
         # Create send button
         self._send_button = ft.IconButton(
@@ -92,21 +98,33 @@ class Chat:
             padding=20,
             content=ft.Column(
             [
+                # Username at the top, centered and bold
+                ft.Row(
+                    controls=[
+                        CText(
+                            page=self._page,
+                            value=self._username,
+                            size_deviation=4,
+                            weight=ft.FontWeight.BOLD,
+                        )
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
                 self._msg_list,
                 ft.Row(
-                controls=[
-                    ft.IconButton(
-                    icon=ft.Icons.ARROW_DOWNWARD,
-                    tooltip="Scroll to bottom",
-                    on_click=lambda e: self.scroll_to_bottom(duration=500),
-                    )
-                ],
-                alignment=ft.MainAxisAlignment.END,
-                spacing=5,
+                    controls=[
+                        ft.IconButton(
+                        icon=ft.Icons.ARROW_DOWNWARD,
+                        tooltip="Scroll to bottom",
+                        on_click=lambda e: self.scroll_to_bottom(duration=500),
+                        )
+                    ],
+                    alignment=ft.MainAxisAlignment.END,
+                    spacing=5,
                 ),
                 ft.Row(
-                controls=[self._msg_input, self._send_button],
-                spacing=5,
+                    controls=[self._msg_input, self._send_button],
+                    spacing=5,
                 )
             ],
             expand=True,
@@ -173,14 +191,15 @@ class ContactInfo:
         _username(str): Contact's username.
         _contact_name(ft.Text): Contact's name displayed as text.
     """
-    def __init__(self, icon: ft.CircleAvatar, username: str) -> None:
+    def __init__(self, page: ft.Page, icon: ft.CircleAvatar, username: str) -> None:
+        self._page: ft.Page = page
         self._contact_icon: ft.CircleAvatar = icon
         self._username: str = username
-        self._contact_name: ft.Text = ft.Text(self._username)
+        self._contact_name: ft.Text = CText(page=self._page, value=self._username)
 
         # Make contact icon bigger
-        self._contact_icon.max_radius = 100
-        self._contact_icon.radius = 100
+        self._contact_icon.max_radius = 70
+        self._contact_icon.radius = 70
         
     def build(self) -> ft.Container:
         # Ensure the contact name text wraps if it's too long
@@ -194,10 +213,15 @@ class ContactInfo:
                         controls=[
                             self._contact_icon,
                             self._contact_name,
+                            ft.Placeholder(
+                                expand=True,  # This allows the Placeholder to expand
+                                content=CText(page=self._page, value="Contact Info"),
+                                color=ft.Colors.ORANGE,
+                            ),
                         ],
                         alignment=ft.MainAxisAlignment.START,
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        expand=True,
+                        expand=True,  # This allows the Column to expand within the Row
                     )
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -380,13 +404,13 @@ class Contact:
         
         # Create a new icon instead of reusing the original
         new_icon = ft.CircleAvatar(
-            content=CText(page=self._page, value=retrieve_initials(text=self._username), size=80),
+            content=CText(page=self._page, value=retrieve_initials(text=self._username), size=50),
             max_radius=100,
             bgcolor=self._icon_color,
             color=ft.Colors.WHITE,
         )
 
-        contact_info: ContactInfo = ContactInfo(icon=new_icon, username=self._username)
+        contact_info: ContactInfo = ContactInfo(page=self._page, icon=new_icon, username=self._username)
         self._contact_info_tab.content = contact_info.build()
         self._contact_info_tab.update()
         
@@ -399,7 +423,7 @@ class Contact:
             content=ft.Row(
             controls=[
                 self._icon,
-                self._text_widget
+                self._text_widget,
             ],
             spacing=10,
             alignment=ft.MainAxisAlignment.START,

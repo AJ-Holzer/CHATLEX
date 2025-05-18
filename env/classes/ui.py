@@ -78,8 +78,13 @@ class UI(ft.Tabs):
             # Update client storage
             self._page.client_storage.set(config.CS_FONT_SIZE, font_size_slider.value)
             self._page.client_storage.set(config.CS_FONT_FAMILY, font_family_dropdown.value)
+            self._page.client_storage.set(config.CS_LOGOUT_ON_LOST_FOCUS, logout_on_lost_focus_switch.value)
 
-        font_size_label: ft.Text = CText(page=self._page, value="Font Settings", style=ft.TextStyle(font_family=self.default_font, size=self.default_font_size))
+        divider: ft.Divider = ft.Divider(height=1)
+
+        font_size_label: ft.Text = CText(page=self._page, value="Font Settings", size_deviation=5)
+        security_label: ft.Text = CText(page=self._page, value="Security Settings", size_deviation=5)
+        logout_on_lost_focus_label: ft.Text = CText(page=self._page, value="Logout on lost focus")
 
         font_size_slider: ft.Slider = ft.Slider(
             min=config.FONT_MIN_SIZE,
@@ -95,18 +100,43 @@ class UI(ft.Tabs):
             options=[ft.DropdownOption(key=font_name) for font_name in self._page.fonts.keys()] if self._page.fonts else None,  # type:ignore
             on_change=on_setting_changed,
         )
+        
+        logout_on_lost_focus_switch: ft.Switch = ft.Switch(
+            # label=CText(page=self._page, value="Logout on lost focus"),
+            label_position=ft.LabelPosition.LEFT,
+            value=get_key_or_default(page=self._page, default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT, key_name=config.CS_LOGOUT_ON_LOST_FOCUS),
+            on_change=on_setting_changed,
+        )
 
         return ft.Container(
             expand=True,
             padding=20,
             content=ft.Column(
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=20,
-                controls=[
-                    font_size_label,
-                    font_size_slider,
-                    font_family_dropdown
-                ]
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=20,
+            controls=[
+                font_size_label,
+                font_size_slider,
+                font_family_dropdown,
+                divider,
+                security_label,
+                ft.Container(
+                content=ft.Row(
+                    controls=[
+                    ft.Container(
+                        content=logout_on_lost_focus_label,
+                        alignment=ft.alignment.center_left,
+                        expand=True,
+                    ),
+                    ft.Container(
+                        content=logout_on_lost_focus_switch,
+                        alignment=ft.alignment.center_right,
+                    ),
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                ),
+                )
+            ]
             )
         )
 
