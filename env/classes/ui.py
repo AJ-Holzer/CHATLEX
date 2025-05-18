@@ -121,20 +121,20 @@ class UI(ft.Tabs):
                 divider,
                 security_label,
                 ft.Container(
-                content=ft.Row(
-                    controls=[
-                    ft.Container(
-                        content=logout_on_lost_focus_label,
-                        alignment=ft.alignment.center_left,
-                        expand=True,
+                    content=ft.Row(  # TODO: Use class instead to make editing easier!
+                        controls=[
+                            ft.Container(
+                                content=logout_on_lost_focus_label,
+                                alignment=ft.alignment.center_left,
+                                expand=True,
+                            ),
+                            ft.Container(
+                                content=logout_on_lost_focus_switch,
+                                alignment=ft.alignment.center_right,
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     ),
-                    ft.Container(
-                        content=logout_on_lost_focus_switch,
-                        alignment=ft.alignment.center_right,
-                    ),
-                    ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                ),
                 )
             ]
             )
