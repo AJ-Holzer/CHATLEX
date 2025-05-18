@@ -1,12 +1,13 @@
 import flet as ft  # type:ignore[import-untyped]
 import time
-from typing import Callable, Optional
+from typing import Callable, Optional, Any
 
 # Types
 from env.typing.types import SenderType
 
 # Func
 from env.func.extractor import retrieve_initials
+from env.func.get_session_key import get_key_or_default
 
 # # Classes
 # from env.classes.pages import Chat
@@ -14,10 +15,18 @@ from env.func.extractor import retrieve_initials
 # Config
 from env.config import config
 
+class CText(ft.Text):
+    
+    def __init__(self, page: ft.Page, value: str = "", color: Optional[ft.ColorValue] = None, **kwargs: Any) -> None:
+        font_family: str = get_key_or_default(page=page, default=config.FONT_FAMILY_DEFAULT, key_name=config.CS_FONT_FAMILY)
+        size: int = get_key_or_default(page=page, default=config.FONT_SIZE_DEFAULT, key_name=config.CS_FONT_SIZE)
+        super().__init__(value=value, font_family=font_family, size=size, color=color, **kwargs)  # type:ignore
+        self._page: ft.Page = page
 class Chat:
-    def __init__(self, username: str, contact_uid: str) -> None:
+    def __init__(self, username: str, contact_uid: str, page: ft.Page) -> None:
         self._username: str = username
         self._contact_uid: str = contact_uid
+        self._page: ft.Page = page
         
         self._msg_list: ft.ListView = ft.ListView(
             controls=[],
@@ -48,11 +57,11 @@ class Chat:
 
     def load_msgs(self) -> None:
         raise NotImplementedError("This function is not implemented yet!")
-    
+
     def create_msg_bubble(self, sender: SenderType, msg: str, timestamp: float) -> None:
-        self._msg_list.controls.append(MsgBubble(sender=sender, message=msg, timestamp=timestamp).build())
+        self._msg_list.controls.append(MsgBubble(page=self._page, message=msg, timestamp=timestamp, sender=sender).build())
         self.scroll_to_bottom(duration=500)
-    
+
     def build(self) -> ft.Container:
         return ft.Container(
             expand=True,
@@ -81,10 +90,11 @@ class Chat:
         )
 
 class MsgBubble:
-    def __init__(self, message: str, timestamp: float, sender: SenderType = SenderType.SELF) -> None:
+    def __init__(self, page: ft.Page, message: str, timestamp: float, sender: SenderType = SenderType.SELF) -> None:
         self._sender: SenderType = sender
         self._message: str = message
         self._timestamp: float = timestamp
+        self._page: ft.Page = page
 
         # Determine alignment and color
         self._bg_color: ft.ColorValue = (
@@ -95,7 +105,7 @@ class MsgBubble:
     def build(self) -> ft.Container:
         # The actual message container (80% of parent column)
         bubble = ft.Container(
-            content=ft.Text(self._message, color=ft.Colors.WHITE),
+            content=CText(page=self._page, value=self._message, color=ft.Colors.WHITE),
             bgcolor=self._bg_color,
             padding=10,
             border_radius=10,
@@ -154,6 +164,7 @@ class ContactInfo:
 class Contact:
     def __init__(
         self,
+        page: ft.Page,
         username: str,
         size: int,
         contact_uid: str,
@@ -166,6 +177,7 @@ class Contact:
         icon_color: ft.ColorValue = ft.Colors.PURPLE_900,
         is_online: bool = False
     ) -> None:
+        self._page              : ft.Page               = page
         self._chat_tab          : ft.Tab                = chat_tab
         self._contact_info_tab  : ft.Tab                = contact_info_tab
         self._contact_uid       : str                   = contact_uid
@@ -291,7 +303,7 @@ class Contact:
         # Switch to chat page
         self.tab_change_function(2)
         
-        chat: Chat = Chat(username=self._username, contact_uid=self._contact_uid)
+        chat: Chat = Chat(username=self._username, contact_uid=self._contact_uid, page=self._page)
         self._chat_tab.content = chat.build()
         self._chat_tab.update()
         

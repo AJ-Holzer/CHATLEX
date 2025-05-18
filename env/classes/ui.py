@@ -72,7 +72,7 @@ class UI(ft.Tabs):
         # https://flet.dev/docs/controls/dropdown                   # Drop-down menu for language and font settings
 
         def on_setting_changed(e: ft.ControlEvent) -> None:
-            self._page.open(ft.SnackBar(ft.Text("Restart application to apply changes!"), duration=1000))
+            self._page.open(ft.SnackBar(ft.Text("Restart application to apply changes!"), duration=2000))
             self._page.update()  # type:ignore
             
             # Update client storage
@@ -119,7 +119,7 @@ class UI(ft.Tabs):
         # https://flet.dev/docs/reference/types/badge                    # Use to show unread messages (number)
         # https://flet.dev/docs/cookbook/large-lists                     # Use for displaying many contacts --> runs smoothly
         
-        contacts: list[Contact] = [Contact(username=fake.name, size=self.default_font_size, contact_uid="10000", tab_change_function=self.switch_to_tab, chat_tab=self._chat_tab, contact_info_tab=self._contact_info_tab, is_online=random.choice([True, False])) for _ in range(100)]
+        contacts: list[Contact] = [Contact(page=self._page, username=fake.name, size=self.default_font_size, contact_uid="10000", tab_change_function=self.switch_to_tab, chat_tab=self._chat_tab, contact_info_tab=self._contact_info_tab, is_online=random.choice([True, False])) for _ in range(100)]
 
         contacts_lv: ft.ReorderableListView = ft.ReorderableListView(
             controls=[contact.build() for contact in contacts],
@@ -163,9 +163,7 @@ class UI(ft.Tabs):
         
         return ft.Container(
             ft.Row(
-                controls=[
-                    text_hint,
-                ],
+                controls=[text_hint],
                 alignment=ft.MainAxisAlignment.CENTER,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
@@ -186,14 +184,27 @@ class UI(ft.Tabs):
             style=ft.TextStyle(font_family=self.default_font, size=self.default_font_size + 5, weight=ft.FontWeight.BOLD),
         )
         description_developer_info: ft.Text = ft.Text(
-            "Created by AJ-Holzer\n"
-            "Passionate about robotics, secure communication systems, and Python development.",
+            "Created by ",
+            spans=[
+            ft.TextSpan(
+                "AJ-Holzer",
+                style=ft.TextStyle(weight=ft.FontWeight.BOLD)
+            ),
+            ft.TextSpan(
+                "\nPassionate about robotics, secure communication systems, and Python development."
+            ),
+            ],
             style=ft.TextStyle(font_family=self.default_font, size=self.default_font_size),
         )
         website_button: ft.TextButton = ft.TextButton(
-            "Visit: ajservers.site",
+            "Check out my website",
             url="https://ajservers.site",
-            style=ft.ButtonStyle(text_style=ft.TextStyle(font_family=self.default_font, size=self.default_font_size))
+            style=ft.ButtonStyle(
+            text_style=ft.TextStyle(
+                font_family=self.default_font,
+                size=self.default_font_size,
+            )
+            )
         )
 
         return ft.Container(
