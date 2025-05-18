@@ -1,0 +1,2 @@
+[tool.flet.android]
+include_packages = ["pysqlcipher3"]

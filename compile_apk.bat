@@ -1,0 +1,1 @@
+flet build apk --description "This is a secure messenger app." --project "Chat Lex" --product "Chat Lex" --org "ajservers.site"
