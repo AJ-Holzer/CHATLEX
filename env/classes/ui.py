@@ -115,22 +115,25 @@ class UI(ft.Tabs):
         # https://flet.dev/docs/controls/cupertinotextfield              # For adding contacts
         # https://flet.dev/docs/reference/types/badge                    # Use to show unread messages (number)
         # https://flet.dev/docs/cookbook/large-lists                     # Use for displaying many contacts --> runs smoothly
-        
-        contacts: list[Contact] = [Contact(page=self._page, username=fake.name, contact_uid="10000", tab_change_function=self.switch_to_tab, chat_tab=self._chat_tab, contact_info_tab=self._contact_info_tab, is_online=random.choice([True, False])) for _ in range(100)]
 
+        # <<--- TESTING PURPOSE START --->>#
+        # TODO: Retrieve contacts from db when initialized!
+        contacts: list[Contact] = [Contact(page=self._page, username=fake.name, contact_uid="10000", tab_change_function=self.switch_to_tab, chat_tab=self._chat_tab, contact_info_tab=self._contact_info_tab, is_online=random.choice([True, False])) for _ in range(100)]
         contacts_lv: ft.ReorderableListView = ft.ReorderableListView(
             controls=[contact.build() for contact in contacts],
             expand=True
         )
+        # <<--- TESTING PURPOSE END --->>#
 
         return ft.Container(
-            expand=True,
-            padding=20,
             content=ft.Column(
+                controls=[contacts_lv],
                 horizontal_alignment=ft.CrossAxisAlignment.START,
                 spacing=20,
-                controls=[contacts_lv]
-            )
+                expand=True,
+            ),
+            padding=20,
+            expand=True,
         )
 
     def chat_page(self) -> ft.Container:
@@ -143,14 +146,14 @@ class UI(ft.Tabs):
         text_hint: ft.Text = CText(page=self._page, value="Select a contact to chat!", font_family=self.default_font, style=ft.TextStyle(size=self.default_font_size + 0))
         
         return ft.Container(
-            ft.Row(
-                controls=[
-                    text_hint,
-                ],
+            ft.Column(
+                controls=[text_hint],
                 alignment=ft.MainAxisAlignment.CENTER,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                expand=True,
             ),
             padding=40,
+            expand=True,
         )
 
     def contact_info_page(self) -> ft.Container:
@@ -159,12 +162,14 @@ class UI(ft.Tabs):
         text_hint: ft.Text = CText(page=self._page, value="Select a contact to view Info!", font_family=self.default_font, style=ft.TextStyle(size=self.default_font_size + 0))
 
         return ft.Container(
-            ft.Row(
+            ft.Column(
                 controls=[text_hint],
                 alignment=ft.MainAxisAlignment.CENTER,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                expand=True,
             ),
             padding=40,
+            expand=True,
         )
 
     def about_page(self) -> ft.Container:
@@ -210,12 +215,7 @@ class UI(ft.Tabs):
         )
 
         return ft.Container(
-            expand=True,
-            padding=20,
             content=ft.Column(
-                scroll=ft.ScrollMode.AUTO,
-                alignment=ft.MainAxisAlignment.START,
-                spacing=20,
                 controls=[
                     header_about,
                     description_about,
@@ -224,6 +224,12 @@ class UI(ft.Tabs):
                     description_developer_info,
                     website_button
                 ],
+                scroll=ft.ScrollMode.AUTO,
+                alignment=ft.MainAxisAlignment.START,
+                spacing=20,
+                expand=True,
             ),
+            expand=True,
+            padding=20,
         )
 

@@ -26,6 +26,8 @@ class CText(ft.Text):
     def __init__(self, page: ft.Page, value: str = "", use_default_size: bool = True, size_deviation: int = 0, color: Optional[ft.ColorValue] = None, **kwargs: Any) -> None:
         font_family: str = get_key_or_default(page=page, default=config.FONT_FAMILY_DEFAULT, key_name=config.CS_FONT_FAMILY)
         size: int = get_key_or_default(page=page, default=config.FONT_SIZE_DEFAULT, key_name=config.CS_FONT_SIZE) + size_deviation
+        kwargs["no_wrap"] = False
+        kwargs["max_lines"] = None
         if "font_family" not in kwargs:
             kwargs["font_family"] = font_family
         if "size" not in kwargs:
@@ -181,6 +183,10 @@ class ContactInfo:
         self._contact_icon.radius = 100
         
     def build(self) -> ft.Container:
+        # Ensure the contact name text wraps if it's too long
+        self._contact_name.no_wrap = False
+        self._contact_name.max_lines = None  # Allow unlimited lines
+
         return ft.Container(
             content=ft.Row(
                 controls=[
@@ -191,14 +197,16 @@ class ContactInfo:
                         ],
                         alignment=ft.MainAxisAlignment.START,
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        expand=True,
                     )
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                
+                expand=True,
             ),
             alignment=ft.alignment.center,
             padding=20,
+            expand=True,
         )
 
 class Contact:
@@ -252,7 +260,7 @@ class Contact:
         self._icon_background  : ft.CircleAvatar  = (
             icon
             or ft.CircleAvatar(
-                content=CText(page=self._page, value=self._initials),
+                content=CText(page=self._page, value=self._initials, use_default_size=False),
                 max_radius=icon_min_size,
                 bgcolor=icon_color,
                 color=ft.Colors.WHITE,
