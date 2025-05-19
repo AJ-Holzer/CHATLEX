@@ -1,31 +1,43 @@
-import flet as ft  # type:ignore[import-untyped]
 from typing import Optional
 
-# Func
-from env.func.security import aes_decrypt, aes_encrypt, hash_password, generate_iv, derive_key, verify_password, byte_to_str, str_to_byte  # type:ignore
-
-# from env.func.get_session_key import get_key_or_default
+import flet as ft  # type:ignore[import-untyped]
 
 # Config
 from env.config import config
 
+# Func
+from env.func.security import (
+    byte_to_str,
+    generate_iv,
+    hash_password,
+    str_to_byte,
+    verify_password,
+)
+
+# from env.func.get_session_key import get_key_or_default
+
+
 class Login(ft.Column):
     def __init__(self, page: ft.Page, contrls: list[ft.Control]) -> None:
         super().__init__()  # type:ignore
-        
+
         self._page = page
         self._controls = contrls
-        
+
         # Get password
         password_iv_tmp: Optional[str] = self._page.client_storage.get("password-iv")
-        self.password_iv: Optional[bytes] = str_to_byte(data=password_iv_tmp) if isinstance(password_iv_tmp, str) and password_iv_tmp else None
+        self.password_iv: Optional[bytes] = (
+            str_to_byte(data=password_iv_tmp)
+            if isinstance(password_iv_tmp, str) and password_iv_tmp
+            else None
+        )
         self.user_already_exists: bool = True if self.password_iv else False
-        
+
         print(self.password_iv, self.user_already_exists)
-        
+
         # Progress bar
         self._progress_bar = ft.ProgressBar(visible=False)
-        
+
         # Create password entries
         self.password_entry: ft.TextField = ft.TextField(
             label="Password",
@@ -35,7 +47,9 @@ class Login(ft.Column):
             can_reveal_password=True,
             filled=True,
         )
-        if not self.user_already_exists:  # Create a second password entry to verify the password if no iv exists
+        if (
+            not self.user_already_exists
+        ):  # Create a second password entry to verify the password if no iv exists
             self.password_verify_entry: ft.TextField = ft.TextField(
                 label="Verify Password",
                 text_align=ft.TextAlign.LEFT,
@@ -44,60 +58,64 @@ class Login(ft.Column):
                 can_reveal_password=True,
                 filled=True,
             )
-        
+
         self.button_login: ft.ElevatedButton = ft.ElevatedButton(
             text=("Login" if self.user_already_exists else "Create Password"),
             width=200,
             disabled=True,
             on_click=(self.submit if self.user_already_exists else self.create_account),
         )
-        
+
         # Align content
         self.alignment = ft.MainAxisAlignment.CENTER
         self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         self.spacing = 10
         self.expand = True
-        
+
         self.controls = [
             ft.Container(
-            content=ft.Column(
-                controls=[
-                ft.Image(src="assets/icon.png", width=300),
-                self.password_entry,
-                *( [self.password_verify_entry] if not self.user_already_exists else [] ),
-                self._progress_bar,
-                self.button_login,
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                content=ft.Column(
+                    controls=[
+                        ft.Image(src="assets/icon.png", width=300),
+                        self.password_entry,
+                        *(
+                            [self.password_verify_entry]
+                            if not self.user_already_exists
+                            else []
+                        ),
+                        self._progress_bar,
+                        self.button_login,
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    expand=True,
+                    spacing=10,
+                ),
                 expand=True,
-                spacing=10,
-            ),
-            expand=True,
-            padding=40,
-            alignment=ft.alignment.center,
+                padding=40,
+                alignment=ft.alignment.center,
             )
         ]
-        
+
         if not self.user_already_exists:
             warning_model: ft.AlertDialog = ft.AlertDialog(
                 modal=True,
                 title=ft.Text("Important!"),
                 content=ft.Text(
-                    "Now you will be asked to create a password to encrypt your messages. "\
-                    "Please enter it correctly and remember it. You won't be able to decrypt the data "\
+                    "Now you will be asked to create a password to encrypt your messages. "
+                    "Please enter it correctly and remember it. You won't be able to decrypt the data "
                     "if you forget or loose your password."
-                    ),
+                ),
                 actions=[
                     ft.TextButton(
                         "I understand!",
-                        on_click=lambda e: self._page.close(warning_model)
+                        on_click=lambda e: self._page.close(warning_model),
                     )
                 ],
-                actions_alignment=ft.MainAxisAlignment.END
+                actions_alignment=ft.MainAxisAlignment.END,
             )
             self._page.open(warning_model)
-            
+
     def show_progress(self) -> None:
         self._progress_bar.visible = True
         self._page.update()  # type:ignore
@@ -108,15 +126,21 @@ class Login(ft.Column):
 
     def validate(self, e: ft.ControlEvent) -> None:
         # Disable button if nothing inserted
-        self.button_login.disabled = False if all([self.password_entry.value, *([self.password_verify_entry.value] if not self.user_already_exists else [])]) else True
+        self.button_login.disabled = (
+            False
+            if all(
+                [
+                    self.password_entry.value,
+                    *(
+                        [self.password_verify_entry.value]
+                        if not self.user_already_exists
+                        else []
+                    ),
+                ]
+            )
+            else True
+        )
         self._page.update()  # type:ignore
-        
-    def clear_password_entries(self) -> None:
-        self.password_entry.value = ""
-        self.password_entry.update()
-        if hasattr(self, "password_verify_entry"):
-            self.password_verify_entry.value = ""
-            self.password_verify_entry.update()
 
     def create_account(self, e: ft.ControlEvent) -> None:
         # Deactivate the login button to avoid multiple processes running at the same time
@@ -127,22 +151,22 @@ class Login(ft.Column):
             verify_pwd_model: ft.AlertDialog = ft.AlertDialog(
                 modal=True,
                 title=ft.Text("Please confirm"),
-                content=ft.Text("The passwords you entered are not equal! Please reenter them."),
+                content=ft.Text(
+                    "The passwords you entered are not equal! Please reenter them."
+                ),
                 actions=[
                     ft.TextButton(
-                        "OK",
-                        on_click=lambda e: self._page.close(verify_pwd_model)
+                        "OK", on_click=lambda e: self._page.close(verify_pwd_model)
                     )
                 ],
-                actions_alignment=ft.MainAxisAlignment.END
+                actions_alignment=ft.MainAxisAlignment.END,
             )
             self._page.open(verify_pwd_model)
-            
+
             # Reactivate the login button to make sure the user can input stuff
             self.button_login.disabled = False
             self.button_login.update()  # type:ignore
             self.hide_progress()
-            self.clear_password_entries()
             return
 
         self.show_progress()  # type:ignore  # Show progress bar
@@ -166,25 +190,30 @@ class Login(ft.Column):
         self.show_progress()  # type:ignore  # Show progress bar
 
         password: str = str(self.password_entry.value)
-        
-        stored_hash: Optional[str] = self._page.client_storage.get(config.CS_PASSWORD_HASH)
-        if not stored_hash or not verify_password(hash=stored_hash, password=str(self.password_entry.value)):
+
+        stored_hash: Optional[str] = self._page.client_storage.get(
+            config.CS_PASSWORD_HASH
+        )
+        if not stored_hash or not verify_password(
+            hash=stored_hash, password=str(self.password_entry.value)
+        ):
             wrng_pwd_alert: ft.AlertDialog = ft.AlertDialog(
                 modal=True,
                 title=ft.Text("Please try again!"),
                 content=ft.Text("You entered a wrong password!"),
                 actions=[
-                    ft.TextButton("OK", on_click=lambda e: self._page.close(wrng_pwd_alert))
+                    ft.TextButton(
+                        "OK", on_click=lambda e: self._page.close(wrng_pwd_alert)
+                    )
                 ],
-                actions_alignment=ft.MainAxisAlignment.END
+                actions_alignment=ft.MainAxisAlignment.END,
             )
             self._page.open(wrng_pwd_alert)
-            
+
             # Reactivate the login button to make sure the user can input stuff
             self.button_login.disabled = False
             self.button_login.update()  # type:ignore
             self.hide_progress()
-            self.clear_password_entries()
             return
 
         self.hide_progress()  # type:ignore  # Hide progress bar on success

@@ -1,8 +1,12 @@
 import flet as ft  # type:ignore[import-untyped]
 
+from env.classes.forms import Login
+
 # Classes
 from env.classes.ui import UI
-from env.classes.forms import Login
+
+# Config
+from env.config import config
 
 # Func
 from env.func.get_session_key import get_key_or_default
@@ -10,20 +14,33 @@ from env.func.get_session_key import get_key_or_default
 # Themes
 from env.themes.themes import themes
 
-# Config
-from env.config import config
 
 def main(page: ft.Page) -> None:
+    """Initializes and configures the main application page.
+
+    Args:
+        page(ft.Page): The FlutterFlow page object.
+
+    Returns:
+        None: No return value.
+
+    Raises:
+        Exception: Generic exception during page initialization or configuration.
+    """
     page.title = "ChatLex"
     page.window.resizable = True
     page.window.width = 400
     page.window.height = 800
     page.fonts = {
         "Varela Round": "fonts/Varela Round.ttf",
-        "Baloo Bhaijaan": "fonts/Baloo Bhaijaan.ttf"
+        "Baloo Bhaijaan": "fonts/Baloo Bhaijaan.ttf",
     }
-    
-    logout_on_lost_focus: bool = get_key_or_default(page=page, default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT, key_name=config.CS_LOGOUT_ON_LOST_FOCUS)
+
+    logout_on_lost_focus: bool = get_key_or_default(
+        page=page,
+        default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT,
+        key_name=config.CS_LOGOUT_ON_LOST_FOCUS,
+    )
 
     def handle_livecycle_change(e: ft.AppLifecycleStateChangeEvent):
         if e.state not in [ft.AppLifecycleState.SHOW]:
@@ -45,10 +62,10 @@ def main(page: ft.Page) -> None:
     update_theme()
 
     ui: UI = UI(page=page)
-    
+
     # page.client_storage.clear()
     # page.theme_mode = ft.ThemeMode.LIGHT
-    
+
     page.update()  # type:ignore
 
     container: ft.Container = ft.Container(
@@ -58,9 +75,7 @@ def main(page: ft.Page) -> None:
     )
 
     page.add(Login(page=page, contrls=[container]))
-    
-    page.on_login
-    
+
 
 if __name__ == "__main__":
     ft.app(target=main, name="ChatLex")  # type:ignore

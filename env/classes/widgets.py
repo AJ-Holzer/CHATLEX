@@ -1,21 +1,23 @@
-import flet as ft  # type:ignore[import-untyped]
 import time
-from typing import Callable, Optional, Any
+from typing import Any, Callable, Optional
 
-# Types
-from env.typing.types import SenderType
+import flet as ft  # type:ignore[import-untyped]
+
+# Config
+from env.config import config
 
 # Func
 from env.func.extractor import retrieve_initials
 from env.func.get_session_key import get_key_or_default
 
+# Types
+from env.typing.types import SenderType
+
 # # Classes
 # from env.classes.pages import Chat
 
-# Config
-from env.config import config
 
-class CText(ft.Text):    
+class CText(ft.Text):
     """Enhanced text element inheriting from ft.Text, bound to a specific ft.Page instance.  Provides convenient defaults for font settings based on page configuration.
 
     Attributes:
@@ -23,9 +25,29 @@ class CText(ft.Text):
         value(str): The text content of this element.
         color(Optional[ft.ColorValue]): Color of the text. Defaults to None.
     """
-    def __init__(self, page: ft.Page, value: str = "", use_default_size: bool = True, size_deviation: int = 0, color: Optional[ft.ColorValue] = None, **kwargs: Any) -> None:
-        font_family: str = get_key_or_default(page=page, default=config.FONT_FAMILY_DEFAULT, key_name=config.CS_FONT_FAMILY)
-        size: int = get_key_or_default(page=page, default=config.FONT_SIZE_DEFAULT, key_name=config.CS_FONT_SIZE) + size_deviation
+
+    def __init__(
+        self,
+        page: ft.Page,
+        value: str = "",
+        use_default_size: bool = True,
+        size_deviation: int = 0,
+        color: Optional[ft.ColorValue] = None,
+        **kwargs: Any,
+    ) -> None:
+        font_family: str = get_key_or_default(
+            page=page,
+            default=config.FONT_FAMILY_DEFAULT,
+            key_name=config.CS_FONT_FAMILY,
+        )
+        size: int = (
+            get_key_or_default(
+                page=page,
+                default=config.FONT_SIZE_DEFAULT,
+                key_name=config.CS_FONT_SIZE,
+            )
+            + size_deviation
+        )
         kwargs["no_wrap"] = False
         kwargs["max_lines"] = None
         if "font_family" not in kwargs:
@@ -35,6 +57,7 @@ class CText(ft.Text):
                 kwargs["size"] = size
         super().__init__(value=value, color=color, **kwargs)  # type:ignore
         self._page: ft.Page = page
+
 
 class Chat:
     """Represents a chat interface with message sending and display capabilities.
@@ -47,11 +70,12 @@ class Chat:
         _msg_input(ft.TextField): TextField for user message input.
         _send_button(ft.IconButton): Button to send messages.
     """
+
     def __init__(self, username: str, contact_uid: str, page: ft.Page) -> None:
         self._username: str = username
         self._contact_uid: str = contact_uid
         self._page: ft.Page = page
-        
+
         self._msg_list: ft.ListView = ft.ListView(
             controls=[],
             padding=5,
@@ -65,22 +89,25 @@ class Chat:
             hint_text="Type a message...",
             multiline=True,
             min_lines=1,
-            max_lines=5
-        )
-        
-        # Create send button
-        self._send_button = ft.IconButton(
-            icon=ft.Icons.SEND,
-            on_click=self.send_message
+            max_lines=5,
         )
 
-    def scroll_to_bottom(self, duration: int) -> None:        
-        self._msg_list.scroll_to(offset=-1, duration=duration, curve=ft.AnimationCurve.EASE_IN_OUT)
+        # Create send button
+        self._send_button = ft.IconButton(
+            icon=ft.Icons.SEND, on_click=self.send_message
+        )
+
+    def scroll_to_bottom(self, duration: int) -> None:
+        self._msg_list.scroll_to(
+            offset=-1, duration=duration, curve=ft.AnimationCurve.EASE_IN_OUT
+        )
 
     def send_message(self, e: ft.ControlEvent) -> None:
         msg_text = str(self._msg_input.value).strip()
         if msg_text:
-            self.create_msg_bubble(sender=SenderType.SELF, msg=msg_text, timestamp=time.time())
+            self.create_msg_bubble(
+                sender=SenderType.SELF, msg=msg_text, timestamp=time.time()
+            )
             self._msg_input.value = ""  # clear input field
             self._msg_input.update()
             self._msg_list.update()
@@ -89,7 +116,11 @@ class Chat:
         raise NotImplementedError("This function is not implemented yet!")
 
     def create_msg_bubble(self, sender: SenderType, msg: str, timestamp: float) -> None:
-        self._msg_list.controls.append(MsgBubble(page=self._page, message=msg, timestamp=timestamp, sender=sender).build())
+        self._msg_list.controls.append(
+            MsgBubble(
+                page=self._page, message=msg, timestamp=timestamp, sender=sender
+            ).build()
+        )
         self.scroll_to_bottom(duration=500)
 
     def build(self) -> ft.Container:
@@ -97,39 +128,40 @@ class Chat:
             expand=True,
             padding=20,
             content=ft.Column(
-            [
-                # Username at the top, centered and bold
-                ft.Row(
-                    controls=[
-                        CText(
-                            page=self._page,
-                            value=self._username,
-                            size_deviation=4,
-                            weight=ft.FontWeight.BOLD,
-                        )
-                    ],
-                    alignment=ft.MainAxisAlignment.CENTER,
-                ),
-                self._msg_list,
-                ft.Row(
-                    controls=[
-                        ft.IconButton(
-                        icon=ft.Icons.ARROW_DOWNWARD,
-                        tooltip="Scroll to bottom",
-                        on_click=lambda e: self.scroll_to_bottom(duration=500),
-                        )
-                    ],
-                    alignment=ft.MainAxisAlignment.END,
-                    spacing=5,
-                ),
-                ft.Row(
-                    controls=[self._msg_input, self._send_button],
-                    spacing=5,
-                )
-            ],
-            expand=True,
+                [
+                    # Username at the top, centered and bold
+                    ft.Row(
+                        controls=[
+                            CText(
+                                page=self._page,
+                                value=self._username,
+                                size_deviation=4,
+                                weight=ft.FontWeight.BOLD,
+                            )
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                    ),
+                    self._msg_list,
+                    ft.Row(
+                        controls=[
+                            ft.IconButton(
+                                icon=ft.Icons.ARROW_DOWNWARD,
+                                tooltip="Scroll to bottom",
+                                on_click=lambda e: self.scroll_to_bottom(duration=500),
+                            )
+                        ],
+                        alignment=ft.MainAxisAlignment.END,
+                        spacing=5,
+                    ),
+                    ft.Row(
+                        controls=[self._msg_input, self._send_button],
+                        spacing=5,
+                    ),
+                ],
+                expand=True,
             ),
         )
+
 
 class MsgBubble:
     """Represents a message bubble in a chat interface.
@@ -142,7 +174,14 @@ class MsgBubble:
         _bg_color(ft.ColorValue): Background color of the message bubble, determined by the sender.
         _alignment(ft.MainAxisAlignment): Alignment of the message bubble, determined by the sender.
     """
-    def __init__(self, page: ft.Page, message: str, timestamp: float, sender: SenderType = SenderType.SELF) -> None:
+
+    def __init__(
+        self,
+        page: ft.Page,
+        message: str,
+        timestamp: float,
+        sender: SenderType = SenderType.SELF,
+    ) -> None:
         self._sender: SenderType = sender
         self._message: str = message
         self._timestamp: float = timestamp
@@ -150,9 +189,15 @@ class MsgBubble:
 
         # Determine alignment and color
         self._bg_color: ft.ColorValue = (
-            config.SELF_SENDER_COLOR if self._sender == SenderType.SELF else config.OTHER_SENDER_COLOR
+            config.SELF_SENDER_COLOR
+            if self._sender == SenderType.SELF
+            else config.OTHER_SENDER_COLOR
         )
-        self._alignment = ft.MainAxisAlignment.END if self._sender == SenderType.SELF else ft.MainAxisAlignment.START
+        self._alignment = (
+            ft.MainAxisAlignment.END
+            if self._sender == SenderType.SELF
+            else ft.MainAxisAlignment.START
+        )
 
     def build(self) -> ft.Container:
         # The actual message container (80% of parent column)
@@ -175,13 +220,14 @@ class MsgBubble:
         return ft.Container(
             content=ft.Column(
                 controls=[
-                    ft.Row(controls=[bubble]  , alignment=self._alignment),
-                    ft.Row(controls=[metadata], alignment=self._alignment)
+                    ft.Row(controls=[bubble], alignment=self._alignment),
+                    ft.Row(controls=[metadata], alignment=self._alignment),
                 ],
                 spacing=5,
             ),
             padding=ft.padding.symmetric(vertical=5),
         )
+
 
 class ContactInfo:
     """Represents contact information, including icon and username.
@@ -191,6 +237,7 @@ class ContactInfo:
         _username(str): Contact's username.
         _contact_name(ft.Text): Contact's name displayed as text.
     """
+
     def __init__(self, page: ft.Page, icon: ft.CircleAvatar, username: str) -> None:
         self._page: ft.Page = page
         self._contact_icon: ft.CircleAvatar = icon
@@ -200,7 +247,7 @@ class ContactInfo:
         # Make contact icon bigger
         self._contact_icon.max_radius = 70
         self._contact_icon.radius = 70
-        
+
     def build(self) -> ft.Container:
         # Ensure the contact name text wraps if it's too long
         self._contact_name.no_wrap = False
@@ -233,6 +280,7 @@ class ContactInfo:
             expand=True,
         )
 
+
 class Contact:
     """Represents a contact in a chat application.
 
@@ -254,6 +302,7 @@ class Contact:
         _icon(ft.Stack): Stack containing the icon and online status indicator.
         _container(ft.Container): Container holding the contact information.
     """
+
     def __init__(
         self,
         page: ft.Page,
@@ -266,37 +315,35 @@ class Contact:
         padding: int = 10,
         icon_min_size: int = 17,
         icon_color: ft.ColorValue = ft.Colors.PURPLE_900,
-        is_online: bool = False
+        is_online: bool = False,
     ) -> None:
-        self._page              : ft.Page               = page
-        self._chat_tab          : ft.Tab                = chat_tab
-        self._contact_info_tab  : ft.Tab                = contact_info_tab
-        self._contact_uid       : str                   = contact_uid
-        self._icon_color        : ft.ColorValue         = icon_color
-        self._icon_min_size     : int                   = icon_min_size
-        self._is_online         : bool                  = is_online
-        self._padding           : int                   = padding
-        self._text_widget       : ft.Text               = CText(page=self._page, value=username)
-        self._username          : str                   = username
-        self._initials          : str                   = retrieve_initials(text=username)
+        self._page: ft.Page = page
+        self._chat_tab: ft.Tab = chat_tab
+        self._contact_info_tab: ft.Tab = contact_info_tab
+        self._contact_uid: str = contact_uid
+        self._icon_color: ft.ColorValue = icon_color
+        self._icon_min_size: int = icon_min_size
+        self._is_online: bool = is_online
+        self._padding: int = padding
+        self._text_widget: ft.Text = CText(page=self._page, value=username)
+        self._username: str = username
+        self._initials: str = retrieve_initials(text=username)
         self.tab_change_function: Callable[[int], None] = tab_change_function
 
-        self._icon_background  : ft.CircleAvatar  = (
-            icon
-            or ft.CircleAvatar(
-                content=CText(page=self._page, value=self._initials, use_default_size=False),
-                max_radius=icon_min_size,
-                bgcolor=icon_color,
-                color=ft.Colors.WHITE,
-            )
+        self._icon_background: ft.CircleAvatar = icon or ft.CircleAvatar(
+            content=CText(
+                page=self._page, value=self._initials, use_default_size=False
+            ),
+            max_radius=icon_min_size,
+            bgcolor=icon_color,
+            color=ft.Colors.WHITE,
         )
 
-        self._icon_foreground  : ft.CircleAvatar  = ft.CircleAvatar(
-            bgcolor=config.COLOR_ONLINE if is_online else config.COLOR_OFFLINE,
-            radius=5
+        self._icon_foreground: ft.CircleAvatar = ft.CircleAvatar(
+            bgcolor=config.COLOR_ONLINE if is_online else config.COLOR_OFFLINE, radius=5
         )
 
-        self._icon             : ft.Stack         = ft.Stack(
+        self._icon: ft.Stack = ft.Stack(
             controls=[
                 self._icon_background,
                 ft.Container(
@@ -311,14 +358,16 @@ class Contact:
     @property
     def is_online(self) -> bool:
         return self._is_online
-    
+
     @is_online.setter
     def is_online(self, is_online: bool) -> None:
         self._is_online = is_online
-        
+
         try:
             self._is_online = is_online
-            self._icon_foreground.bgcolor = ft.Colors.GREEN if is_online else ft.Colors.RED
+            self._icon_foreground.bgcolor = (
+                ft.Colors.GREEN if is_online else ft.Colors.RED
+            )
             self._icon.update()
         except Exception as e:
             print(f"Error updating contact status: {e}")
@@ -342,7 +391,7 @@ class Contact:
         self._username = new_username
         self._text_widget.value = new_username
         self.update()
-        
+
     @property
     def text_widget(self) -> ft.Text:
         return self._text_widget
@@ -350,7 +399,7 @@ class Contact:
     @property
     def padding(self) -> int:
         return self._padding
-    
+
     @padding.setter
     def padding(self, new_padding: int) -> None:
         if not self._container:
@@ -362,21 +411,21 @@ class Contact:
         self._padding = new_padding
         self._container.padding = new_padding
         self._container.update()
-        
+
     @property
     def icon_min_size(self) -> int:
         return self._icon_min_size
-    
+
     @icon_min_size.setter
     def icon_min_size(self, new_min_size: int) -> None:
         self._icon_min_size = new_min_size
         self._icon_background.min_radius = new_min_size
         self._icon.update()
-        
+
     @property
     def icon_color(self) -> ft.ColorValue:
         return self._icon_color
-    
+
     @icon_color.setter
     def icon_color(self, new_color: ft.ColorValue) -> None:
         self._icon_color = new_color
@@ -389,49 +438,55 @@ class Contact:
 
     def open_chat(self) -> None:
         print(f"Opening chat for user '{self._username}'.")
-        
+
         # Switch to chat page
         self.tab_change_function(2)
-        
-        chat: Chat = Chat(username=self._username, contact_uid=self._contact_uid, page=self._page)
+
+        chat: Chat = Chat(
+            username=self._username, contact_uid=self._contact_uid, page=self._page
+        )
         self._chat_tab.content = chat.build()
         self._chat_tab.update()
-        
+
         chat.scroll_to_bottom(duration=0)
-        
+
     def create_contact_info_page(self) -> None:
         print(f"Creating contact page for user '{self._username}'.")
-        
+
         # Create a new icon instead of reusing the original
         new_icon = ft.CircleAvatar(
-            content=CText(page=self._page, value=retrieve_initials(text=self._username), size=50),
+            content=CText(
+                page=self._page, value=retrieve_initials(text=self._username), size=50
+            ),
             max_radius=100,
             bgcolor=self._icon_color,
             color=ft.Colors.WHITE,
         )
 
-        contact_info: ContactInfo = ContactInfo(page=self._page, icon=new_icon, username=self._username)
+        contact_info: ContactInfo = ContactInfo(
+            page=self._page, icon=new_icon, username=self._username
+        )
         self._contact_info_tab.content = contact_info.build()
         self._contact_info_tab.update()
-        
+
     def create_pages(self, e: ft.ControlEvent) -> None:
         self.create_contact_info_page()
         self.open_chat()
 
     def build(self) -> ft.Container:
-        self._container =  ft.Container(
+        self._container = ft.Container(
             content=ft.Row(
-            controls=[
-                self._icon,
-                self._text_widget,
-            ],
-            spacing=10,
-            alignment=ft.MainAxisAlignment.START,
-            vertical_alignment=ft.CrossAxisAlignment.CENTER
+                controls=[
+                    self._icon,
+                    self._text_widget,
+                ],
+                spacing=10,
+                alignment=ft.MainAxisAlignment.START,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
             padding=self._padding,
             alignment=ft.alignment.center_left,
-            on_click=self.create_pages
+            on_click=self.create_pages,
         )
 
         return self._container

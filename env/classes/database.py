@@ -1,20 +1,35 @@
-# import sqlite3
+import sqlite3
 
-# # Use pysqlcipher3 instead if installed
-# from pysqlcipher3 import dbapi2 as sqlcipher  # type:ignore
+import flet as ft  # type:ignore[import-untyped]
 
-# conn = sqlcipher.connect('')
+# Class
+from env.classes.widgets import CText
 
-# # Set the key
-# conn.execute("PRAGMA key = 'your-strong-password'")
+# Config
+from env.config import config
 
-# # Optional: to verify encryption is working
-# conn.execute("PRAGMA cipher_version;")
-# print(conn.fetchone())
+# Func
+from env.func.get_session_key import get_key_or_default
 
-# # Now you can use it like normal sqlite3
-# conn.execute("CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY, msg TEXT);")
-# conn.execute("INSERT INTO test (msg) VALUES (?)", ("Hello Secure World!",))
-# conn.commit()
 
-# conn.close()
+class SQL:
+    def __init__(self, page: ft.Page, sql_path: str) -> None:
+        self._page: ft.Page = page
+
+        # Check if sql path exists, otherwise show push message to lead to the settings page
+        if not get_key_or_default(
+            page=self._page, default=None, key_name=config.CS_SQL_PATH
+        ):
+            self._page.open(
+                ft.SnackBar(
+                    CText(
+                        page=self._page,
+                        value="Consider to create a database to store your messages.",
+                    ),
+                    duration=3000,
+                )
+            )
+            return
+
+        self._conn: sqlite3.Connection = sqlite3.connect(str(config.SQL_PATH))
+        self._cur: sqlite3.Cursor = self._conn.cursor()
