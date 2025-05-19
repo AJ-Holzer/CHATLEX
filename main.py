@@ -30,7 +30,7 @@ def main(page: ft.Page) -> None:
             page.clean()
             page.session.clear()
             page.add(Login(page=page, contrls=[container]))
-    
+
     def update_theme() -> None:
         if page.platform_brightness == ft.Brightness.DARK:
             page.theme = themes.DARK
