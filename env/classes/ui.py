@@ -158,7 +158,7 @@ class UI(ft.Tabs):
         # https://flet.dev/docs/cookbook/large-lists                     # Use for displaying many contacts --> runs smoothly
 
         # <<--- TESTING PURPOSE START --->> #
-        # TODO: Retrieve contacts from db when initialized!
+        # TODO: Retrieve contacts from db when initialized and use class ContactsPage!
         contacts: list[Contact] = [
             Contact(
                 page=self._page,
