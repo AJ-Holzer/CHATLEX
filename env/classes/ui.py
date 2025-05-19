@@ -134,6 +134,8 @@ class UI(ft.Tabs):
             ),
         )
 
+        # TODO: Add the ability to add a database file for the contacts and encrypt it! --> Use SQL class.
+
         return ft.Container(
             expand=True,
             padding=20,

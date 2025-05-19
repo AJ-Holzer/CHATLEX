@@ -33,8 +33,6 @@ class Login(ft.Column):
         )
         self.user_already_exists: bool = True if self.password_iv else False
 
-        print(self.password_iv, self.user_already_exists)
-
         # Progress bar
         self._progress_bar = ft.ProgressBar(visible=False)
 
@@ -178,7 +176,6 @@ class Login(ft.Column):
 
         self.hide_progress()  # type:ignore  # Hide progress bar
 
-        print(f"Stored {iv=} and {pwd_hash=}")
         self._page.clean()
         self._page.add(Login(page=self._page, contrls=self._controls))
 
@@ -188,8 +185,6 @@ class Login(ft.Column):
         self.button_login.update()  # type:ignore
 
         self.show_progress()  # type:ignore  # Show progress bar
-
-        password: str = str(self.password_entry.value)
 
         stored_hash: Optional[str] = self._page.client_storage.get(
             config.CS_PASSWORD_HASH
@@ -218,6 +213,5 @@ class Login(ft.Column):
 
         self.hide_progress()  # type:ignore  # Hide progress bar on success
 
-        print(f"Logged in with password '{password}'")
         self._page.clean()
         self._page.add(*self._controls)

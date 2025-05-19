@@ -1,6 +1,11 @@
-import flet as ft  # type:ignore[import-untyped]
+from functools import lru_cache
 from typing import Any
 
+import flet as ft  # type:ignore[import-untyped]
+
+
+# Cache 100 values to improve performance
+@lru_cache(maxsize=100)
 def get_key_or_default(page: ft.Page, default: Any, key_name: str) -> Any:
     """Retrieves a value from a session by key, returning a default if the key is not found.
 
@@ -19,6 +24,6 @@ def get_key_or_default(page: ft.Page, default: Any, key_name: str) -> Any:
         value: Any = page.client_storage.get(key_name)
         print(f"Key found! Returning value '{value}'")
         return value
-    
+
     print(f"Key not found! Returning default value '{default}'")
     return default
