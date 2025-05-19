@@ -1,12 +1,10 @@
-from typing import Optional
-
 import flet as ft  # type:ignore[import-untyped]
 
 # from env.classes.database import SQL
 from env.classes.faker import Faker
 
 # Classes
-from env.classes.widgets import CText, SettingSwitch
+from env.classes.widgets import Contact, CText, SettingSwitch
 
 # Config
 from env.config import config
@@ -14,7 +12,7 @@ from env.config import config
 # Func
 from env.func.get_session_key import get_key_or_default
 
-fake = Faker()
+faker = Faker()
 
 
 class UI(ft.Tabs):
@@ -159,24 +157,45 @@ class UI(ft.Tabs):
         # https://flet.dev/docs/reference/types/badge                    # Use to show unread messages (number)
         # https://flet.dev/docs/cookbook/large-lists                     # Use for displaying many contacts --> runs smoothly
 
-        contacts_lv: Optional[ft.ReorderableListView] = None
+        # <<--- TESTING PURPOSE START --->> #
+        # TODO: Retrieve contacts from db when initialized!
+        contacts: list[Contact] = [
+            Contact(
+                page=self._page,
+                username=faker.name,
+                contact_uid="10000",
+                tab_change_function=self.switch_to_tab,
+                chat_tab=self._chat_tab,
+                contact_info_tab=self._contact_info_tab,
+                is_online=True,
+            )
+            for _ in range(100)
+        ]
+        contacts_lv: ft.ReorderableListView = ft.ReorderableListView(
+            controls=[contact.build() for contact in contacts], expand=True
+        )
+        # <<--- TESTING PURPOSE END --->> #
+
+        # Display the msg to create a database if no file exists
+        if not get_key_or_default(
+            page=self._page,
+            default=None,
+            key_name=config.CS_SQL_PATH,
+        ):
+            no_db_text: ft.Text = CText(
+                page=self._page,
+                value="Consider to create a database file in the settings!",
+            )
+            return ft.Container(
+                content=no_db_text,
+                alignment=ft.alignment.center,
+                expand=True,
+                padding=20,
+            )
 
         return ft.Container(
             content=ft.Column(
-                controls=[
-                    ft.Container(
-                        content=(
-                            contacts_lv  # Display the msg to create a database if no file exists
-                            if contacts_lv
-                            else CText(
-                                page=self._page,
-                                value="Consider to create a database file in the settings.\n\nOtherwise, you won't be able to add any contacts.",
-                            )
-                        ),
-                        alignment=(None if contacts_lv else ft.alignment.center),
-                        expand=True,
-                    )
-                ],
+                controls=[contacts_lv],
                 horizontal_alignment=ft.CrossAxisAlignment.START,
                 spacing=20,
                 expand=True,

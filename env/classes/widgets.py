@@ -3,6 +3,9 @@ from typing import Any, Callable, Optional
 
 import flet as ft  # type:ignore[import-untyped]
 
+# Classes
+from env.classes.faker import Faker
+
 # Config
 from env.config import config
 
@@ -13,8 +16,7 @@ from env.func.get_session_key import get_key_or_default
 # Types
 from env.typing.types import SenderType
 
-# # Classes
-# from env.classes.pages import Chat
+faker: Faker = Faker()
 
 
 class SettingSwitch:
@@ -536,3 +538,50 @@ class Contact:
         )
 
         return self._container
+
+
+# TODO: Actually use the ContactsPage class, but only return the stuff, do not use the contacts_tab --> makes problems!!!
+class ContactsPage:
+    def __init__(
+        self,
+        page: ft.Page,
+        contacts_tab: ft.Tab,
+        available_contacts: Optional[list[Contact]] = None,
+    ) -> None:
+        self._page: ft.Page = page
+        self._contacts_tab: ft.Tab = contacts_tab
+        self._available_contacts: Optional[list[Contact]] = available_contacts
+        self._contacts_lv: Optional[ft.ReorderableListView] = None
+
+        if self._available_contacts:
+            self._contacts_lv = ft.ReorderableListView(
+                controls=[contact.build() for contact in self._available_contacts]
+            )
+
+        self._tab_column: ft.Column = ft.Column(
+            controls=[
+                ft.Container(
+                    content=(
+                        self._contacts_lv
+                        if self._contacts_lv is not None
+                        # Display the msg to create a database if no file exists
+                        else CText(
+                            page=self._page,
+                            value="Consider to create a database file in the settings.\n\nOtherwise, you won't be able to add any contacts.",
+                        )
+                    ),
+                    alignment=(None if self._contacts_lv else ft.alignment.center),
+                    expand=True,
+                )
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.START,
+            spacing=20,
+            expand=True,
+        )
+
+    def build(self) -> ft.Container:
+        return ft.Container(
+            content=self._tab_column,
+            padding=20,
+            expand=True,
+        )

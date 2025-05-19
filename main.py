@@ -42,6 +42,17 @@ def main(page: ft.Page) -> None:
         key_name=config.CS_LOGOUT_ON_LOST_FOCUS,
     )
 
+    ui: UI = UI(page=page)
+
+    # page.client_storage.clear()
+    # page.theme_mode = ft.ThemeMode.LIGHT
+
+    container: ft.Container = ft.Container(
+        content=ui,
+        padding=ft.padding.only(top=40),
+        expand=True,
+    )
+
     def handle_livecycle_change(e: ft.AppLifecycleStateChangeEvent):
         if e.state not in [ft.AppLifecycleState.SHOW]:
             page.clean()
@@ -60,19 +71,6 @@ def main(page: ft.Page) -> None:
         page.on_app_lifecycle_state_change = handle_livecycle_change
 
     update_theme()
-
-    ui: UI = UI(page=page)
-
-    # page.client_storage.clear()
-    # page.theme_mode = ft.ThemeMode.LIGHT
-
-    page.update()  # type:ignore
-
-    container: ft.Container = ft.Container(
-        content=ui,
-        padding=ft.padding.only(top=40),
-        expand=True,
-    )
 
     page.add(Login(page=page, contrls=[container]))
 
