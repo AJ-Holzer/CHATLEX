@@ -106,11 +106,17 @@ class Login(ft.Column):
         self._progress_bar.visible = False
         self._page.update()  # type:ignore
 
-
     def validate(self, e: ft.ControlEvent) -> None:
         # Disable button if nothing inserted
         self.button_login.disabled = False if all([self.password_entry.value, *([self.password_verify_entry.value] if not self.user_already_exists else [])]) else True
         self._page.update()  # type:ignore
+        
+    def clear_password_entries(self) -> None:
+        self.password_entry.value = ""
+        self.password_entry.update()
+        if hasattr(self, "password_verify_entry"):
+            self.password_verify_entry.value = ""
+            self.password_verify_entry.update()
 
     def create_account(self, e: ft.ControlEvent) -> None:
         # Deactivate the login button to avoid multiple processes running at the same time
@@ -136,6 +142,7 @@ class Login(ft.Column):
             self.button_login.disabled = False
             self.button_login.update()  # type:ignore
             self.hide_progress()
+            self.clear_password_entries()
             return
 
         self.show_progress()  # type:ignore  # Show progress bar
@@ -177,6 +184,7 @@ class Login(ft.Column):
             self.button_login.disabled = False
             self.button_login.update()  # type:ignore
             self.hide_progress()
+            self.clear_password_entries()
             return
 
         self.hide_progress()  # type:ignore  # Hide progress bar on success
