@@ -1,10 +1,12 @@
+from typing import Optional
+
 import flet as ft  # type:ignore[import-untyped]
 
 # from env.classes.database import SQL
 from env.classes.faker import Faker
 
 # Classes
-from env.classes.widgets import CText
+from env.classes.widgets import CText, SettingSwitch
 
 # Config
 from env.config import config
@@ -89,7 +91,7 @@ class UI(ft.Tabs):
                 config.CS_FONT_FAMILY, font_family_dropdown.value
             )
             self._page.client_storage.set(
-                config.CS_LOGOUT_ON_LOST_FOCUS, logout_on_lost_focus_switch.value
+                config.CS_LOGOUT_ON_LOST_FOCUS, logout_on_lost_focus_switch.state
             )
 
         divider: ft.Divider = ft.Divider(height=1)
@@ -99,9 +101,6 @@ class UI(ft.Tabs):
         )
         security_label: ft.Text = CText(
             page=self._page, value="Security Settings", size_deviation=5
-        )
-        logout_on_lost_focus_label: ft.Text = CText(
-            page=self._page, value="Logout on lost focus"
         )
 
         font_size_slider: ft.Slider = ft.Slider(
@@ -126,15 +125,15 @@ class UI(ft.Tabs):
             on_change=on_setting_changed,
         )
 
-        logout_on_lost_focus_switch: ft.CupertinoSwitch = ft.CupertinoSwitch(
-            # label=CText(page=self._page, value="Logout on lost focus"),
-            label_position=ft.LabelPosition.LEFT,
-            value=get_key_or_default(
+        logout_on_lost_focus_switch: SettingSwitch = SettingSwitch(
+            page=self._page,
+            text="Logout on lost focus",
+            event=on_setting_changed,
+            state=get_key_or_default(
                 page=self._page,
                 default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT,
                 key_name=config.CS_LOGOUT_ON_LOST_FOCUS,
             ),
-            on_change=on_setting_changed,
         )
 
         return ft.Container(
@@ -149,22 +148,7 @@ class UI(ft.Tabs):
                     font_family_dropdown,
                     divider,
                     security_label,
-                    ft.Container(
-                        content=ft.Row(  # TODO: Use class instead to make editing easier!
-                            controls=[
-                                ft.Container(
-                                    content=logout_on_lost_focus_label,
-                                    alignment=ft.alignment.center_left,
-                                    expand=True,
-                                ),
-                                ft.Container(
-                                    content=logout_on_lost_focus_switch,
-                                    alignment=ft.alignment.center_right,
-                                ),
-                            ],
-                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                        ),
-                    ),
+                    logout_on_lost_focus_switch.build(),
                 ],
             ),
         )
@@ -175,37 +159,24 @@ class UI(ft.Tabs):
         # https://flet.dev/docs/reference/types/badge                    # Use to show unread messages (number)
         # https://flet.dev/docs/cookbook/large-lists                     # Use for displaying many contacts --> runs smoothly
 
-        # <<--- TESTING PURPOSE START --->> #
-        # # TODO: Retrieve contacts from db when initialized!
-        # contacts: list[Contact] = [Contact(page=self._page, username=fake.name, contact_uid="10000", tab_change_function=self.switch_to_tab, chat_tab=self._chat_tab, contact_info_tab=self._contact_info_tab, is_online=random.choice([True, False])) for _ in range(100)]
-        # contacts_lv: ft.ReorderableListView = ft.ReorderableListView(
-        #     controls=[contact.build() for contact in contacts],
-        #     expand=True
-        # )
-        # <<--- TESTING PURPOSE END --->> #
-
-        # Display the msg to create a database if no file exists
-        contacts_lv: ft.ReorderableListView
-        if not get_key_or_default(
-            page=self._page, default=None, key_name=config.CS_SQL_PATH
-        ):
-            contacts_lv = ft.ReorderableListView(
-                controls=[
-                    CText(
-                        page=self._page,
-                        value="Consider to create a database file in the settings!",
-                    )
-                ],
-                expand=True,
-            )
-        else:
-            contacts_lv = ft.ReorderableListView(
-                controls=[], expand=True  # TODO: Load contacts from db!
-            )
+        contacts_lv: Optional[ft.ReorderableListView] = None
 
         return ft.Container(
             content=ft.Column(
-                controls=[contacts_lv],
+                controls=[
+                    ft.Container(
+                        content=(
+                            contacts_lv  # Display the msg to create a database if no file exists
+                            if contacts_lv
+                            else CText(
+                                page=self._page,
+                                value="Consider to create a database file in the settings.\n\nOtherwise, you won't be able to add any contacts.",
+                            )
+                        ),
+                        alignment=(None if contacts_lv else ft.alignment.center),
+                        expand=True,
+                    )
+                ],
                 horizontal_alignment=ft.CrossAxisAlignment.START,
                 spacing=20,
                 expand=True,

@@ -17,6 +17,52 @@ from env.typing.types import SenderType
 # from env.classes.pages import Chat
 
 
+class SettingSwitch:
+    def __init__(
+        self,
+        page: ft.Page,
+        text: str,
+        state: bool,
+        event: ft.OptionalControlEventCallable,
+    ) -> None:
+        self._page: ft.Page = page
+        self._txt: str = text
+        self._state: bool = state
+        self._event: ft.OptionalControlEventCallable = event
+
+        self._text_widget: ft.Text = CText(
+            page=self._page,
+            value=self._txt,
+        )
+
+        self._switch_widget: ft.CupertinoSwitch = ft.CupertinoSwitch(
+            value=self._state,
+            on_change=self._event,
+        )
+
+    @property
+    def state(self) -> bool:
+        return self._state
+
+    def build(self) -> ft.Container:
+        return ft.Container(
+            content=ft.Row(
+                controls=[
+                    ft.Container(
+                        content=self._text_widget,
+                        alignment=ft.alignment.center_left,
+                        expand=True,
+                    ),
+                    ft.Container(
+                        content=self._switch_widget,
+                        alignment=ft.alignment.center_right,
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            ),
+        )
+
+
 class CText(ft.Text):
     """Enhanced text element inheriting from ft.Text, bound to a specific ft.Page instance.  Provides convenient defaults for font settings based on page configuration.
 
