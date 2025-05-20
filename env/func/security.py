@@ -8,10 +8,10 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
-ARGON2_HASH_PATTERN = re.compile(r"^\$argon2(id|i)\$v=\d+\$m=\d+,t=\d+,p=\d+\$.+")
-
 # Config
 from env.config import config
+
+ARGON2_HASH_PATTERN = re.compile(r"^\$argon2(id|i)\$v=\d+\$m=\d+,t=\d+,p=\d+\$.+")
 
 
 def is_valid_argon2_hash(hash_str: str) -> bool:
