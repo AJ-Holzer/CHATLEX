@@ -1,6 +1,7 @@
 import re
 from base64 import b64decode, b64encode
 from secrets import token_bytes
+from typing import Any
 
 from argon2 import PasswordHasher
 from argon2.low_level import Type, hash_secret_raw
@@ -11,7 +12,9 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 # Config
 from env.config import config
 
-ARGON2_HASH_PATTERN = re.compile(r"^\$argon2(id|i)\$v=\d+\$m=\d+,t=\d+,p=\d+\$.+")
+ARGON2_HASH_PATTERN: re.Pattern[Any] = re.compile(
+    r"^\$argon2(id|i)\$v=\d+\$m=\d+,t=\d+,p=\d+\$.+"
+)
 
 
 def is_valid_argon2_hash(hash_str: str) -> bool:
