@@ -20,6 +20,16 @@ faker: Faker = Faker()
 
 
 class SettingSwitch:
+    """A switch control with a text label, built using Flutter widgets.
+
+    Attributes:
+        _page(ft.Page): The Flutter page where the switch is displayed.
+        _txt(str): The text label for the switch.
+        _state(bool): The current state (on/off) of the switch.
+        _event(ft.OptionalControlEventCallable): An optional callback function triggered when the switch state changes.
+        _text_widget(ft.Text): The Flutter Text widget displaying the label.
+        _switch_widget(ft.CupertinoSwitch): The Flutter CupertinoSwitch widget.
+    """
     def __init__(
         self,
         page: ft.Page,
@@ -44,7 +54,7 @@ class SettingSwitch:
 
     @property
     def state(self) -> bool:
-        return self._state
+        return self._switch_widget.value
 
     def build(self) -> ft.Container:
         return ft.Container(
@@ -542,6 +552,15 @@ class Contact:
 
 # TODO: Actually use the ContactsPage class, but only return the stuff, do not use the contacts_tab --> makes problems!!!
 class ContactsPage:
+    """Represents the contacts page in the application.
+
+    Attributes:
+        _page(ft.Page): The Flutter page object.
+        _contacts_tab(ft.Tab): The tab for managing contacts.
+        _available_contacts(Optional[list[Contact]]): List of available contacts to display.
+        _contacts_lv(Optional[ft.ReorderableListView]): Reorderable list view to display contacts; None if no contacts are available.
+        _tab_column(ft.Column): Column layout containing the contacts list view or message.
+    """
     def __init__(
         self,
         page: ft.Page,
