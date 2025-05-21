@@ -210,5 +210,17 @@ class SQL:
         ]
 
     def encrypt_data(self, data: str) -> str:
-        encrypted = aes_encrypt(plaintext=data, key=self._key, iv=self._iv)
-        return base64.b64encode(encrypted).decode("utf-8")
+        encrypted: bytes = aes_encrypt(
+            plaintext=data,
+            key=self._key,
+            iv=self._iv,
+        )
+        return base64.b64encode(encrypted).decode("UTF-8")
+
+    def decrypt_data(self, data: str) -> str:
+        decrypted: bytes = aes_decrypt(
+            ciphertext=base64.b64decode(data),
+            key=self._key,
+            iv=self._iv,
+        )
+        return decrypted.decode("UTF-8")

@@ -93,7 +93,11 @@ def derive_key(password: str, salt: bytes) -> bytes:
     return key
 
 
-def aes_encrypt(plaintext: str, key: bytes, iv: bytes) -> bytes:
+def aes_encrypt(
+    plaintext: str,
+    key: bytes,
+    iv: bytes,
+) -> bytes:  # TODO: Maybe get the data as bytes?
     """AES encrypt function.
 
     Args:
@@ -119,7 +123,11 @@ def aes_encrypt(plaintext: str, key: bytes, iv: bytes) -> bytes:
     return ciphertext
 
 
-def aes_decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> str:
+def aes_decrypt(
+    ciphertext: bytes,
+    key: bytes,
+    iv: bytes,
+) -> bytes:
     """Decrypts ciphertext using AES in CBC mode with PKCS7 padding.
 
     Args:
@@ -140,14 +148,9 @@ def aes_decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> str:
 
     # Remove PKCS7 padding and decode base64 to get original plaintext bytes
     unpadder = padding.PKCS7(128).unpadder()
-    plaintext_padded = unpadder.update(padded_plaintext) + unpadder.finalize()
-    plaintext = b64decode(plaintext_padded)
-    return plaintext.decode("UTF-8")
+    plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
 
-    # unpadder = padding.PKCS7(128).unpadder()
-    # plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
-
-    # return plaintext
+    return plaintext
 
 
 def hash_password(password: str) -> str:
