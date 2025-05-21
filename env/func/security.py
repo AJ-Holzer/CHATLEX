@@ -18,21 +18,64 @@ ARGON2_HASH_PATTERN: re.Pattern[Any] = re.compile(
 
 
 def is_valid_argon2_hash(hash_str: str) -> bool:
+    """Check if a given string matches the Argon2 hash pattern.
+
+    Args:
+        hash_str(str): The string to check against the Argon2 hash pattern.
+
+    Returns:
+        bool: True if the string matches the Argon2 hash pattern, False otherwise.
+
+    Raises:
+        re.error: If the provided hash_str is not a valid regular expression.
+    """
     return bool(ARGON2_HASH_PATTERN.match(hash_str))
 
 
 def byte_to_str(data: bytes) -> str:
-    """Convert bytes to a base64-encoded UTF-8 string."""
+    """Convert bytes to string using base64 encoding.
+
+    Args:
+        data(bytes): Bytes data to be converted.
+
+    Returns:
+        str: Base64 encoded string.
+
+    Raises:
+        binascii.Error: If the bytes data is not valid base64 encoded data.
+        UnicodeDecodeError: If the base64 encoded data cannot be decoded using UTF-8.
+    """
     return b64encode(data).decode("UTF-8")
 
 
 def str_to_byte(data: str) -> bytes:
-    """Convert a base64-encoded UTF-8 string to bytes."""
+    """Convert a string to bytes using base64 decoding.
+
+    Args:
+        data(str): String to be converted to bytes.
+
+    Returns:
+        bytes: Bytes representation of the input string.
+
+    Raises:
+        binascii.Error: Raised if the input string is not a valid base64 encoded string.
+        UnicodeEncodeError: Raised if the input string cannot be encoded using UTF-8.
+    """
     return b64decode(data.encode("UTF-8"))
 
 
 def generate_iv() -> bytes:
-    """Securely generate a 16-byte IV for AES-CBC."""
+    """Generates a 16-byte Initialization Vector (IV).
+
+    Args:
+        None(None): No parameters are needed.
+
+    Returns:
+        bytes: A 16-byte Initialization Vector (IV).
+
+    Raises:
+        Exception: If token_bytes function fails unexpectedly.
+    """
     return token_bytes(16)
 
 
@@ -51,7 +94,20 @@ def derive_key(password: str, salt: bytes) -> bytes:
 
 
 def aes_encrypt(plaintext: bytes, key: bytes, iv: bytes) -> bytes:
-    """Encrypt plaintext using AES-256-CBC with PKCS7 padding."""
+    """Encrypt data using AES in CBC mode.
+
+    Args:
+        plaintext(bytes): Data to be encrypted.
+        key(bytes): Encryption key.
+        iv(bytes): Initialization vector.
+
+    Returns:
+        bytes: Ciphertext.
+
+    Raises:
+        ValueError: If the key or IV is not the correct length.
+        TypeError: If input data is not bytes.
+    """
     padder = padding.PKCS7(128).padder()
     padded_data = padder.update(plaintext) + padder.finalize()
 
@@ -63,7 +119,20 @@ def aes_encrypt(plaintext: bytes, key: bytes, iv: bytes) -> bytes:
 
 
 def aes_decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
-    """Decrypt ciphertext using AES-256-CBC with PKCS7 padding."""
+    """Decrypts ciphertext using AES in CBC mode with PKCS7 padding.
+
+    Args:
+        ciphertext(bytes): Ciphertext to decrypt.
+        key(bytes): Secret key for AES decryption.
+        iv(bytes): Initialization vector (IV) for CBC mode.
+
+    Returns:
+        bytes: Decrypted plaintext.
+
+    Raises:
+        ValueError: If the key or IV length is invalid.
+        cryptography.exceptions.InvalidTag: If the ciphertext is tampered with or the key is incorrect.
+    """
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     decryptor = cipher.decryptor()
     padded_plaintext = decryptor.update(ciphertext) + decryptor.finalize()
@@ -75,7 +144,17 @@ def aes_decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
 
 
 def hash_password(password: str) -> str:
-    """Hash a password using Argon2id (for storing securely)."""
+    """Hashes a given password using Argon2.
+
+    Args:
+        password(str): The password to hash.
+
+    Returns:
+        str: The Argon2 hash of the password.
+
+    Raises:
+        ValueError: Raised if no password is provided.
+    """
     if not password:
         raise ValueError("No password provided!")
 
@@ -89,7 +168,18 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(hash: str, password: str) -> bool:
-    """Verify an Argon2id password hash."""
+    """Verifies if a given password matches a given Argon2 hash.
+
+    Args:
+        hash(str): The Argon2 hash to verify.
+        password(str): The password to verify against the hash.
+
+    Returns:
+        bool: True if the password matches the hash, False otherwise.
+
+    Raises:
+        Exception: Generic exception during hash verification.
+    """
     if not is_valid_argon2_hash(hash):
         print("Hash format invalid or potentially unsafe.")
         return False
