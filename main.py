@@ -1,5 +1,6 @@
 import flet as ft  # type:ignore[import-untyped]
 
+from env.classes.database import SQL
 from env.classes.forms import Login
 
 # Classes
@@ -42,6 +43,7 @@ def main(page: ft.Page) -> None:
         key_name=config.CS_LOGOUT_ON_LOST_FOCUS,
     )
 
+    # db: SQL = SQL(page=page)  # TODO: Add key derivation and create db here
     ui: UI = UI(page=page)
 
     # page.client_storage.clear()

@@ -64,6 +64,8 @@ class SQL:
         )
         self._conn.commit()
 
+        print(f"Created database at '{self._db_path}'.")
+
     def insert_user(self, user_uid: str, username: str, ip: str) -> None:
         """Insert a new user into the database if one with the same user_uid does not already exist.
 
