@@ -1,6 +1,8 @@
-from typing import Optional
+import os
 
 import flet as ft  # type:ignore[import-untyped]
+
+from env.classes.paths import paths
 
 
 class Config:
@@ -36,7 +38,7 @@ class Config:
         self.LOGOUT_ON_LOST_FOCUS_DEFAULT: bool = False
 
         # DB settings
-        self.SQL_PATH: Optional[str] = None
+        self.SQL_PATH: str = os.path.join(paths.app_storage, "chatlex.db")
 
 
 config = Config()

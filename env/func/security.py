@@ -93,23 +93,24 @@ def derive_key(password: str, salt: bytes) -> bytes:
     return key
 
 
-def aes_encrypt(plaintext: bytes, key: bytes, iv: bytes) -> bytes:
-    """Encrypt data using AES in CBC mode.
+def aes_encrypt(plaintext: str, key: bytes, iv: bytes) -> bytes:
+    """AES encrypt function.
 
     Args:
-        plaintext(bytes): Data to be encrypted.
+        plaintext(str): Plaintext string to be encrypted.
         key(bytes): Encryption key.
-        iv(bytes): Initialization vector.
+        iv(bytes): Initialization vector (IV).
 
     Returns:
-        bytes: Ciphertext.
+        bytes: Ciphertext in bytes.
 
     Raises:
-        ValueError: If the key or IV is not the correct length.
-        TypeError: If input data is not bytes.
+        ValueError: If the key or IV is invalid.
+        TypeError: If input types are not as expected.
     """
     padder = padding.PKCS7(128).padder()
-    padded_data = padder.update(plaintext) + padder.finalize()
+    byte_data: bytes = b64encode(plaintext.encode("UTF-8"))
+    padded_data = padder.update(byte_data) + padder.finalize()
 
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     encryptor = cipher.encryptor()
@@ -118,7 +119,7 @@ def aes_encrypt(plaintext: bytes, key: bytes, iv: bytes) -> bytes:
     return ciphertext
 
 
-def aes_decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
+def aes_decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> str:
     """Decrypts ciphertext using AES in CBC mode with PKCS7 padding.
 
     Args:
@@ -137,10 +138,16 @@ def aes_decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
     decryptor = cipher.decryptor()
     padded_plaintext = decryptor.update(ciphertext) + decryptor.finalize()
 
+    # Remove PKCS7 padding and decode base64 to get original plaintext bytes
     unpadder = padding.PKCS7(128).unpadder()
-    plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
+    plaintext_padded = unpadder.update(padded_plaintext) + unpadder.finalize()
+    plaintext = b64decode(plaintext_padded)
+    return plaintext.decode("UTF-8")
 
-    return plaintext
+    # unpadder = padding.PKCS7(128).unpadder()
+    # plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
+
+    # return plaintext
 
 
 def hash_password(password: str) -> str:
