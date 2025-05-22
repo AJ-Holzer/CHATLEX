@@ -5,7 +5,10 @@ from env.classes.faker import Faker
 from env.classes.paths import paths
 
 # Classes
-from env.classes.widgets import Contact, CText, SettingSwitch
+from env.classes.widgets import (  # Contact,
+    CText,
+    SettingSwitch,
+)
 
 # Config
 from env.config import config
@@ -184,6 +187,17 @@ class UI(ft.Tabs):
         # )
         # <<--- TESTING PURPOSE END --->> #
 
+        # return ft.Container(
+        #     content=ft.Column(
+        #         controls=[contacts_lv],
+        #         horizontal_alignment=ft.CrossAxisAlignment.START,
+        #         spacing=20,
+        #         expand=True,
+        #     ),
+        #     padding=20,
+        #     expand=True,
+        # )
+
         # Display the msg to create a database if no file exists
         if (
             not get_key_or_default(
@@ -204,17 +218,6 @@ class UI(ft.Tabs):
                 expand=True,
                 padding=20,
             )
-
-        return ft.Container(
-            content=ft.Column(
-                controls=[contacts_lv],
-                horizontal_alignment=ft.CrossAxisAlignment.START,
-                spacing=20,
-                expand=True,
-            ),
-            padding=20,
-            expand=True,
-        )
 
     def chat_page(self) -> ft.Container:
         # https://flet.dev/docs/controls/markdown                        # For showing message
