@@ -94,10 +94,10 @@ def derive_key(password: str, salt: bytes) -> bytes:
 
 
 def aes_encrypt(
-    plaintext: str,
+    plaintext: str,  # TODO: Maybe get the data as bytes?
     key: bytes,
     iv: bytes,
-) -> bytes:  # TODO: Maybe get the data as bytes?
+) -> bytes:
     """AES encrypt function.
 
     Args:
