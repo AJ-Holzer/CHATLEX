@@ -2,6 +2,7 @@ import flet as ft  # type:ignore[import-untyped]
 
 # from env.classes.database import SQL
 from env.classes.faker import Faker
+from env.classes.paths import paths
 
 # Classes
 from env.classes.widgets import Contact, CText, SettingSwitch
@@ -57,6 +58,10 @@ class UI(ft.Tabs):
         self.animation_duration = 300
         self.expand = True
         self.selected_index = 1
+
+        # Create database
+        # sql: SQL = SQL()
+        print(paths.app_storage)
 
     def switch_to_tab(self, selected_index: int) -> None:
         self.selected_index = selected_index
@@ -162,32 +167,36 @@ class UI(ft.Tabs):
 
         # <<--- TESTING PURPOSE START --->> #
         # TODO: Retrieve contacts from db when initialized and use class ContactsPage!
-        contacts: list[Contact] = [
-            Contact(
-                page=self._page,
-                username=faker.name,
-                contact_uid="10000",
-                tab_change_function=self.switch_to_tab,
-                chat_tab=self._chat_tab,
-                contact_info_tab=self._contact_info_tab,
-                is_online=True,
-            )
-            for _ in range(100)
-        ]
-        contacts_lv: ft.ReorderableListView = ft.ReorderableListView(
-            controls=[contact.build() for contact in contacts], expand=True
-        )
+        # contacts: list[Contact] = [
+        #     Contact(
+        #         page=self._page,
+        #         username=faker.name,
+        #         contact_uid="10000",
+        #         tab_change_function=self.switch_to_tab,
+        #         chat_tab=self._chat_tab,
+        #         contact_info_tab=self._contact_info_tab,
+        #         is_online=True,
+        #     )
+        #     for _ in range(100)
+        # ]
+        # contacts_lv: ft.ReorderableListView = ft.ReorderableListView(
+        #     controls=[contact.build() for contact in contacts], expand=True
+        # )
         # <<--- TESTING PURPOSE END --->> #
 
         # Display the msg to create a database if no file exists
-        if not get_key_or_default(
-            page=self._page,
-            default=None,
-            key_name=config.CS_SQL_PATH,
+        if (
+            not get_key_or_default(
+                page=self._page,
+                default=None,
+                key_name=config.CS_SQL_PATH,
+            )
+            or True
         ):
             no_db_text: ft.Text = CText(
                 page=self._page,
-                value="Consider to create a database file in the settings!",
+                # value="Consider to create a database file in the settings!",
+                value=paths.app_storage,
             )
             return ft.Container(
                 content=no_db_text,

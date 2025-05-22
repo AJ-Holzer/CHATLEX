@@ -30,6 +30,7 @@ class SettingSwitch:
         _text_widget(ft.Text): The Flutter Text widget displaying the label.
         _switch_widget(ft.CupertinoSwitch): The Flutter CupertinoSwitch widget.
     """
+
     def __init__(
         self,
         page: ft.Page,
@@ -340,25 +341,25 @@ class ContactInfo:
 
 
 class Contact:
-    """Represents a contact in a chat application.
+    """Represents a contact in a contact list.
 
     Attributes:
-        _page(ft.Page): The FlutterFlow Page object.
-        _chat_tab(ft.Tab): The chat tab.
-        _contact_info_tab(ft.Tab): The contact info tab.
+        _page(ft.Page): The FlutterFlow page where the contact widget is displayed.
+        _chat_tab(ft.Tab): The FlutterFlow tab for chat.
+        _contact_info_tab(ft.Tab): The FlutterFlow tab for contact information.
         _contact_uid(str): Unique identifier for the contact.
         _icon_color(ft.ColorValue): Color of the contact icon.
         _icon_min_size(int): Minimum size of the contact icon.
-        _is_online(bool): Indicates if the contact is online.
+        _is_online(bool): Indicates whether the contact is online.
         _padding(int): Padding around the contact widget.
-        _text_widget(ft.Text): Text widget displaying the contact's username.
+        _text_widget(ft.Text): FlutterFlow text widget displaying the contact's username.
         _username(str): Username of the contact.
         _initials(str): Initials of the contact's username.
         tab_change_function(Callable[[int], None]): Function to switch between tabs.
         _icon_background(ft.CircleAvatar): Background of the contact icon.
-        _icon_foreground(ft.CircleAvatar): Foreground indicator for online/offline status.
-        _icon(ft.Stack): Stack containing the icon and online status indicator.
-        _container(ft.Container): Container holding the contact information.
+        _icon_foreground(ft.CircleAvatar): Foreground of the contact icon (online/offline indicator).
+        _icon(ft.Stack): Stack containing the contact icon.
+        _container(ft.Container): Container holding the contact widget.
     """
 
     def __init__(
@@ -561,6 +562,7 @@ class ContactsPage:
         _contacts_lv(Optional[ft.ReorderableListView]): Reorderable list view to display contacts; None if no contacts are available.
         _tab_column(ft.Column): Column layout containing the contacts list view or message.
     """
+
     def __init__(
         self,
         page: ft.Page,
