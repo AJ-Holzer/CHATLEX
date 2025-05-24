@@ -20,9 +20,16 @@ def get_key_or_default(page: ft.Page, default: Any, key_name: str) -> Any:
     Raises:
         KeyError: If the key is not found in the session and no default is provided.
     """
+    value: Any = None
+
     if page.client_storage.contains_key(key_name):
-        value: Any = page.client_storage.get(key_name)
-        print(f"Key found! Returning value '{value}'")
+        value = page.client_storage.get(key_name)
+        print(f"Key '{key_name}' found in client storage! Returning value '{value}'")
+        return value
+
+    elif page.session.contains_key(key_name):
+        value = page.session.get(key_name)
+        print(f"Key '{key_name}' found in session! Returning value '{value}'")
         return value
 
     print(f"Key not found! Returning default value '{default}'")

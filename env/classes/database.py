@@ -1,4 +1,5 @@
 import base64
+import os
 import sqlite3
 
 import flet as ft  # type:ignore[import-untyped]
@@ -26,10 +27,18 @@ class DatabaseHandler:
         self._key: bytes = key
         self._iv: bytes = iv
 
+        # Check if key and iv exist
+        if not self._key or not self._iv:
+            raise ValueError("Key and IV must be provided for encryption/decryption.")
+
         self._db_path: str = get_key_or_default(
             page=self._page, default=config.SQL_PATH, key_name=config.CS_SQL_PATH
         )
 
+        # Create db path if it does not exist
+        os.makedirs(os.path.dirname(self._db_path), exist_ok=True)
+
+        print(f"Using database path: {self._db_path}")
         self._conn: sqlite3.Connection = sqlite3.connect(str(config.SQL_PATH))
         self._cur: sqlite3.Cursor = self._conn.cursor()
 
@@ -39,6 +48,7 @@ class DatabaseHandler:
             CREATE TABLE IF NOT EXISTS users (
             user_uid TEXT PRIMARY KEY,
             username TEXT NOT NULL,
+            description TEXT,
             ip TEXT NOT NULL
             )
         """
@@ -66,7 +76,9 @@ class DatabaseHandler:
 
         print(f"Created database at '{self._db_path}'.")
 
-    def insert_user(self, user_uid: str, username: str, ip: str) -> None:
+    def insert_user(
+        self, user_uid: str, username: str, description: str, ip: str
+    ) -> None:
         """Insert a new user into the database if one with the same user_uid does not already exist.
 
         Args:
@@ -83,8 +95,8 @@ class DatabaseHandler:
             sqlite3.OperationalError: Raised if there is an error during database operation.
         """
         self._cur.execute(
-            "INSERT OR IGNORE INTO users (user_uid, username, ip) VALUES (?, ?, ?)",
-            (user_uid, username, ip),
+            "INSERT OR IGNORE INTO users (user_uid, username, description, ip) VALUES (?, ?, ?)",
+            (user_uid, username, description, ip),
         )
         self._conn.commit()
 
@@ -131,7 +143,7 @@ class DatabaseHandler:
         )
         self._conn.commit()
 
-    def retrieve_users(self, user_uid: str) -> list[dict[str, str]]:
+    def retrieve_contacts(self) -> list[dict[str, str]]:
         """Retrieves user information from the database based on the provided user UID.
 
         Args:
@@ -145,15 +157,16 @@ class DatabaseHandler:
             sqlite3.OperationalError: Raised if there is an error while executing the SQL query.
             TypeError: Raised if the input user_uid is not a string.
         """
-        data: list[tuple[str, str, str]] = self._cur.execute(
-            "SELECT * FROM users WHERE user_uid = ?", (user_uid,)
+        data: list[tuple[str, str, str, str]] = self._cur.execute(
+            "SELECT user_uid, username, description, ip FROM users"
         ).fetchall()
 
         return [
             {
                 "user_uid": str(user[0]),
                 "username": str(user[1]),
-                "ip": str(user[2]),
+                "description": str(user[2]),
+                "ip": str(user[3]),
             }
             for user in data
         ]

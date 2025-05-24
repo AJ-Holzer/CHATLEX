@@ -2,10 +2,7 @@ from typing import Optional
 
 import flet as ft  # type:ignore[import-untyped]
 
-from env.types.typing import (
-    PageContent,
-    SitePages,
-)
+from env.typing.types import PageContent, SitePages
 
 
 class Router:
@@ -97,6 +94,15 @@ class Router:
             self._page.title = self._default_title
 
         self._page.update()  # type:ignore
+        
+        # Run startup function if it exists
+        if startup_func := self._routes[route].get("start_function"):
+            print(f"Running startup function for route '{route}'")
+
+            if function_args := self._routes[route].get("function_args", {}):
+                startup_func(**function_args)
+            else:
+                startup_func()
 
     def route_pop(self) -> None:
         """Removes the last element from the current view path.

@@ -31,6 +31,7 @@ class Config:
         self.CS_FONT_SIZE: str = "font-size"
         self.CS_PASSWORD_IV: str = "password-iv"
         self.CS_PASSWORD_HASH: str = "password-hash"
+        self.CS_SESSION_KEY: str = "session-key"
         self.CS_LOGOUT_ON_LOST_FOCUS: str = "logout-lost-focus"
         self.CS_SQL_PATH: str = "sql-path"
 

@@ -1,13 +1,12 @@
 import flet as ft  # type:ignore[import-untyped]
 
 from env.classes.forms import Login
-from env.classes.pages import Router
+from env.classes.router import Router
 from env.classes.routes import ContactsPage
 from env.config import config
 from env.func.get_session_key import get_key_or_default
 from env.themes.themes import themes
 
-# from env.classes.database import DatabaseHandler
 # from env.classes.ui import UI
 
 
@@ -64,6 +63,8 @@ def main(page: ft.Page) -> None:
             "content": [
                 Login(page=page, router=router),
             ],
+            "start_function": None,
+            "function_args": None,
         },
     )
 
@@ -73,10 +74,14 @@ def main(page: ft.Page) -> None:
         content={
             "title": "Contacts",
             "content": [ContactsPage(page=page, router=router).build()],
+            "start_function": ContactsPage(
+                page=page,
+                router=router,
+            ).display_existing_contacts,
+            "function_args": None,
         },
     )
 
-    # TODO: Create contacts page
     # TODO: Create chat page for each contact
     # TODO: Create settings page
     # TODO: Create about page

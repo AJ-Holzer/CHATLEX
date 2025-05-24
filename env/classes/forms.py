@@ -2,7 +2,7 @@ from typing import Optional
 
 import flet as ft  # type:ignore[import-untyped]
 
-from env.classes.pages import Router
+from env.classes.router import Router
 
 # Config
 from env.config import config
@@ -216,5 +216,11 @@ class Login(ft.Column):
             return
 
         self.hide_progress()  # type:ignore  # Hide progress bar on success
+
+        # Set key for this session to decrypt data
+        self._page.session.set(
+            key=config.CS_SESSION_KEY,
+            value=str(self.password_entry.value),
+        )
 
         self._router.go(config.ROUTE_CONTACTS)

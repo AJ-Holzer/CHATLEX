@@ -1,19 +1,13 @@
 import time
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 
 import flet as ft  # type:ignore[import-untyped]
 
-# Classes
 from env.classes.faker import Faker
-
-# Config
+from env.classes.router import Router
 from env.config import config
-
-# Func
 from env.func.extractor import retrieve_initials
 from env.func.get_session_key import get_key_or_default
-
-# Types
 from env.typing.types import SenderType
 
 faker: Faker = Faker()
@@ -365,11 +359,10 @@ class Contact:
     def __init__(
         self,
         page: ft.Page,
+        router: Router,
         username: str,
         contact_uid: str,
-        tab_change_function: Callable[[int], None],
-        chat_tab: ft.Tab,
-        contact_info_tab: ft.Tab,
+        description: str = "",
         icon: Optional[ft.CircleAvatar] = None,
         padding: int = 10,
         icon_min_size: int = 17,
@@ -377,8 +370,7 @@ class Contact:
         is_online: bool = False,
     ) -> None:
         self._page: ft.Page = page
-        self._chat_tab: ft.Tab = chat_tab
-        self._contact_info_tab: ft.Tab = contact_info_tab
+        self._router: Router = router
         self._contact_uid: str = contact_uid
         self._icon_color: ft.ColorValue = icon_color
         self._icon_min_size: int = icon_min_size
@@ -386,8 +378,14 @@ class Contact:
         self._padding: int = padding
         self._text_widget: ft.Text = CText(page=self._page, value=username)
         self._username: str = username
+        self._description: str = description
         self._initials: str = retrieve_initials(text=username)
-        self.tab_change_function: Callable[[int], None] = tab_change_function
+
+        self._text_size: int = get_key_or_default(
+            page=self._page,
+            default=config.FONT_SIZE_DEFAULT,
+            key_name=config.CS_FONT_SIZE,
+        )
 
         self._icon_background: ft.CircleAvatar = icon or ft.CircleAvatar(
             content=CText(
@@ -433,11 +431,11 @@ class Contact:
 
     @property
     def size(self) -> int:
-        return self._size
+        return self._text_size
 
     @size.setter
     def size(self, new_size: int) -> None:
-        self._size = new_size
+        self._text_size = new_size
         self._text_widget.size = new_size
         self.update()
 
@@ -499,38 +497,15 @@ class Contact:
         print(f"Opening chat for user '{self._username}'.")
 
         # Switch to chat page
-        self.tab_change_function(2)
+        self._router.go(config.ROUTE_CHAT)
 
         chat: Chat = Chat(
             username=self._username, contact_uid=self._contact_uid, page=self._page
         )
-        self._chat_tab.content = chat.build()
-        self._chat_tab.update()
+
+        # TODO: Load messages from the database
 
         chat.scroll_to_bottom(duration=0)
-
-    def create_contact_info_page(self) -> None:
-        print(f"Creating contact page for user '{self._username}'.")
-
-        # Create a new icon instead of reusing the original
-        new_icon = ft.CircleAvatar(
-            content=CText(
-                page=self._page, value=retrieve_initials(text=self._username), size=50
-            ),
-            max_radius=100,
-            bgcolor=self._icon_color,
-            color=ft.Colors.WHITE,
-        )
-
-        contact_info: ContactInfo = ContactInfo(
-            page=self._page, icon=new_icon, username=self._username
-        )
-        self._contact_info_tab.content = contact_info.build()
-        self._contact_info_tab.update()
-
-    def create_pages(self, e: ft.ControlEvent) -> None:
-        self.create_contact_info_page()
-        self.open_chat()
 
     def build(self) -> ft.Container:
         self._container = ft.Container(
@@ -545,7 +520,7 @@ class Contact:
             ),
             padding=self._padding,
             alignment=ft.alignment.center_left,
-            on_click=self.create_pages,
+            on_click=lambda _: _,  # TODO: Load messages, open chat and load contact info
         )
 
         return self._container
