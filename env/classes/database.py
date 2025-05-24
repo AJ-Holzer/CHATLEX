@@ -11,8 +11,8 @@ from env.func.get_session_key import get_key_or_default
 from env.func.security import aes_decrypt, aes_encrypt
 
 
-class SQL:
-    """SQL database interaction class. Manages connection, table creation, and data manipulation for users, messages, and devices.
+class DatabaseHandler:
+    """DatabaseHandler interaction class. Manages connection, table creation, and data manipulation for users, messages, and devices.
 
     Attributes:
         _page(ft.Page): Page object associated with the database.

@@ -8,7 +8,7 @@ from env.types.typing import (
 )
 
 
-class Routes:
+class Router:
     def __init__(
         self,
         page: ft.Page,

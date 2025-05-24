@@ -2,6 +2,8 @@ from typing import Optional
 
 import flet as ft  # type:ignore[import-untyped]
 
+from env.classes.pages import Router
+
 # Config
 from env.config import config
 
@@ -14,15 +16,17 @@ from env.func.security import (
     verify_password,
 )
 
-# from env.func.get_session_key import get_key_or_default
-
 
 class Login(ft.Column):
-    def __init__(self, page: ft.Page, contrls: list[ft.Control]) -> None:
+    def __init__(
+        self,
+        page: ft.Page,
+        router: Router,
+    ) -> None:
         super().__init__()  # type:ignore
 
-        self._page = page
-        self._controls = contrls
+        self._page: ft.Page = page
+        self._router: Router = router
 
         # Get password
         password_iv_tmp: Optional[str] = self._page.client_storage.get("password-iv")
@@ -176,8 +180,8 @@ class Login(ft.Column):
 
         self.hide_progress()  # type:ignore  # Hide progress bar
 
-        self._page.clean()
-        self._page.add(Login(page=self._page, contrls=self._controls))
+        # Restart login page to show the login button
+        self._router.go(config.ROUTE_LOGIN)
 
     def submit(self, e: ft.ControlEvent) -> None:
         # Deactivate the login button to avoid multiple processes running at the same time
@@ -213,5 +217,4 @@ class Login(ft.Column):
 
         self.hide_progress()  # type:ignore  # Hide progress bar on success
 
-        self._page.clean()
-        self._page.add(*self._controls)
+        self._router.go(config.ROUTE_CONTACTS)

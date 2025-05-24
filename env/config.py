@@ -40,5 +40,10 @@ class Config:
         # DB settings
         self.SQL_PATH: str = os.path.join(paths.app_storage, "chatlex.db")
 
+        # Routing settings
+        self.ROUTE_LOGIN: str = "/login"
+        self.ROUTE_CONTACTS: str = "/contacts"
+        self.ROUTE_CHAT: str = "/chat"
+
 
 config = Config()
