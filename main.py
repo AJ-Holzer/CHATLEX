@@ -26,6 +26,7 @@ def main(page: ft.Page) -> None:
     page.window.resizable = True
     page.window.width = 400
     page.window.height = 800
+    page.window.icon = "assets/icon.png"
     page.fonts = {
         "Varela Round": "fonts/Varela Round.ttf",
         "Baloo Bhaijaan": "fonts/Baloo Bhaijaan.ttf",
@@ -85,7 +86,7 @@ def main(page: ft.Page) -> None:
         content={
             "title": "Contacts",
             "content": [with_top_padding(contacts_page.build())],
-            "start_function": contacts_page.add_database_handler,
+            "start_function": contacts_page.add_database_handler,  # TODO: Load the contacts at creation too!
             "function_args": None,
         },
     )
