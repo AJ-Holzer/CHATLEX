@@ -49,7 +49,10 @@ class DatabaseHandler:
         os.makedirs(os.path.dirname(self._db_path), exist_ok=True)
 
         print(f"Using database path: {self._db_path}")
-        self._conn: sqlite3.Connection = sqlite3.connect(str(config.SQL_PATH))
+        self._conn: sqlite3.Connection = sqlite3.connect(
+            self._db_path,
+            check_same_thread=False,  # TODO: Try to avoid using this in production
+        )
         self._cur: sqlite3.Cursor = self._conn.cursor()
 
         # Create tables if they do not exist
@@ -105,7 +108,7 @@ class DatabaseHandler:
             sqlite3.OperationalError: Raised if there is an error during database operation.
         """
         self._cur.execute(
-            "INSERT OR IGNORE INTO users (user_uid, username, description, ip) VALUES (?, ?, ?)",
+            "INSERT OR IGNORE INTO users (user_uid, username, description, ip) VALUES (?, ?, ?, ?)",
             (user_uid, username, description, ip),
         )
         self._conn.commit()
@@ -234,7 +237,7 @@ class DatabaseHandler:
             for device in data
         ]
 
-    def encrypt_data(self, data: str) -> str:
+    def _encrypt_data(self, data: str) -> str:
         encrypted: bytes = aes_encrypt(
             plaintext=data,
             key=self._key,
@@ -242,10 +245,13 @@ class DatabaseHandler:
         )
         return base64.b64encode(encrypted).decode("UTF-8")
 
-    def decrypt_data(self, data: str) -> str:
+    def _decrypt_data(self, data: str) -> str:
         decrypted: bytes = aes_decrypt(
             ciphertext=base64.b64decode(data),
             key=self._key,
             iv=self._iv,
         )
         return decrypted.decode("UTF-8")
+
+    def close(self) -> None:
+        self._conn.close()

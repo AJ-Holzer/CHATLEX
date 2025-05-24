@@ -28,16 +28,22 @@ class ContactsPage:
             padding=10,
         )
 
+    def add_database_handler(self) -> None:
+        """Initializes the DatabaseHandler in the main thread."""
+        if not self._database_handler:
+            self._database_handler = DatabaseHandler(
+                page=self._page,
+                key=get_key_or_default(
+                    page=self._page, key_name=config.CS_SESSION_KEY, default=b""
+                ),
+                iv=get_key_or_default(
+                    page=self._page, key_name=config.CS_PASSWORD_IV, default=b""
+                ),
+            )
+
     def display_existing_contacts(self) -> None:
-        self._database_handler = DatabaseHandler(
-            page=self._page,
-            key=get_key_or_default(
-                page=self._page, key_name=config.CS_SESSION_KEY, default=b""
-            ),
-            iv=get_key_or_default(
-                page=self._page, key_name=config.CS_PASSWORD_IV, default=b""
-            ),
-        )
+        if not self._database_handler:
+            raise ValueError("Database handler is not set!")
 
         self._database_handler.retrieve_contacts()
 
@@ -45,12 +51,16 @@ class ContactsPage:
         raise NotImplementedError("This function is not implemented yet!")
 
     def _add_contact(self) -> None:
+        if not self._database_handler:
+            raise ValueError("Database handler is not set!")
+
         username_field: ft.TextField = ft.TextField(label="Username", autofocus=True)
         description_field: ft.TextField = ft.TextField(label="User Description")
+        ip_field: ft.TextField = ft.TextField(label="IP Address")
         dialog: ft.AlertDialog = ft.AlertDialog(
             title=ft.Text("Add Contact"),
             content=ft.Column(
-                controls=[username_field, description_field],
+                controls=[username_field, description_field, ip_field],
                 tight=True,
             ),
             actions=[
@@ -59,6 +69,7 @@ class ContactsPage:
                     on_click=lambda e: self._on_add_contact_submit(
                         username=str(username_field.value),
                         user_description=str(description_field.value),
+                        user_ip=str(ip_field.value),
                         dialog=dialog,
                     ),
                 ),
@@ -72,9 +83,12 @@ class ContactsPage:
         self._page.update()  # type:ignore
 
     def _on_add_contact_submit(
-        self, username: str, user_description: str, dialog: ft.AlertDialog
+        self, username: str, user_description: str, user_ip: str, dialog: ft.AlertDialog
     ) -> None:
-        if not username:
+        if not self._database_handler:
+            raise ValueError("Database handler is not set!")
+
+        if not username or not user_ip:
             return
 
         self._list_view.controls.append(
@@ -86,8 +100,15 @@ class ContactsPage:
                 contact_uid=str(uuid.uuid4()),  # Generate a unique ID for the contact
             ).build()
         )
-        dialog.open = False
+        self._page.close(dialog)  # Close the dialog after adding the contact
         self._page.update()  # type:ignore
+
+        self._database_handler.insert_user(
+            user_uid=str(uuid.uuid4()),  # TODO: Use same UID as in Contact!!!
+            username=username,
+            description=user_description,
+            ip=user_ip,
+        )
 
     def build(self) -> ft.Container:
         return ft.Container(

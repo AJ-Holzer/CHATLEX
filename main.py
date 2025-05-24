@@ -55,13 +55,24 @@ def main(page: ft.Page) -> None:
         start_route=config.ROUTE_LOGIN,
     )
 
+    # Add padding to all pages by wrapping their content in a Container with top padding
+    def with_top_padding(content: ft.Control) -> ft.Container:
+        return ft.Container(
+            content=content, padding=ft.padding.only(top=40), expand=True
+        )
+
+    contacts_page: ContactsPage = ContactsPage(
+        page=page,
+        router=router,
+    )
+
     # Login page
     router.add(
         route=config.ROUTE_LOGIN,
         content={
             "title": "Login",
             "content": [
-                Login(page=page, router=router),
+                with_top_padding(Login(page=page, router=router)),
             ],
             "start_function": None,
             "function_args": None,
@@ -73,11 +84,8 @@ def main(page: ft.Page) -> None:
         route=config.ROUTE_CONTACTS,
         content={
             "title": "Contacts",
-            "content": [ContactsPage(page=page, router=router).build()],
-            "start_function": ContactsPage(
-                page=page,
-                router=router,
-            ).display_existing_contacts,
+            "content": [with_top_padding(contacts_page.build())],
+            "start_function": contacts_page.add_database_handler,
             "function_args": None,
         },
     )
