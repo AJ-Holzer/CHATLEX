@@ -35,6 +35,16 @@ class DatabaseHandler:
             page=self._page, default=config.SQL_PATH, key_name=config.CS_SQL_PATH
         )
 
+        # TODO: Remove this line. It is only for testing purposes.
+        path_alert: ft.AlertDialog = ft.AlertDialog(
+            title=ft.Text("Database initialized!"),
+            content=ft.Text(f"Path: {self._db_path}"),
+            actions=[
+                ft.TextButton("OK", on_click=lambda _: self._page.close(path_alert))
+            ],
+        )
+        self._page.open(path_alert)
+
         # Create db path if it does not exist
         os.makedirs(os.path.dirname(self._db_path), exist_ok=True)
 

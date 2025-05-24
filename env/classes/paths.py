@@ -3,7 +3,7 @@ import platform
 import sys
 
 if platform.system() == "Android":
-    from android.storage import app_storage_path  # type:ignore
+    from android_storage import app_storage_path  # type:ignore
 
 
 class Paths:

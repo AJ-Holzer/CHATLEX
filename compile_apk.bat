@@ -3,4 +3,5 @@ flet build apk ^
     --project "ChatLex" ^
     --product "ChatLex" ^
     --org "ajservers.site" ^
-    --android-permissions android.permission.READ_EXTERNAL_STORAGE=True,android.permission.WRITE_EXTERNAL_STORAGE=True,android.permission.INTERNET=True
+    --android-permissions android.permission.READ_EXTERNAL_STORAGE=True,android.permission.WRITE_EXTERNAL_STORAGE=True,android.permission.INTERNET=True ^
+    -v
