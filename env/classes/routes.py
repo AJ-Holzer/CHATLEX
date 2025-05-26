@@ -8,6 +8,7 @@ from env.classes.router import Router
 from env.classes.widgets import Contact
 from env.config import config
 from env.func.get_session_key import get_key_or_default
+from env.typing.types import ContactType
 
 
 class ContactsPage:
@@ -31,21 +32,24 @@ class ContactsPage:
     def add_database_handler(self) -> None:
         """Initializes the DatabaseHandler in the main thread."""
         if not self._database_handler:
-            self._database_handler = DatabaseHandler(
-                page=self._page,
-                key=get_key_or_default(
-                    page=self._page, key_name=config.CS_SESSION_KEY, default=b""
-                ),
-                iv=get_key_or_default(
-                    page=self._page, key_name=config.CS_PASSWORD_IV, default=b""
-                ),
-            )
+            self._database_handler = DatabaseHandler(page=self._page)
 
     def display_existing_contacts(self) -> None:
         if not self._database_handler:
             raise ValueError("Database handler is not set!")
 
-        self._database_handler.retrieve_contacts()
+        contacts: list[ContactType] = self._database_handler.retrieve_contacts()
+
+        for contact in contacts:
+            self._list_view.controls.append(
+                Contact(
+                    page=self._page,
+                    router=self._router,
+                    username=contact["username"],
+                    description=contact["description"],
+                    contact_uid=contact["user_uid"],
+                ).build()
+            )
 
     def _remove_contact(self, contact_name: str) -> None:
         raise NotImplementedError("This function is not implemented yet!")

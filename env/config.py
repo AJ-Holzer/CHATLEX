@@ -17,6 +17,7 @@ class Config:
         self.ARGON2_MEMORY_COST: int = 65536  # 64 MB
         self.ARGON2_PARALLELISM: int = 2
         self.ARGON2_HASH_LEN: int = 32  # 256-bit key
+        self.SALT_LENGTH: int = 32
 
         # General colors
         self.COLOR_ONLINE: ft.ColorValue = ft.Colors.GREEN
@@ -31,9 +32,11 @@ class Config:
         self.CS_FONT_SIZE: str = "font-size"
         self.CS_PASSWORD_IV: str = "password-iv"
         self.CS_PASSWORD_HASH: str = "password-hash"
-        self.CS_SESSION_KEY: str = "session-key"
         self.CS_LOGOUT_ON_LOST_FOCUS: str = "logout-lost-focus"
         self.CS_SQL_PATH: str = "sql-path"
+
+        # Session storage keys
+        self.SS_SESSION_KEY: str = "session-key"
 
         # Default values
         self.LOGOUT_ON_LOST_FOCUS_DEFAULT: bool = False

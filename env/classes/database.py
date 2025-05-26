@@ -1,15 +1,14 @@
 import base64
 import os
 import sqlite3
+from typing import Optional
 
 import flet as ft  # type:ignore[import-untyped]
 
-# Config
 from env.config import config
-
-# Func
 from env.func.get_session_key import get_key_or_default
 from env.func.security import aes_decrypt, aes_encrypt
+from env.typing.types import ContactType
 
 
 class DatabaseHandler:
@@ -22,10 +21,10 @@ class DatabaseHandler:
         _cur(sqlite3.Cursor): SQLite database cursor object.
     """
 
-    def __init__(self, page: ft.Page, key: bytes, iv: bytes) -> None:
+    def __init__(self, page: ft.Page) -> None:
         self._page: ft.Page = page
-        self._key: bytes = key
-        self._iv: bytes = iv
+        self._key: Optional[bytes] = self._page.session.get(config.SS_SESSION_KEY)
+        self._iv: Optional[bytes] = self._page.client_storage.get(config.CS_PASSWORD_IV)
 
         # Check if key and iv exist
         if not self._key or not self._iv:
@@ -35,15 +34,15 @@ class DatabaseHandler:
             page=self._page, default=config.SQL_PATH, key_name=config.CS_SQL_PATH
         )
 
-        # TODO: Remove this line. It is only for testing purposes.
-        path_alert: ft.AlertDialog = ft.AlertDialog(
-            title=ft.Text("Database initialized!"),
-            content=ft.Text(f"Path: {self._db_path}"),
-            actions=[
-                ft.TextButton("OK", on_click=lambda _: self._page.close(path_alert))
-            ],
-        )
-        self._page.open(path_alert)
+        # # TODO: Remove this line. It is only for testing purposes.
+        # path_alert: ft.AlertDialog = ft.AlertDialog(
+        #     title=ft.Text("Database initialized!"),
+        #     content=ft.Text(f"Path: {self._db_path}"),
+        #     actions=[
+        #         ft.TextButton("OK", on_click=lambda _: self._page.close(path_alert))
+        #     ],
+        # )
+        # self._page.open(path_alert)
 
         # Create db path if it does not exist
         os.makedirs(os.path.dirname(self._db_path), exist_ok=True)
@@ -72,7 +71,7 @@ class DatabaseHandler:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_uid TEXT NOT NULL,
             message TEXT NOT NULL,
-            timestamp REAL NOT NULL,
+            timestamp TEXT NOT NULL,
             FOREIGN KEY(user_uid) REFERENCES users(user_uid)
             )
         """
@@ -109,7 +108,12 @@ class DatabaseHandler:
         """
         self._cur.execute(
             "INSERT OR IGNORE INTO users (user_uid, username, description, ip) VALUES (?, ?, ?, ?)",
-            (user_uid, username, description, ip),
+            (
+                self._encrypt_data(user_uid),
+                self._encrypt_data(username),
+                self._encrypt_data(description),
+                self._encrypt_data(ip),
+            ),
         )
         self._conn.commit()
 
@@ -131,7 +135,11 @@ class DatabaseHandler:
         """
         self._cur.execute(
             "INSERT OR IGNORE INTO messages (user_uid, message, timestamp) VALUES (?, ?, ?)",
-            (user_uid, message, timestamp),
+            (
+                self._encrypt_data(user_uid),
+                self._encrypt_data(message),
+                self._encrypt_data(str(timestamp)),
+            ),
         )
         self._conn.commit()
 
@@ -152,23 +160,21 @@ class DatabaseHandler:
         """
         self._cur.execute(
             "INSERT OR IGNORE INTO devices (ip, name) VALUES (?, ?)",
-            (ip, name),
+            (self._encrypt_data(data=ip), self._encrypt_data(name)),
         )
         self._conn.commit()
 
-    def retrieve_contacts(self) -> list[dict[str, str]]:
-        """Retrieves user information from the database based on the provided user UID.
+    def retrieve_contacts(self) -> list[ContactType]:
+        """Retrieves all contact information from the database.
 
         Args:
-            self(Database): Instance of the Database class.
-            user_uid(str): The unique identifier of the user to retrieve.
+            self(DatabaseConnector): Instance of the DatabaseConnector class.
 
         Returns:
-            list[dict[str, str]]: A list of dictionaries, where each dictionary contains user information (user_uid, username, ip). Returns an empty list if no user is found.
+            list[dict]: List of dictionaries, where each dictionary represents a contact with keys: "user_uid", "username", "description", and "ip".
 
         Raises:
-            sqlite3.OperationalError: Raised if there is an error while executing the SQL query.
-            TypeError: Raised if the input user_uid is not a string.
+            Exception: Generic exception during database interaction or data processing.
         """
         data: list[tuple[str, str, str, str]] = self._cur.execute(
             "SELECT user_uid, username, description, ip FROM users"
@@ -176,10 +182,10 @@ class DatabaseHandler:
 
         return [
             {
-                "user_uid": str(user[0]),
-                "username": str(user[1]),
-                "description": str(user[2]),
-                "ip": str(user[3]),
+                "user_uid": self._decrypt_data(user[0]),
+                "username": self._decrypt_data(user[1]),
+                "description": self._decrypt_data(user[2]),
+                "ip": self._decrypt_data(user[3]),
             }
             for user in data
         ]
@@ -198,16 +204,16 @@ class DatabaseHandler:
             sqlite3.OperationalError: Raised if there is an error executing the SQL query.
             TypeError: Raised if the user_uid is not a string.
         """
-        data: list[tuple[int, str, str, float]] = self._cur.execute(
+        data: list[tuple[int, str, str, str]] = self._cur.execute(
             "SELECT * FROM messages WHERE user_uid = ?", (user_uid,)
         ).fetchall()
 
         return [
             {
-                "id": str(msg[0]),
-                "user_uid": str(msg[1]),
-                "message": str(msg[2]),
-                "timestamp": str(msg[3]),
+                "id": self._decrypt_data(str(msg[0])),
+                "user_uid": self._decrypt_data(msg[1]),
+                "message": self._decrypt_data(msg[2]),
+                "timestamp": self._decrypt_data(msg[3]),
             }
             for msg in data
         ]
@@ -231,21 +237,33 @@ class DatabaseHandler:
 
         return [
             {
-                "ip": str(device[0]),
-                "name": str(device[1]),
+                "ip": self._decrypt_data(device[0]),
+                "name": self._decrypt_data(device[1]),
             }
             for device in data
         ]
 
+    def remove_contact(self, user_uid: str) -> None:
+        self._cur.execute(
+            "DELETE FROM users WHERE user_uid = ?",
+            (self._encrypt_data(user_uid),),
+        )
+
     def _encrypt_data(self, data: str) -> str:
+        if not self._key or not self._iv:
+            raise ValueError("Key and IV must be provided for encryption.")
+
         encrypted: bytes = aes_encrypt(
             plaintext=data,
             key=self._key,
-            iv=self._iv,
+            iv=self._iv,  # TODO: Check if it really bytes! Raises error somehow
         )
         return base64.b64encode(encrypted).decode("UTF-8")
 
     def _decrypt_data(self, data: str) -> str:
+        if not self._key or not self._iv:
+            raise ValueError("Key and IV must be provided for encryption.")
+
         decrypted: bytes = aes_decrypt(
             ciphertext=base64.b64decode(data),
             key=self._key,
@@ -254,4 +272,17 @@ class DatabaseHandler:
         return decrypted.decode("UTF-8")
 
     def close(self) -> None:
+        if not self._conn:
+            return
+
         self._conn.close()
+
+    def commit(self) -> None:
+        """Commits the current transaction to the database."""
+        if not self._conn:
+            raise ValueError("Database connection is not established.")
+
+        self._conn.commit()
+
+    def __del__(self) -> None:
+        self.close()

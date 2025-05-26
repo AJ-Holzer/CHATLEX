@@ -177,6 +177,10 @@ def hash_password(password: str) -> str:
     return ph.hash(password)
 
 
+def generate_salt() -> bytes:
+    return token_bytes(config.SALT_LENGTH)
+
+
 def verify_password(hash: str, password: str) -> bool:
     """Verifies if a given password matches a given Argon2 hash.
 

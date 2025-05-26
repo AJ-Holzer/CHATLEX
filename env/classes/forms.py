@@ -3,13 +3,11 @@ from typing import Optional
 import flet as ft  # type:ignore[import-untyped]
 
 from env.classes.router import Router
-
-# Config
 from env.config import config
-
-# Func
+from env.func.get_session_key import get_key_or_default
 from env.func.security import (
     byte_to_str,
+    derive_key,
     generate_iv,
     hash_password,
     str_to_byte,
@@ -27,21 +25,26 @@ class Login(ft.Column):
 
         self._page: ft.Page = page
         self._router: Router = router
+        self._salt: bytes = get_key_or_default(
+            page=self._page,
+            key_name=config.SS_SESSION_KEY,  # TODO: Add missing code!
+            default=generate_iv(),  # TODO: Don't generate a new salt every time. Raise error instead!
+        )
 
         # Get password
         password_iv_tmp: Optional[str] = self._page.client_storage.get("password-iv")
-        self.password_iv: Optional[bytes] = (
+        self._password_iv: Optional[bytes] = (
             str_to_byte(data=password_iv_tmp)
             if isinstance(password_iv_tmp, str) and password_iv_tmp
             else None
         )
-        self.user_already_exists: bool = True if self.password_iv else False
+        self._user_already_exists: bool = True if self._password_iv else False
 
         # Progress bar
         self._progress_bar = ft.ProgressBar(visible=False)
 
         # Create password entries
-        self.password_entry: ft.TextField = ft.TextField(
+        self._password_entry: ft.TextField = ft.TextField(
             label="Password",
             text_align=ft.TextAlign.LEFT,
             on_change=self.validate,
@@ -50,7 +53,7 @@ class Login(ft.Column):
             filled=True,
         )
         if (
-            not self.user_already_exists
+            not self._user_already_exists
         ):  # Create a second password entry to verify the password if no iv exists
             self.password_verify_entry: ft.TextField = ft.TextField(
                 label="Verify Password",
@@ -61,11 +64,13 @@ class Login(ft.Column):
                 filled=True,
             )
 
-        self.button_login: ft.ElevatedButton = ft.ElevatedButton(
-            text=("Login" if self.user_already_exists else "Create Password"),
+        self._button_login: ft.ElevatedButton = ft.ElevatedButton(
+            text=("Login" if self._user_already_exists else "Create Password"),
             width=200,
             disabled=True,
-            on_click=(self.submit if self.user_already_exists else self.create_account),
+            on_click=(
+                self.submit if self._user_already_exists else self.create_account
+            ),
         )
 
         # Align content
@@ -79,14 +84,14 @@ class Login(ft.Column):
                 content=ft.Column(
                     controls=[
                         ft.Image(src="assets/icon.png", width=300),
-                        self.password_entry,
+                        self._password_entry,
                         *(
                             [self.password_verify_entry]
-                            if not self.user_already_exists
+                            if not self._user_already_exists
                             else []
                         ),
                         self._progress_bar,
-                        self.button_login,
+                        self._button_login,
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -99,24 +104,25 @@ class Login(ft.Column):
             )
         ]
 
-        if not self.user_already_exists:
-            warning_model: ft.AlertDialog = ft.AlertDialog(
-                modal=True,
-                title=ft.Text("Important!"),
-                content=ft.Text(
-                    "Now you will be asked to create a password to encrypt your messages. "
-                    "Please enter it correctly and remember it. You won't be able to decrypt the data "
-                    "if you forget or loose your password."
-                ),
-                actions=[
-                    ft.TextButton(
-                        "I understand!",
-                        on_click=lambda e: self._page.close(warning_model),
-                    )
-                ],
-                actions_alignment=ft.MainAxisAlignment.END,
-            )
-            self._page.open(warning_model)
+        # FIXME: Show warning dialog if user is new and password is not set yet
+        # if not self._user_already_exists:
+        #     warning_model: ft.AlertDialog = ft.AlertDialog(
+        #         modal=True,
+        #         title=ft.Text("Important!"),
+        #         content=ft.Text(
+        #             "Now you will be asked to create a password to encrypt your messages. "
+        #             "Please enter it correctly and remember it. You won't be able to decrypt the data "
+        #             "if you forget or loose your password."
+        #         ),
+        #         actions=[
+        #             ft.TextButton(
+        #                 "I understand!",
+        #                 on_click=lambda e: self._page.close(warning_model),
+        #             )
+        #         ],
+        #         actions_alignment=ft.MainAxisAlignment.END,
+        #     )
+        #     self._page.open(warning_model)
 
     def show_progress(self) -> None:
         self._progress_bar.visible = True
@@ -128,14 +134,14 @@ class Login(ft.Column):
 
     def validate(self, e: ft.ControlEvent) -> None:
         # Disable button if nothing inserted
-        self.button_login.disabled = (
+        self._button_login.disabled = (
             False
             if all(
                 [
-                    self.password_entry.value,
+                    self._password_entry.value,
                     *(
                         [self.password_verify_entry.value]
-                        if not self.user_already_exists
+                        if not self._user_already_exists
                         else []
                     ),
                 ]
@@ -146,10 +152,10 @@ class Login(ft.Column):
 
     def create_account(self, e: ft.ControlEvent) -> None:
         # Deactivate the login button to avoid multiple processes running at the same time
-        self.button_login.disabled = True
-        self.button_login.update()  # type:ignore
+        self._button_login.disabled = True
+        self._button_login.update()  # type:ignore
 
-        if self.password_entry.value != self.password_verify_entry.value:
+        if self._password_entry.value != self.password_verify_entry.value:
             verify_pwd_model: ft.AlertDialog = ft.AlertDialog(
                 modal=True,
                 title=ft.Text("Please confirm"),
@@ -166,15 +172,15 @@ class Login(ft.Column):
             self._page.open(verify_pwd_model)
 
             # Reactivate the login button to make sure the user can input stuff
-            self.button_login.disabled = False
-            self.button_login.update()  # type:ignore
+            self._button_login.disabled = False
+            self._button_login.update()  # type:ignore
             self.hide_progress()
             return
 
         self.show_progress()  # type:ignore  # Show progress bar
 
         iv: str = byte_to_str(data=generate_iv())
-        pwd_hash: str = hash_password(password=str(self.password_entry.value))
+        pwd_hash: str = hash_password(password=str(self._password_entry.value))
         self._page.client_storage.set(key=config.CS_PASSWORD_IV, value=iv)
         self._page.client_storage.set(key=config.CS_PASSWORD_HASH, value=pwd_hash)
 
@@ -185,8 +191,8 @@ class Login(ft.Column):
 
     def submit(self, e: ft.ControlEvent) -> None:
         # Deactivate the login button to avoid multiple processes running at the same time
-        self.button_login.disabled = True
-        self.button_login.update()  # type:ignore
+        self._button_login.disabled = True
+        self._button_login.update()  # type:ignore
 
         self.show_progress()  # type:ignore  # Show progress bar
 
@@ -194,7 +200,7 @@ class Login(ft.Column):
             config.CS_PASSWORD_HASH
         )
         if not stored_hash or not verify_password(
-            hash=stored_hash, password=str(self.password_entry.value)
+            hash=stored_hash, password=str(self._password_entry.value)
         ):
             wrng_pwd_alert: ft.AlertDialog = ft.AlertDialog(
                 modal=True,
@@ -210,8 +216,8 @@ class Login(ft.Column):
             self._page.open(wrng_pwd_alert)
 
             # Reactivate the login button to make sure the user can input stuff
-            self.button_login.disabled = False
-            self.button_login.update()  # type:ignore
+            self._button_login.disabled = False
+            self._button_login.update()  # type:ignore
             self.hide_progress()
             return
 
@@ -219,8 +225,8 @@ class Login(ft.Column):
 
         # Set key for this session to decrypt data
         self._page.session.set(
-            key=config.CS_SESSION_KEY,
-            value=str(self.password_entry.value),
+            key=config.SS_SESSION_KEY,
+            value=derive_key(password=str(self._password_entry.value), salt=self._salt),
         )
 
         self._router.go(config.ROUTE_CONTACTS)

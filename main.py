@@ -96,6 +96,7 @@ def main(page: ft.Page) -> None:
     # TODO: Create about page
     # TODO: Create user profile page
 
+    # page.client_storage.clear()
     # page.theme_mode = ft.ThemeMode.LIGHT
 
     # ui_container: ft.Container = ft.Container(
