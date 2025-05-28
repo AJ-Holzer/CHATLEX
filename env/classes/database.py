@@ -7,7 +7,7 @@ import flet as ft  # type:ignore[import-untyped]
 
 from env.config import config
 from env.func.get_session_key import get_key_or_default
-from env.func.security import aes_decrypt, aes_encrypt
+from env.func.security import aes_decrypt, aes_encrypt, str_to_byte
 from env.typing.types import ContactType
 
 
@@ -24,7 +24,9 @@ class DatabaseHandler:
     def __init__(self, page: ft.Page) -> None:
         self._page: ft.Page = page
         self._key: Optional[bytes] = self._page.session.get(config.SS_SESSION_KEY)
-        self._iv: Optional[bytes] = self._page.client_storage.get(config.CS_PASSWORD_IV)
+        self._iv: bytes = str_to_byte(
+            data=str(self._page.client_storage.get(config.CS_PASSWORD_IV))
+        )
 
         # Check if key and iv exist
         if not self._key or not self._iv:

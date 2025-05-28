@@ -8,7 +8,7 @@
 
 This is a messenger designed with a strong focus on security and anonymity.
 
-> ## NOTE
+> ## ❗NOTE
 >
 > **Chatlex is intended for lawful use only. The developers do not condone illegal activity.**
 
