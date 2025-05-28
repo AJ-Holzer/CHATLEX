@@ -11,6 +11,12 @@ def main(page: ft.Page) -> None:
     page.window.width = config.APP_WIDTH
     page.window.height = config.APP_HEIGHT
 
+    # Initialize router
+    router: AppRouter = AppRouter(page=page)
+
+    # Update page to apply visuals
+    page.update()  # type:ignore
+
 
 if __name__ == "__main__":
     ft.app(target=main)  # type:ignore
