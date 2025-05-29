@@ -10,5 +10,10 @@ class MasterContainer(ft.Container):
         super().__init__(*args, **kwargs)  # type:ignore
 
         # Set default values
-        self.padding = ft.padding.only(top=config.APP_PADDING_TOP)
+        self.padding = ft.Padding(
+            top=config.APP_PADDING_TOP,
+            right=config.APP_PADDING_RIGHT,
+            bottom=config.APP_PADDING_BOTTOM,
+            left=config.APP_PADDING_LEFT,
+        )
         self.expand = True

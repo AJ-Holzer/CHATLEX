@@ -3,8 +3,7 @@ import flet as ft  # type:ignore[import-untyped]
 from env.classes.app_storage import Storages
 from env.classes.router import AppRouter
 from env.config import config
-
-# Pages
+from env.pages.contacts import ContactsPage
 from env.pages.login import LoginPage
 from env.themes.themes import themes
 
@@ -56,6 +55,24 @@ def main(page: ft.Page) -> None:
                 LoginPage(page=page, storages=storages, router=router).build(),
             ],
             "execute_function": None,
+            "function_args": None,
+        },
+    )
+
+    # Contacts Page
+    contacts_page: ContactsPage = ContactsPage(
+        page=page,
+        storages=storages,
+        router=router,
+    )
+    router.add_route(
+        route=config.ROUTE_CONTACTS,
+        content={
+            "title": "Contacts",
+            "page_content": [
+                contacts_page.build(),
+            ],
+            "execute_function": contacts_page.load_contacts,
             "function_args": None,
         },
     )

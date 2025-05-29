@@ -14,8 +14,22 @@ class ContactsPage:
         self._storages: Storages = storages
         self._router: AppRouter = router
 
+        # Contacts list
+        self._contacts_list: ft.ListView = ft.ListView(
+            controls=[],
+            expand=True,
+        )
+
     def load_contacts(self) -> None:
-        pass
+        print("Loading contacts...")
 
     def build(self) -> ft.Container:
-        return MasterContainer(content=ft.Row(controls=ft.Column(controls=[])))
+        return MasterContainer(
+            content=ft.Row(
+                controls=[
+                    ft.Column(
+                        controls=[self._contacts_list],
+                    ),
+                ],
+            )
+        )
