@@ -47,6 +47,10 @@ class AppRouter:
         # Add new route
         self._routes[route] = content
 
+    def remove_route(self, route: str) -> None:
+        if route in self._routes:
+            del self._routes[route]
+
     def go(self, route: str) -> None:
         """Navigate to a specific route and execute associated actions.
 
@@ -60,6 +64,9 @@ class AppRouter:
         Raises:
             ValueError: Raised if the specified route does not exist.
         """
+        if not route.startswith("/"):
+            raise ValueError(f"Route '{route}' does not start with a '/'!")
+
         if route not in self._routes:
             raise ValueError(f"Route '{route}' does not exist.")
 

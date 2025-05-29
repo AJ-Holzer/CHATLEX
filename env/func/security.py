@@ -1,7 +1,7 @@
 import re
 from base64 import b64decode, b64encode
 from secrets import token_bytes
-from typing import Any
+from typing import Any, Optional
 
 from argon2 import PasswordHasher
 from argon2.low_level import Type, hash_secret_raw
@@ -32,7 +32,7 @@ def is_valid_argon2_hash(hash_str: str) -> bool:
     return bool(ARGON2_HASH_PATTERN.match(hash_str))
 
 
-def byte_to_str(data: bytes) -> str:
+def byte_to_str(data: bytes) -> Optional[str]:
     """Convert bytes to string using base64 encoding.
 
     Args:
@@ -45,10 +45,10 @@ def byte_to_str(data: bytes) -> str:
         binascii.Error: If the bytes data is not valid base64 encoded data.
         UnicodeDecodeError: If the base64 encoded data cannot be decoded using UTF-8.
     """
-    return b64encode(data).decode("UTF-8")
+    return b64encode(data).decode("UTF-8") if data else None
 
 
-def str_to_byte(data: str) -> bytes:
+def str_to_byte(data: str) -> Optional[bytes]:
     """Convert a string to bytes using base64 decoding.
 
     Args:
@@ -61,7 +61,7 @@ def str_to_byte(data: str) -> bytes:
         binascii.Error: Raised if the input string is not a valid base64 encoded string.
         UnicodeEncodeError: Raised if the input string cannot be encoded using UTF-8.
     """
-    return b64decode(data.encode("UTF-8"))
+    return b64decode(data.encode("UTF-8")) if data else None
 
 
 def generate_iv() -> bytes:
@@ -94,7 +94,7 @@ def derive_key(password: str, salt: bytes) -> bytes:
 
 
 def aes_encrypt(
-    plaintext: str,  # TODO: Maybe get the data as bytes?
+    plaintext: str,
     key: bytes,
     iv: bytes,
 ) -> bytes:
