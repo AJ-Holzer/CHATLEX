@@ -18,13 +18,13 @@ class TopBar:
 
         # Initialize buttons
         self._home_button: ft.IconButton = ft.IconButton(
-            icon=ft.CupertinoIcons.PROFILE_CIRCLED,
+            icon=ft.Icons.PERSON_OUTLINE,
             height=config.TOP_BAR_HEIGHT,
             icon_size=config.TOP_BAR_HEIGHT - 15,
             on_click=lambda _: self._router.go(route=config.ROUTE_PROFILE),
         )
         self._settings_button: ft.IconButton = ft.IconButton(
-            icon=ft.Icons.SETTINGS_ROUNDED,
+            icon=ft.CupertinoIcons.LINE_HORIZONTAL_3,
             height=config.TOP_BAR_HEIGHT,
             icon_size=config.TOP_BAR_HEIGHT - 15,
             on_click=lambda _: self._router.go(route=config.ROUTE_SETTINGS),
@@ -49,12 +49,16 @@ class TopBar:
 
     def build(self) -> ft.Container:
         return ft.Container(
-            content=ft.Row(
+            content=ft.Column(
                 controls=[
-                    self._home_button_row,
-                    self._label_row,
-                    self._settings_button_row,
-                    # TODO: Add a separation line
+                    ft.Row(
+                        controls=[
+                            self._home_button_row,
+                            self._label_row,
+                            self._settings_button_row,
+                        ],
+                    ),
+                    ft.Divider(height=1, thickness=1),
                 ],
             ),
         )

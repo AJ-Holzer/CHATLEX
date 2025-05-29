@@ -1,12 +1,9 @@
-from typing import Optional
-
 import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.container import MasterContainer
 from env.app.widgets.top_bar import TopBar
 from env.classes.app_storage import Storages
 from env.classes.router import AppRouter
-from env.config import config
 
 
 class ContactsPage:
@@ -21,6 +18,13 @@ class ContactsPage:
             controls=[],
             expand=True,
         )
+
+    def _add_contact(
+        self,
+        username: str,
+        contact_uid: str,
+    ) -> None:
+        pass
 
     def load_contacts(self) -> None:
         print("Loading contacts...")
