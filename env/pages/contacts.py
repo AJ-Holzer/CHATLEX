@@ -3,6 +3,7 @@ from typing import Optional
 import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.container import MasterContainer
+from env.app.widgets.top_bar import TopBar
 from env.classes.app_storage import Storages
 from env.classes.router import AppRouter
 from env.config import config
@@ -13,6 +14,7 @@ class ContactsPage:
         self._page: ft.Page = page
         self._storages: Storages = storages
         self._router: AppRouter = router
+        self._top_bar: TopBar = TopBar(router=self._router)
 
         # Contacts list
         self._contacts_list: ft.ListView = ft.ListView(
@@ -28,8 +30,18 @@ class ContactsPage:
             content=ft.Row(
                 controls=[
                     ft.Column(
-                        controls=[self._contacts_list],
+                        controls=[
+                            self._top_bar.build(),
+                            self._contacts_list,
+                        ],
+                        expand=True,
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     ),
                 ],
-            )
+                expand=True,
+                alignment=ft.MainAxisAlignment.CENTER,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
+            expand=True,
         )

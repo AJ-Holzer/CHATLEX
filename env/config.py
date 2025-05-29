@@ -10,6 +10,11 @@ class Config:
     APP_PADDING_BOTTOM: int = 20
     APP_PADDING_LEFT: int = 20
 
+    # Top bar settings
+    TOP_BAR_HEIGHT: int = 50
+    TOP_BAR_LABEL_HEIGHT: int = 25
+    TOP_BAR_ICON_SIZE: int = TOP_BAR_HEIGHT - 15
+
     # Storage settings
     CS_USER_PASSWORD_HASH: str = "password-hash"
     CS_USER_PASSWORD_IV: str = "password-iv"
@@ -26,6 +31,8 @@ class Config:
     # Routes
     ROUTE_CONTACTS: str = "/contacts"
     ROUTE_LOGIN: str = "/login"
+    ROUTE_PROFILE: str = "/profile"
+    ROUTE_SETTINGS: str = "/settings"
 
 
 config = Config()
