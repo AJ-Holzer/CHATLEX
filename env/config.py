@@ -18,8 +18,8 @@ class Config:
     # Storage settings
     CS_USER_PASSWORD_HASH: str = "password-hash"
     CS_USER_PASSWORD_IV: str = "password-iv"
-    SS_USER_SESSION_KEY: str = "session-key"
     CS_USER_SALT: str = "salt"
+    SS_USER_SESSION_KEY: str = "session-key"
 
     # Settings for Argon2 key derivation
     ARGON2_TIME_COST: int = 40  # Increase for more security (more iterations)
@@ -41,6 +41,9 @@ class Config:
     ENCRYPTION_PRIVATE_KEY_FILE: str = "master_key_priv.txt"
     ENCRYPTION_PUBLIC_KEY_FILE: str = "master_key_publ.txt"
     ENCRYPTION_SIGNED_ONION_DATA_FILE: str = "singed_onion_data.json"
+
+    # Database settings
+    DATABASE_FILE: str = ""
 
 
 config = Config()

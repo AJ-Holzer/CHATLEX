@@ -23,6 +23,12 @@ class Paths:
         else:
             self._app_storage_path = os.path.expanduser("~")
 
+    def format(self, path: str) -> str:
+        # Normalize and join the path to the app storage path
+        converted_path = os.path.normpath(path)
+        full_path = os.path.join(self._app_storage_path, converted_path)
+        return os.path.normpath(full_path)
+
     @property
     def app_storage(self) -> str:
         return self._app_storage_path

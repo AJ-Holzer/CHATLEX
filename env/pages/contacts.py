@@ -19,17 +19,15 @@ class ContactsPage:
             expand=True,
         )
 
-        # TODO: Add a "add user" button at the bottom right!
+        # TODO: Add an "add user" button at the bottom right!
 
-    def _add_contact(
-        self,
-        username: str,
-        contact_uid: str,
-    ) -> None:
+    def _add_contact(self, contact_uuid: str) -> None:
+        # TODO: Use database class to insert user!
         raise NotImplementedError("This function is not implemented yet!")
 
     def load_contacts(self) -> None:
-        print("Loading contacts...")
+        # TODO: Use database class to retrieve contacts
+        raise NotImplementedError("This function is not implemented yet!")
 
     def build(self) -> ft.Container:
         return MasterContainer(
