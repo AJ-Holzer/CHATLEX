@@ -1,12 +1,13 @@
 # ZEPHRA
 
+A messenger, designed with a strong focus on security and anonymity.
+
 > 🚧 **Project in Progress!** – Regular updates are being made.
 
-> **Contributions Welcome!**<br>
+> **Contributions Welcome!**
+>
 > This is an open-source project. If you'd like to help improve the messenger,
 > feel free to fork the repository, suggest enhancements, or report issues.
-
-This is a messenger designed with a strong focus on security and anonymity.
 
 > ## ❗NOTE
 >
