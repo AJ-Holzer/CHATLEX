@@ -12,6 +12,20 @@ This is a messenger designed with a strong focus on security and anonymity.
 >
 > **ZEPHRA is intended for lawful use only. The developers do not condone illegal activity.**
 
+> ## ❗Legal Disclaimer
+> 
+> This project is provided for **educational and research purposes only**. The developers and contributors are **not responsible** for how this software is used.
+> 
+> Use of this software is at your own risk. You are solely responsible for complying with local laws and regulations regarding privacy, encryption, and communication.
+> 
+> We explicitly **do not condone illegal activity** and will not provide support for misuse of this project.
+> 
+> ## Important Notes
+> 
+> - We do not collect or store any data.
+> - We will not implement backdoors.
+> - This project is fully open-source under the AGPLv3 license.
+
 ## Your ideas
 
 If you have any suggestions on how to enhance its safety and anonymity,
