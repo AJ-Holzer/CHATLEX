@@ -19,12 +19,14 @@ class ContactsPage:
             expand=True,
         )
 
+        # TODO: Add a "add user" button at the bottom right!
+
     def _add_contact(
         self,
         username: str,
         contact_uid: str,
     ) -> None:
-        pass
+        raise NotImplementedError("This function is not implemented yet!")
 
     def load_contacts(self) -> None:
         print("Loading contacts...")
