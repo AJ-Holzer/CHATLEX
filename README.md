@@ -13,15 +13,15 @@ This is a messenger designed with a strong focus on security and anonymity.
 > **ZEPHRA is intended for lawful use only. The developers do not condone illegal activity.**
 
 > ## ❗Legal Disclaimer
-> 
+>
 > This project is provided for **educational and research purposes only**. The developers and contributors are **not responsible** for how this software is used.
-> 
+>
 > Use of this software is at your own risk. You are solely responsible for complying with local laws and regulations regarding privacy, encryption, and communication.
-> 
+>
 > We explicitly **do not condone illegal activity** and will not provide support for misuse of this project.
-> 
+>
 > ## Important Notes
-> 
+>
 > - We do not collect or store any data.
 > - We will not implement backdoors.
 > - This project is fully open-source under the AGPLv3 license.
@@ -37,12 +37,12 @@ feel free to open an issue in the GitHub repository.
 | ----------------------- | ------------------------------------------------------------------------------ | ----------- |
 | Decentralized messenger | No server between your messages                                                | ✔️          |
 | Encryption              | AES-265, ECDHE, Kyber                                                          | ❌          |
-| Password generation     | A key will be derived with salt and pepper to make the entered password unique | ❌          |
+| Password generation     | A key will be derived with salt and pepper to make the entered password unique | ✔️          |
 | Data                    | Your data will be stored **locally only**, encrypted                           | ❌          |
 | Platforms               | Android                                                                        | ✔️          |
 | Data transmission       | The data will be sent over the Tor network to anonymize the traffic            | ❌          |
 | Open source             | Transparent codebase for public scrutiny and trust                             | ✔️          |
-| Key derivation          | The code uses Argon2 to derive a new key to encrypt the messages               | ❌          |
+| Key derivation          | The code uses Argon2 to derive a new key to encrypt the messages               | ✔️          |
 
 📌 **Notice!** The project is still in progress-some features may not be included yet.
 
