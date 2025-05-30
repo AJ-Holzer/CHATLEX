@@ -81,22 +81,7 @@ class OnionEncryption:
         with open(config.ENCRYPTION_SINGED_ONION_DATA_FILE, "w") as file:
             json.dump(self._signed_onion_data, file, indent=2)
 
-    def generate_master_keys(self) -> None:
-        # Create a new key
-        key: SigningKey = SigningKey.generate()
-
-        # Derive private and public key
-        self._keys["private_key"] = key
-        self._keys["public_key"] = key.verify_key
-
-        # Save keys
-        self.save_master_keys()
-
-    def load_master_keys(self) -> None:
-        self._load_key(key="private_key")
-        self._load_key(key="public_key")
-
-    def save_master_keys(self) -> None:
+    def _save_master_keys(self) -> None:
         # Check if keys exist
         if self._keys["private_key"] is None:
             raise TypeError("Private key is of type 'None'. Create key first!")
@@ -106,6 +91,21 @@ class OnionEncryption:
         # Save keys
         self._save_key(key="private_key")
         self._save_key(key="public_key")
+
+    def generate_master_keys(self) -> None:
+        # Create a new key
+        key: SigningKey = SigningKey.generate()
+
+        # Derive private and public key
+        self._keys["private_key"] = key
+        self._keys["public_key"] = key.verify_key
+
+        # Save keys
+        self._save_master_keys()
+
+    def load_master_keys(self) -> None:
+        self._load_key(key="private_key")
+        self._load_key(key="public_key")
 
     def sign_onion(self, onion_address: str, expiry_days: int) -> None:
         # Check if key exists
