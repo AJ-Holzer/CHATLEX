@@ -10,6 +10,14 @@ from env.config import config
 from env.typing.encryption import MasterKeys, SignedOnionData
 
 
+class AES:
+    def __init__(self) -> None:
+        pass
+
+    def encrypt(self) -> None:...
+
+    def decrypt(self) -> None:...
+
 class OnionEncryption:
     def __init__(self) -> None:
         """Initializes an instance of the class.
@@ -71,14 +79,14 @@ class OnionEncryption:
             file.write(base64.b64encode(actual_key.encode()).decode(config.ENCODING))
 
     def _load_signed_data(self) -> Optional[SignedOnionData]:
-        if not Path(config.ENCRYPTION_SINGED_ONION_DATA_FILE).exists():
+        if not Path(config.ENCRYPTION_SIGNED_ONION_DATA_FILE).exists():
             return None
 
-        with open(config.ENCRYPTION_SINGED_ONION_DATA_FILE, "r") as file:
+        with open(config.ENCRYPTION_SIGNED_ONION_DATA_FILE, "r") as file:
             return json.load(file)
 
     def _save_signed_data(self) -> None:
-        with open(config.ENCRYPTION_SINGED_ONION_DATA_FILE, "w") as file:
+        with open(config.ENCRYPTION_SIGNED_ONION_DATA_FILE, "w") as file:
             json.dump(self._signed_onion_data, file, indent=2)
 
     def _save_master_keys(self) -> None:

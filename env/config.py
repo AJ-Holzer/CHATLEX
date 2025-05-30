@@ -40,7 +40,7 @@ class Config:
     # Encryption settings
     ENCRYPTION_PRIVATE_KEY_FILE: str = "master_key_priv.txt"
     ENCRYPTION_PUBLIC_KEY_FILE: str = "master_key_publ.txt"
-    ENCRYPTION_SINGED_ONION_DATA_FILE: str = "singed_onion_data.json"
+    ENCRYPTION_SIGNED_ONION_DATA_FILE: str = "singed_onion_data.json"
 
 
 config = Config()
