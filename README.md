@@ -43,6 +43,7 @@ feel free to open an issue in the GitHub repository.
 | Data transmission       | The data will be sent over the Tor network to anonymize the traffic            | ❌          |
 | Open source             | Transparent codebase for public scrutiny and trust                             | ✔️          |
 | Key derivation          | The code uses Argon2 to derive a new key to encrypt the messages               | ✔️          |
+| Public Chat             | A world wide chat available by signing in. NOTE: **Server in between**         | ❌          |
 
 📌 **Notice!** The project is still in progress-some features may not be included yet.
 
