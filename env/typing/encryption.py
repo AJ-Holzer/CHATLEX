@@ -12,5 +12,5 @@ class SignedOnionData(TypedDict):
     onion: str
     timestamp: float
     expires: float
-    singed_by: str
+    signed_by: str
     signature: str

@@ -1,5 +1,6 @@
 import base64
 import json
+import time
 from pathlib import Path
 from typing import Literal, Optional
 
@@ -26,6 +27,7 @@ class OnionEncryption:
             "private_key": None,
             "public_key": None,
         }
+        self._signed_onion_data: Optional[SignedOnionData] = None
 
     def _load_key(self, key: Literal["private_key", "public_key"]) -> None:
         file_path: str = (
@@ -33,13 +35,13 @@ class OnionEncryption:
             if key == "private_key"
             else config.ENCRYPTION_PUBLIC_KEY_FILE
         )
-        
+
         # Check if the file exists
         if not Path(file_path).exists():
             raise FileNotFoundError(f"File '{file_path}' does not exist!")
 
         # Load the data
-        with open(file_path,"r") as file:
+        with open(file_path, "r") as file:
             # Load key
             data = base64.b64decode(file.read())
             if key == "private_key":
@@ -71,13 +73,13 @@ class OnionEncryption:
     def _load_signed_data(self) -> Optional[SignedOnionData]:
         if not Path(config.ENCRYPTION_SINGED_ONION_DATA_FILE).exists():
             return None
-        
+
         with open(config.ENCRYPTION_SINGED_ONION_DATA_FILE, "r") as file:
             return json.load(file)
 
-    def _save_signed_data(self, data: SignedOnionData) -> None:
+    def _save_signed_data(self) -> None:
         with open(config.ENCRYPTION_SINGED_ONION_DATA_FILE, "w") as file:
-            json.dump(data, file, indent=2)
+            json.dump(self._signed_onion_data, file, indent=2)
 
     def generate_master_keys(self) -> None:
         # Create a new key
@@ -105,7 +107,54 @@ class OnionEncryption:
         self._save_key(key="private_key")
         self._save_key(key="public_key")
 
-    def sign_onion(self, onion_address: str, expiry_days: int) ->
+    def sign_onion(self, onion_address: str, expiry_days: int) -> None:
+        # Check if key exists
+        actual_key: Optional[SigningKey] = self._keys["private_key"]
+        if actual_key is None:
+            raise TypeError(
+                "No private key exists. Run 'generate_master_keys()' to generate it!"
+            )
+
+        # Define data
+        timestamp: float = time.time()
+        expires: float = timestamp + expiry_days * 86400
+        message: str = f"{onion_address}{timestamp}{expires}"
+        sig = actual_key.sign(message=message.encode(config.ENCODING)).signature
+
+        self._signed_onion_data = {
+            "onion": onion_address,
+            "timestamp": timestamp,
+            "expires": expires,
+            "signed_by": base64.b64encode(actual_key.encode()).decode(config.ENCODING),
+            "signature": base64.b64encode(sig).decode(config.ENCODING),
+        }
+
+        # Save signed data
+        self._save_signed_data()
+
+    def id_is_valid(self, json_path: str) -> bool:
+        with open(json_path, "r") as file:
+            data: SignedOnionData = json.load(file)
+
+        # Check if time expired
+        if time.time() > data["expires"]:
+            print("❌ ID has expired!")
+            return False
+
+        # Get data
+        message: bytes = f"{data["onion"]}{data["timestamp"]}{data["expires"]}".encode(config.ENCODING)
+        signature: bytes = base64.b64decode(data["signature"])
+        pubkey: bytes = base64.b64decode(data["signed_by"])
+
+        # Check if valid
+        try:
+            verify_key: VerifyKey = VerifyKey(pubkey)
+            verify_key.verify(smessage=message, signature=signature)
+            print("✅ Signature is valid!")
+            return True
+        except Exception as _:
+            print("❌ Signature is invalid!")
+            return False
 
     @property
     def private_key(self) -> SigningKey:
@@ -122,3 +171,12 @@ class OnionEncryption:
             raise TypeError("Public key is of type 'None'. Create key first!")
 
         return self._keys["public_key"]
+
+    @property
+    def signed_onion_data(self) -> SignedOnionData:
+        if self._signed_onion_data is None:
+            raise TypeError(
+                "No signed onion data found. Run the 'sign_onion()' function to sign!"
+            )
+
+        return self._signed_onion_data
