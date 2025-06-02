@@ -19,6 +19,7 @@ class Config:
     CS_USER_PASSWORD_HASH: str = "password-hash"
     CS_USER_PASSWORD_IV: str = "password-iv"
     CS_USER_SALT: str = "salt"
+    CS_LOGOUT_ON_LOST_FOCUS: str = "logout-on-lost-focus"
     SS_USER_SESSION_KEY: str = "session-key"
 
     # Settings for Argon2 key derivation
@@ -44,6 +45,9 @@ class Config:
 
     # Database settings
     DATABASE_FILE: str = ""
+
+    # Advanced security settings
+    LOGOUT_ON_LOST_FOCUS_DEFAULT: bool = False
 
 
 config = Config()

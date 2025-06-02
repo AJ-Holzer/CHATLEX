@@ -1,15 +1,18 @@
 import flet as ft  # type:ignore[import-untyped]
 
+from env.classes.app_storage import Storages
 from env.classes.router import AppRouter
 from env.config import config
+from env.func.logout import logout_on_lost_focus
 
 
 class TopBar:
-    def __init__(self, router: AppRouter) -> None:
+    def __init__(self, page: ft.Page, router: AppRouter, storages: Storages) -> None:
+        self._page: ft.Page = page
         self._router: AppRouter = router
+        self._storages: Storages = storages
 
         # Initialize labels
-        # TODO: Clear session data when clicking the text
         self._label: ft.Text = ft.Text(
             value=config.APP_TITLE,
             weight=ft.FontWeight.BOLD,
@@ -37,7 +40,16 @@ class TopBar:
             expand=True,
         )
         self._label_row: ft.Row = ft.Row(
-            controls=[self._label],
+            controls=[
+                ft.Container(
+                    content=self._label,
+                    on_click=lambda _: logout_on_lost_focus(
+                        e=None,
+                        router=self._router,
+                        storages=self._storages,
+                    ),
+                ),
+            ],
             alignment=ft.MainAxisAlignment.CENTER,
             expand=True,
         )

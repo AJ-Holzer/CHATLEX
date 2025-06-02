@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 import flet as ft  # type:ignore[import-untyped]
 
@@ -84,7 +84,7 @@ class AppRouter:
 
         # Run the function if it exists
         if func := content["execute_function"]:
-            args = content["function_args"]
+            args: Optional[list[Any] | dict[str, Any]] = content["function_args"]
 
             if isinstance(args, list):
                 func(*args)

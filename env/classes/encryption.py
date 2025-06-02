@@ -23,22 +23,43 @@ class AES:
         password: str,
         salt: Optional[bytes] = None,
         iv: Optional[bytes] = None,
-        key: Optional[bytes] = None,
     ) -> None:
+        """Initializes an instance of the class.
+
+        Args:
+            self(Self): The instance of the class.
+            password(str): The password to be stored.
+            salt(Optional[bytes]): The salt to be used for password hashing. If None, a new salt will be generated.
+            iv(Optional[bytes]): The initialization vector (IV) to be used for encryption. If None, a new IV will be generated.
+
+        Returns:
+            None: No return value.
+
+        Raises:
+            ValueError: If the password is empty or None.
+        """
         # Initialize hasher
         self._argon_hasher: ArgonHasher = ArgonHasher()
 
         # Define salt, iv and key
         self._password: str = password
-        self._salt: Optional[bytes] = salt
-        self._iv: Optional[bytes] = iv
-        self._key: Optional[bytes] = key
+        self._salt: bytes = salt or self.generate_salt()
+        self._iv: bytes = iv or self.generate_iv()
+        self._key: Optional[bytes] = self._argon_hasher.derive_key(
+            password=self._password, salt=self._salt
+        )
 
-    def generate_iv(self) -> None:
-        self._iv = token_bytes(16)
+    def generate_iv(self) -> bytes:
+        iv: bytes = token_bytes(16)
+        self._iv = iv
 
-    def generate_salt(self) -> None:
-        self._salt = token_bytes(config.SALT_LENGTH)
+        return iv
+
+    def generate_salt(self) -> bytes:
+        salt: bytes = token_bytes(config.SALT_LENGTH)
+        self._salt = salt
+
+        return salt
 
     def encrypt(self, plaintext: str) -> bytes:
         padder: padding.PaddingContext = padding.PKCS7(128).padder()

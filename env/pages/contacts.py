@@ -11,7 +11,9 @@ class ContactsPage:
         self._page: ft.Page = page
         self._storages: Storages = storages
         self._router: AppRouter = router
-        self._top_bar: TopBar = TopBar(router=self._router)
+        self._top_bar: TopBar = TopBar(
+            page=self._page, router=self._router, storages=self._storages
+        )
 
         # Contacts list
         self._contacts_list: ft.ListView = ft.ListView(
@@ -27,7 +29,8 @@ class ContactsPage:
 
     def load_contacts(self) -> None:
         # TODO: Use database class to retrieve contacts
-        raise NotImplementedError("This function is not implemented yet!")
+        # raise NotImplementedError("This function is not implemented yet!")
+        print("Loading contacts...")
 
     def build(self) -> ft.Container:
         return MasterContainer(

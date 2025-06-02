@@ -4,17 +4,11 @@ import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.container import MasterContainer
 from env.classes.app_storage import Storages
+from env.classes.encryption import AES
+from env.classes.hashing import ArgonHasher
 from env.classes.router import AppRouter
 from env.config import config
-from env.func.security import (
-    byte_to_str,
-    derive_key,
-    generate_iv,
-    generate_salt,
-    hash_password,
-    str_to_byte,
-    verify_password,
-)
+from env.func.converter import byte_to_str, str_to_byte
 
 
 class LoginPage:
@@ -29,12 +23,6 @@ class LoginPage:
             self._storages.client_storage.get(key=config.CS_USER_PASSWORD_HASH)
         ) and bool(self._storages.client_storage.get(key=config.CS_USER_PASSWORD_IV))
 
-        print(
-            self._user_already_exists,
-            self._storages.client_storage.get(key=config.CS_USER_PASSWORD_HASH),
-            self._storages.client_storage.get(key=config.CS_USER_PASSWORD_IV),
-        )
-
         # Password stuff
         self._password_hash: Optional[str] = storages.client_storage.get(
             key=config.CS_USER_PASSWORD_HASH
@@ -42,6 +30,9 @@ class LoginPage:
         self._salt: Optional[bytes] = str_to_byte(
             data=self._storages.client_storage.get(key=config.CS_USER_SALT)
         )
+
+        # Initialize hasher and encryptor
+        self._hasher: ArgonHasher = ArgonHasher()
 
         # Entries
         self._entry_password: ft.TextField = ft.TextField(
@@ -61,6 +52,8 @@ class LoginPage:
 
         # Progress bar
         self._progress_bar: ft.ProgressBar = ft.ProgressBar(visible=False)
+
+        self.show_info_dialog()  # FIXME: The alert can't be closed somehow!??
 
     def _progress_visible(self, visible: bool) -> None:
         self._progress_bar.visible = visible
@@ -114,11 +107,18 @@ class LoginPage:
             self._progress_visible(visible=False)
             return
 
+        # Initialize encryptor
+        encryptor: AES = AES(password=str(self._entry_password.value))
+
+        # Generate salt and iv
+        encryptor.generate_iv()
+        encryptor.generate_salt()
+
         # Show progress bar to indicate something is happening
         self._progress_visible(visible=True)
 
-        iv_raw: Optional[str] = byte_to_str(data=generate_iv())
-        salt_raw: Optional[str] = byte_to_str(data=generate_salt())
+        iv_raw: Optional[str] = byte_to_str(data=encryptor.iv)
+        salt_raw: Optional[str] = byte_to_str(data=encryptor.salt)
 
         if not iv_raw or not salt_raw:
             raise RuntimeError(
@@ -126,7 +126,9 @@ class LoginPage:
             )
         iv: str = iv_raw
         salt: str = salt_raw
-        pwd_hash: str = hash_password(password=str(self._entry_password.value))
+        pwd_hash: str = self._hasher.hash_password(
+            password=str(self._entry_password.value)
+        )
         self._storages.client_storage.set(key=config.CS_USER_PASSWORD_IV, value=iv)
         self._storages.client_storage.set(
             key=config.CS_USER_PASSWORD_HASH, value=pwd_hash
@@ -164,7 +166,7 @@ class LoginPage:
         self._button_clickable(clickable=False)
         self._progress_visible(visible=True)
 
-        if not self._password_hash or not verify_password(
+        if not self._password_hash or not self._hasher.verify_password(
             hash=self._password_hash, password=str(self._entry_password.value)
         ):
             wrong_pwd_alert: ft.AlertDialog = ft.AlertDialog(
@@ -188,20 +190,44 @@ class LoginPage:
             self._progress_visible(visible=False)
             return
 
-        # Hide progress bar on success
-        self._progress_visible(visible=False)
-        self._button_clickable(clickable=True)
-
         # Set key for this session for decrypting data later
         if self._salt is None:
             raise ValueError("No salt existing. Try to reinstall app!")
 
         self._storages.session_storage.set(
             key=config.SS_USER_SESSION_KEY,
-            value=derive_key(password=str(self._entry_password.value), salt=self._salt),
+            value=self._hasher.derive_key(
+                password=str(self._entry_password.value), salt=self._salt
+            ),
         )
 
+        # Hide progress bar on success
+        self._progress_visible(visible=False)
+        self._button_clickable(clickable=True)
+
+        # Clear entries
+        self._entry_password.value = ""
+        if not self._user_already_exists:
+            self._entry_password_confirmation.value = ""
+        self._entry_password.update()
+        if not self._user_already_exists:
+            self._entry_password_confirmation.update()
+
         self._router.go(config.ROUTE_CONTACTS)
+
+    def show_info_dialog(self) -> None:
+        info_alert: ft.AlertDialog = ft.AlertDialog(
+            modal=True,
+            title=ft.Text(value="Correct Password!"),
+            content=ft.Text(value="The passwords you entered are equal!"),
+            actions=[
+                ft.TextButton(
+                    text="Continue",
+                    on_click=lambda e: self._page.close(info_alert),
+                ),
+            ],
+        )
+        self._page.open(info_alert)
 
     def build(self) -> ft.Container:
         return MasterContainer(
