@@ -4,18 +4,9 @@ from env.classes.app_storage import Storages
 from env.classes.router import AppRouter
 from env.config import config
 from env.func.logout import logout_on_lost_focus
+from env.func.update_themes import update_theme
 from env.pages.contacts import ContactsPage
 from env.pages.login import LoginPage
-from env.themes.themes import themes
-
-
-def update_theme(page: ft.Page) -> None:
-    if page.platform_brightness == ft.Brightness.DARK:
-        page.theme = themes.DARK
-    else:
-        page.theme = themes.LIGHT
-
-    page.update()  # type:ignore
 
 
 def main(page: ft.Page) -> None:
