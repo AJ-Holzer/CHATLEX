@@ -97,7 +97,7 @@ class SQLiteDatabase:
             self._cur.execute(
                 "INSERT INTO messages (contact_uuid, message, timestamp) VALUES (?, ?, ?)",
                 (
-                    self._encrypt(data=contact_uuid),
+                    self._encrypt(data=contact_uuid),  # TODO: Don't encrypt primary key
                     self._encrypt(data=message),
                     self._encrypt(data=str(timestamp)),
                 ),
@@ -112,7 +112,7 @@ class SQLiteDatabase:
             self._cur.execute(
                 "INSERT INTO devices (device_uuid, onion_address, name) VALUES (?, ?, ?)",
                 (
-                    self._encrypt(data=device_uuid),
+                    self._encrypt(data=device_uuid),  # TODO: Don't encrypt primary key
                     self._encrypt(data=onion_address),
                     self._encrypt(data=name),
                 ),
@@ -131,7 +131,7 @@ class SQLiteDatabase:
             encrypted_username, encrypted_description, encrypted_onion_address = (
                 self._cur.execute(
                     "SELECT username, description, onion_address FROM contacts WHERE contact_uuid = ?",
-                    (encrypted_uuid,),
+                    (encrypted_uuid,),  # TODO: Don't encrypt primary key
                 ).fetchone()
             )
 
@@ -160,8 +160,8 @@ class SQLiteDatabase:
             for message_id, encrypted_message, encrypted_timestamp in rows:
                 messages.append(
                     {
-                        "id": message_id,
-                        "contact_uuid": contact_uuid,
+                        "id": message_id,  # TODO: Don't encrypt primary key
+                        "contact_uuid": contact_uuid,  # TODO: Don't encrypt uuid key
                         "message": self._decrypt(data=encrypted_message),
                         "timestamp": float(self._decrypt(data=encrypted_timestamp)),
                     }
@@ -183,7 +183,9 @@ class SQLiteDatabase:
             for encrypted_device_uuid, encrypted_onion_address, encrypted_name in rows:
                 devices.append(
                     {
-                        "uuid": self._decrypt(data=encrypted_device_uuid),
+                        "uuid": self._decrypt(
+                            data=encrypted_device_uuid
+                        ),  # TODO: Don't encrypt primary key
                         "onion_address": self._decrypt(data=encrypted_onion_address),
                         "name": self._decrypt(data=encrypted_name),
                     },
