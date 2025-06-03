@@ -1,1 +1,1 @@
-flet pack main.py
+flet pack main.py --add-data="assets;assets"

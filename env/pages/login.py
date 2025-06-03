@@ -6,6 +6,7 @@ from env.app.widgets.container import MasterContainer
 from env.classes.app_storage import Storages
 from env.classes.encryption import AES
 from env.classes.hashing import ArgonHasher
+from env.classes.paths import paths
 from env.classes.router import AppRouter
 from env.config import config
 from env.func.converter import byte_to_str, str_to_byte
@@ -31,7 +32,7 @@ class LoginPage:
             data=self._storages.client_storage.get(key=config.CS_USER_SALT)
         )
 
-        # Initialize hasher and encryptor
+        # Initialize hasher
         self._hasher: ArgonHasher = ArgonHasher()
 
         # Entries
@@ -53,7 +54,11 @@ class LoginPage:
         # Progress bar
         self._progress_bar: ft.ProgressBar = ft.ProgressBar(visible=False)
 
-        self.show_info_dialog()  # FIXME: The alert can't be closed somehow!??
+        # Image
+        self._app_logo: ft.Image = ft.Image(
+            src=paths.join_with_base_path("assets/icon.png"),
+            width=300,
+        )
 
     def _progress_visible(self, visible: bool) -> None:
         self._progress_bar.visible = visible
@@ -105,6 +110,51 @@ class LoginPage:
             # Enable the button again and hide progress bar
             self._button_clickable(clickable=True)
             self._progress_visible(visible=False)
+            return
+
+            # Show info alert and wait until it is closed before proceeding
+
+        info_alert_closed: bool = False
+        cancelled: bool = False
+
+        def on_info_alert_close(e: ft.ControlEvent) -> None:
+            nonlocal info_alert_closed
+            info_alert_closed = True
+            self._page.close(info_alert)
+
+        def on_cancel(e: ft.ControlEvent) -> None:
+            nonlocal cancelled, info_alert_closed
+            self._progress_visible(visible=False)
+            self._button_clickable(clickable=True)
+            self._page.close(info_alert)
+            info_alert_closed = True
+            cancelled = True
+
+        info_alert: ft.AlertDialog = ft.AlertDialog(
+            modal=True,
+            title=ft.Text(value="Important Information!"),
+            content=ft.Text(
+                value="Are you sure you remember the password? You can not decrypt the data if you forget it!"
+            ),
+            actions=[
+                ft.TextButton(
+                    text="NO",
+                    on_click=on_cancel,
+                ),
+                ft.TextButton(
+                    text="YES",
+                    on_click=on_info_alert_close,
+                ),
+            ],
+        )
+        self._page.open(info_alert)
+
+        # Wait for the dialog to be closed
+        while not info_alert_closed:
+            self._page.update()  # type:ignore
+
+        # Check if user cancelled the action
+        if cancelled:
             return
 
         # Initialize encryptor
@@ -215,26 +265,13 @@ class LoginPage:
 
         self._router.go(config.ROUTE_CONTACTS)
 
-    def show_info_dialog(self) -> None:
-        info_alert: ft.AlertDialog = ft.AlertDialog(
-            modal=True,
-            title=ft.Text(value="Correct Password!"),
-            content=ft.Text(value="The passwords you entered are equal!"),
-            actions=[
-                ft.TextButton(
-                    text="Continue",
-                    on_click=lambda e: self._page.close(info_alert),
-                ),
-            ],
-        )
-        self._page.open(info_alert)
-
     def build(self) -> ft.Container:
         return MasterContainer(
             content=ft.Row(
                 controls=[
                     ft.Column(
                         controls=[
+                            self._app_logo,
                             self._entry_password,
                             *(
                                 [self._entry_password_confirmation]

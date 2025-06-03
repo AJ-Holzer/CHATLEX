@@ -31,7 +31,7 @@ def main(page: ft.Page) -> None:
     # Initialize storage
     storages: Storages = Storages(page=page)
 
-    # # TODO: This is only for debugging. Remove this line!
+    # TODO: This is only for debugging. Remove this line!
     storages.client_storage.clear()
 
     # Update page to apply visuals

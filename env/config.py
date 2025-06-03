@@ -44,10 +44,15 @@ class Config:
     ENCRYPTION_SIGNED_ONION_DATA_FILE: str = "singed_onion_data.json"
 
     # Database settings
-    DATABASE_FILE: str = ""
+    DATABASE_FILE: str = ""  # TODO: Add database file!
 
     # Advanced security settings
     LOGOUT_ON_LOST_FOCUS_DEFAULT: bool = False
+
+    # Image paths
+    APP_LOGO_PNG: str = "assets/icon.png"
+    APP_LOGO_ICO: str = "assets/icon.ico"
+    APP_LOGO_SPLASH_ANDROID_PNG: str = "assets/splash_android.png"
 
 
 config = Config()
