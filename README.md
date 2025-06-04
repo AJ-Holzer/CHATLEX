@@ -27,9 +27,10 @@ A next-generation messenger designed with uncompromising focus on privacy, secur
 - Fully open-source under AGPLv3.
 - End-to-end encrypted using modern cryptographic standards.
 
-## Your ideas
+## 💡 Suggest Enhancements
 
-If you have any suggestions on how to enhance its safety and anonymity, feel free to open an issue in the GitHub repository.
+If you have any suggestions on how to enhance its safety and anonymity?
+Feel free to open an issue or start a discussion in the GitHub Repository.
 
 ## ✨ Core Features
 
