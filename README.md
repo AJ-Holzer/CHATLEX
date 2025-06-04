@@ -23,7 +23,7 @@ A next-generation messenger designed with uncompromising focus on privacy, secur
 
 ## 🔒 Our Security & Privacy Principles
 
-- No central servers – Peer-to-peer architecture only.
+- No central servers – Peer-to-peer architect ure only.
 - Zero data collection – We collect nothing from users.
 - No backdoors. **Ever**.
 - Fully open-source under AGPLv3.
@@ -31,7 +31,7 @@ A next-generation messenger designed with uncompromising focus on privacy, secur
 
 ## 💡 Suggest Enhancements
 
-If you have any suggestions on how to enhance its safety and anonymity?
+You have any suggestions on how to enhance its safety and anonymity?
 Feel free to open an issue or start a discussion in the GitHub Repository.
 
 ## ✨ Core Features
