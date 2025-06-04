@@ -74,6 +74,7 @@ class ContactWidget:
                 case _:
                     raise ValueError(f"Action '{action.value}' not available!")
 
+        # TODO: Add missing actions (listed in types)
         action_alert: ft.CupertinoActionSheet = ft.CupertinoActionSheet(
             title=ft.Row(
                 controls=[
@@ -99,9 +100,6 @@ class ContactWidget:
 
         bottom_sheet: ft.BottomSheet = ft.BottomSheet(content=action_alert)
         self._page.open(bottom_sheet)
-
-        # # TODO: Add missing code!
-        # raise NotImplementedError("This function is not implemented yet!")
 
     def build(self) -> ft.Container:
         return ft.Container(

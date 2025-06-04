@@ -57,7 +57,7 @@ class Config:
     ENCRYPTION_SIGNED_ONION_DATA_FILE: str = "singed_onion_data.json"
 
     # Database settings
-    DATABASE_FILE: str = "data.db"  # TODO: Add database file!
+    DATABASE_FILE: str = "data.db"
 
     # Advanced security settings
     LOGOUT_ON_LOST_FOCUS_DEFAULT: bool = False
