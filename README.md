@@ -11,11 +11,11 @@ A next-generation messenger designed with uncompromising focus on privacy, secur
 
 > ## ⚠️ Legal Disclaimer
 >
-> ZEPHRA is created for lawful, educational, and research purposes only. Misuse is strictly discouraged.
+> **ZEPHRA** is created for lawful, educational, and research purposes only. Misuse is strictly discouraged.
 > By using this software, you accept full responsibility for ensuring your compliance with local
 > laws and regulations regarding encryption and communication.
 >
-> - We do not support or assist with illegal activities.
+> - We do NOT support or assist with illegal activities.
 > - Use of this software is entirely at your own risk.
 > - The developers and contributors assume no liability for any misuse or consequences arising from use.
 
