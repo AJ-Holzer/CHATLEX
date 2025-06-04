@@ -61,7 +61,7 @@ Feel free to open an issue or start a discussion in the GitHub Repository.
 - Image Sharing
 - Video Sharing
 
-## 🛠 Current Tech Stack Hightlights
+## 🛠 Current Tech Stack Highlights
 
 - **Language:** Python
 - **Encryption:** AES-256-CBC,
