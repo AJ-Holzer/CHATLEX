@@ -15,6 +15,7 @@ from env.func.converter import str_to_byte
 from env.typing.dicts import ContactData
 
 
+# TODO: Add custom arrangement to the contacts list
 class ContactsPage:
     def __init__(self, page: ft.Page, storages: Storages, router: AppRouter) -> None:
         self._page: ft.Page = page
@@ -66,23 +67,29 @@ class ContactsPage:
             "onion_address": onion_address,
         }
 
-        # Create new contact widget
-        contact_widget: ContactWidget = ContactWidget(
-            contact_data=contact_data,
-            router=self._router,
-        )
+        # Close alert
+        self._page.close(control=alert)
+
+        try:
+            # Insert contact into database
+            self._db.insert_contact(contact_data=contact_data)
+        except Exception as e:
+            self._page.open(
+                ft.SnackBar(
+                    content=ft.Text(
+                        value=f"There was an error while adding the contact! Error: {e}"
+                    ),
+                    duration=10_000,  # Show for 10 seconds
+                    dismiss_direction=ft.DismissDirection.HORIZONTAL,
+                )
+            )
+            return
 
         # Add contact widget to list view
         self._add_contact(contact_data=contact_data)
 
-        # Close alert
-        self._page.close(control=alert)
-
         # Update page to apply changes
         self._page.update()  # type:ignore
-
-        # Insert contact into database
-        self._db.insert_contact(contact_data=contact_data)
 
     def _open_contact_alert(self) -> None:
         # Create entries
@@ -139,6 +146,10 @@ class ContactsPage:
 
     def load_contacts(self) -> None:
         print("Loading contacts...")
+
+        # Empty contacts list to avoid duplicates
+        if self._contacts_list.controls:
+            self._contacts_list.controls = []
 
         contacts: Optional[list[ContactData]] = self._db.retrieve_contacts()
 
