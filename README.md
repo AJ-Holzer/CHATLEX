@@ -4,7 +4,7 @@
 
 A next-generation messenger designed with uncompromising focus on privacy, security, and anonymity.
 
-> 🚧 Active Development – Regular updates underway. Check the [Roadmap](#roadmap) for what’s coming next.
+> 🚧 Active Development – Regular updates underway. Check the [Roadmap](/#roadmap) for what’s coming next.
 >
 > 🤝 Open Source & Community Driven
 > Contributions are welcome! If you have ideas, issues, or improvements, feel free to open an issue or submit a pull request.
