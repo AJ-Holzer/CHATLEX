@@ -39,13 +39,15 @@ class AES:
         # Generate a new IV, salt and key
         iv: bytes = generate_iv()
         salt: bytes = generate_salt(config.SALT_LENGTH)
-        encryption_key: bytes = self._hkdf_hasher.derive_random_key(
-            info=encryption_key_info
+        encryption_key: bytes = self._hkdf_hasher.derive_key(
+            info=encryption_key_info,
+            salt=salt,
         )
 
         padder: padding.PaddingContext = padding.PKCS7(128).padder()
-        byte_data: bytes = base64.b64encode(s=plaintext.encode(config.ENCODING))
-        padded_data: bytes = padder.update(byte_data) + padder.finalize()
+        padded_data: bytes = (
+            padder.update(plaintext.encode(config.ENCODING)) + padder.finalize()
+        )
 
         cipher: Cipher[modes.CBC] = Cipher(
             algorithm=algorithms.AES256(key=encryption_key),
@@ -62,7 +64,8 @@ class AES:
         salt = encrypted_data[: config.SALT_LENGTH :]
         iv = encrypted_data[config.SALT_LENGTH : config.SALT_LENGTH + 16 :]
         decryption_key: bytes = self._hkdf_hasher.derive_key(
-            info=encryption_key_info, salt=salt
+            info=encryption_key_info,
+            salt=salt,
         )
 
         ciphertext = encrypted_data[config.SALT_LENGTH + 16 : :]
@@ -78,4 +81,4 @@ class AES:
         unpadder: padding.PaddingContext = padding.PKCS7(128).unpadder()
         cipher_text: bytes = unpadder.update(padded_data) + unpadder.finalize()
 
-        return base64.b64decode(cipher_text).decode(config.ENCODING)
+        return cipher_text.decode(config.ENCODING)

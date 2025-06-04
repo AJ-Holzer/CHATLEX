@@ -11,10 +11,10 @@ from env.typing.hashing import HKDFInfoKey
 
 class SQLiteDatabase:
     def __init__(self, aes_encryptor: AES) -> None:
+        self._db_path: str = paths.join_with_app_storage(path=config.DATABASE_FILE)
+
         # Initialize sql connection and cursor
-        self._conn: sqlite3.Connection = sqlite3.connect(
-            database=paths.join_with_app_storage(path=config.DATABASE_FILE)
-        )
+        self._conn: sqlite3.Connection = sqlite3.connect(database=self._db_path)
         self._cur: sqlite3.Cursor = self._conn.cursor()
 
         # Initialize AES encryptor
@@ -62,7 +62,7 @@ class SQLiteDatabase:
 
     def _encrypt(self, data: str, encryption_key_info: HKDFInfoKey) -> str:
         if not data:
-            raise ValueError(f"Data has to contain a value, got '{data}' instead!")
+            return ""
 
         return byte_to_str(
             data=self._encryptor.encrypt(
@@ -73,40 +73,37 @@ class SQLiteDatabase:
 
     def _decrypt(self, data: str, encryption_key_info: HKDFInfoKey) -> str:
         if not data:
-            raise ValueError(f"Data has to contain a value, got '{data}' instead!")
+            return ""
 
         return self._encryptor.decrypt(
             encrypted_data=str_to_byte(data=data),
             encryption_key_info=encryption_key_info,
         )
 
-    def insert_contact(
-        self, contact_uuid: str, username: str, description: str, onion_address: str
-    ) -> None:
-        try:
-            # Insert data (encrypted)
-            self._cur.execute(
-                "INSERT INTO contacts (contact_uuid, username, description, ip) VALUES (?, ?, ?, ?)",
-                (
-                    contact_uuid,  # Leave uuid decrypted to be able to find it
-                    self._encrypt(
-                        data=username,
-                        encryption_key_info=config.HKDF_INFO_CONTACT,
-                    ),
-                    self._encrypt(
-                        data=description,
-                        encryption_key_info=config.HKDF_INFO_CONTACT,
-                    ),
-                    self._encrypt(
-                        data=onion_address,
-                        encryption_key_info=config.HKDF_INFO_CONTACT,
-                    ),
+    def insert_contact(self, contact_data: ContactData) -> None:
+        # Insert data (encrypted)
+        self._cur.execute(
+            "INSERT INTO contacts (contact_uuid, username, description, onion_address) VALUES (?, ?, ?, ?)",
+            (
+                contact_data[
+                    "contact_uuid"
+                ],  # Leave uuid decrypted to be able to find it
+                self._encrypt(
+                    data=contact_data["username"],
+                    encryption_key_info=config.HKDF_INFO_CONTACT,
                 ),
-            )
-        except Exception as e:
-            print(
-                f"Exception has occurred while inserting contact with uuid={contact_uuid}: {e}"
-            )
+                self._encrypt(
+                    data=contact_data["description"],
+                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                ),
+                self._encrypt(
+                    data=contact_data["onion_address"],
+                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                ),
+            ),
+        )
+
+        self.commit()
 
     def insert_message(self, contact_uuid: str, message: str, timestamp: float) -> None:
         try:
@@ -124,6 +121,7 @@ class SQLiteDatabase:
                     ),
                 ),
             )
+            self.commit()
         except Exception as e:
             print(
                 f"Exception has occurred while inserting message for contact_uuid={contact_uuid}: {e}"
@@ -145,39 +143,45 @@ class SQLiteDatabase:
                     ),
                 ),
             )
+
+            self.commit()
         except Exception as e:
             print(
                 f"Exception has occurred while inserting message for contact_uuid={device_uuid}: {e}"
             )
 
-    def retrieve_contact(self, contact_uuid: str) -> Optional[ContactData]:
-        try:
-            # Select contact
-            encrypted_username, encrypted_description, encrypted_onion_address = (
-                self._cur.execute(
-                    "SELECT username, description, onion_address FROM contacts WHERE contact_uuid = ?",
-                    (contact_uuid,),  # TODO: Don't encrypt primary key
-                ).fetchone()
-            )
+    def retrieve_contacts(self) -> Optional[list[ContactData]]:
+        # Select contacts
+        rows: list[tuple[str, str, str, str]] = self._cur.execute(
+            "SELECT contact_uuid, username, description, onion_address FROM contacts"
+        ).fetchall()
 
-            return {
-                "contact_uuid": contact_uuid,
-                "username": self._decrypt(
-                    data=encrypted_username,
-                    encryption_key_info=config.HKDF_INFO_CONTACT,
-                ),
-                "description": self._decrypt(
-                    data=encrypted_description,
-                    encryption_key_info=config.HKDF_INFO_CONTACT,
-                ),
-                "onion_address": self._decrypt(
-                    data=encrypted_onion_address,
-                    encryption_key_info=config.HKDF_INFO_CONTACT,
-                ),
-            }
-        except Exception as e:
-            print(f"Could not retrieve contact with uuid='{contact_uuid}'. Error: {e}")
-            return None
+        contacts: list[ContactData] = []
+
+        for (
+            uuid,
+            encrypted_username,
+            encrypted_description,
+            encrypted_onion_address,
+        ) in rows:
+            contacts.append(
+                {
+                    "contact_uuid": uuid,
+                    "username": self._decrypt(
+                        data=encrypted_username,
+                        encryption_key_info=config.HKDF_INFO_CONTACT,
+                    ),
+                    "description": self._decrypt(
+                        data=encrypted_description,
+                        encryption_key_info=config.HKDF_INFO_CONTACT,
+                    ),
+                    "onion_address": self._decrypt(
+                        data=encrypted_onion_address,
+                        encryption_key_info=config.HKDF_INFO_CONTACT,
+                    ),
+                }
+            )
+        return contacts
 
     def retrieve_messages(self, contact_uuid: str) -> Optional[list[MessageData]]:
         try:

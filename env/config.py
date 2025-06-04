@@ -1,5 +1,7 @@
 from typing import Literal
 
+import flet as ft  # type:ignore[import-untyped]
+
 
 class Config:
     # Window settings
@@ -64,6 +66,10 @@ class Config:
     APP_LOGO_PNG: str = "assets/icon.png"
     APP_LOGO_ICO: str = "assets/icon.ico"
     APP_LOGO_SPLASH_ANDROID_PNG: str = "assets/splash_android.png"
+
+    # Contact settings
+    COLOR_ONLINE: ft.ColorValue = ft.Colors.GREEN
+    COLOR_OFFLINE: ft.ColorValue = ft.Colors.RED_400
 
 
 config = Config()

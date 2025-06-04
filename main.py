@@ -1,6 +1,9 @@
+import os
+
 import flet as ft  # type:ignore[import-untyped]
 
 from env.classes.app_storage import Storages
+from env.classes.paths import paths
 from env.classes.router import AppRouter
 from env.config import config
 from env.func.logout import logout_on_lost_focus
@@ -10,6 +13,9 @@ from env.pages.login import LoginPage
 
 
 def main(page: ft.Page) -> None:
+    # Create app path if it doesn't already exist yet
+    os.makedirs(name=paths.app_storage_path, exist_ok=True)
+
     # Initialize window
     page.title = config.APP_TITLE
     page.window.resizable = config.APP_RESIZABLE
@@ -55,7 +61,7 @@ def main(page: ft.Page) -> None:
             "page_content": [
                 contacts_page.build(),
             ],
-            "execute_function": contacts_page.load_contacts,
+            "execute_function": contacts_page.initialize,
             "function_args": None,
         },
     )

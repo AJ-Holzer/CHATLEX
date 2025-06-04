@@ -1,42 +1,45 @@
-import uuid
 from typing import Optional
+
+from env.typing.dicts import ContactData
 
 # TODO: Import database!
 
 
 class Contact:
-    def __init__(self, contact_uuid: str) -> None:
-        self._uuid: str = (
-            contact_uuid  # TODO: Check if uuid exists. Raise error if not!
-        )
+    def __init__(self, contact_data: ContactData) -> None:
+        self._contact_data: ContactData = contact_data
+        self._is_online: bool = False
 
         # Get user data
-        self._username: str  # TODO: Add username
-        self._description: Optional[str]  # TODO: Add description
         self._initials: str = "".join(
-            word.strip()[0] for word in self._username.split(sep=" ", maxsplit=1)
+            word.strip()[0]
+            for word in self._contact_data["username"].split(sep=" ", maxsplit=1)
         )
-        self._onion_address: str  # TODO: Add address
-
-    def _create_uuid(self) -> str:
-        return uuid.uuid4().hex
 
     @property
     def username(self) -> str:
-        return self._username
+        return self._contact_data["username"]
+
+    @property
+    def description(self) -> Optional[str]:
+        return self._contact_data["description"]
+
+    @property
+    def contact_uuid(self) -> str:
+        return self._contact_data["contact_uuid"]
+
+    @property
+    def onion_address(self) -> str:
+        return self._contact_data["onion_address"]
 
     @property
     def initials(self) -> str:
         return self._initials
 
     @property
-    def description(self) -> Optional[str]:
-        return self._description
+    def is_online(self) -> bool:
+        return self._is_online
 
-    @property
-    def uuid(self) -> str:
-        return self._uuid
-
-    @property
-    def onion_address(self) -> str:
-        return self._onion_address
+    @is_online.setter
+    def is_online(self, value: bool) -> None:
+        self._is_online = value

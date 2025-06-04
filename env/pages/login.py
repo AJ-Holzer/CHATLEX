@@ -270,11 +270,14 @@ class LoginPage:
                 f"No salt existing. Salt='{self._salt}' Try to reinstall app!"
             )
 
+        # Store derived session storage key to encrypt and decrypt data
         self._storages.session_storage.set(
             key=config.SS_USER_SESSION_KEY,
-            value=self._argon_hasher.derive_key(
-                password=str(self._entry_password.value),
-                salt=self._salt,
+            value=byte_to_str(
+                data=self._argon_hasher.derive_key(
+                    password=str(self._entry_password.value),
+                    salt=self._salt,
+                )
             ),
         )
 

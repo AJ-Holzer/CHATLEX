@@ -1,9 +1,18 @@
+import uuid
+from typing import Optional
+
 import flet as ft  # type:ignore[import-untyped]
 
+from env.app.widgets.contact import ContactWidget
 from env.app.widgets.container import MasterContainer
 from env.app.widgets.top_bar import TopBar
 from env.classes.app_storage import Storages
+from env.classes.database import SQLiteDatabase
+from env.classes.encryption import AES
 from env.classes.router import AppRouter
+from env.config import config
+from env.func.converter import str_to_byte
+from env.typing.dicts import ContactData
 
 
 class ContactsPage:
@@ -23,34 +32,160 @@ class ContactsPage:
             expand=True,
         )
 
-        # TODO: Add an "add user" button at the bottom right!
+        # Buttons
+        self._add_user_button: ft.FloatingActionButton = ft.FloatingActionButton(
+            icon=ft.Icons.PERSON_ADD_ALT_1_ROUNDED,
+            tooltip="Add Contact",
+            on_click=lambda _: self._open_contact_alert(),
+        )
 
-    def _add_contact(self, contact_uuid: str) -> None:
-        # TODO: Use database class to insert user!
-        raise NotImplementedError("This function is not implemented yet!")
+        # Define types for encryptor and database
+        self._aes_encryptor: AES
+        self._db: SQLiteDatabase
+
+    def _on_add_contact_submit(
+        self,
+        username: str,
+        description: str,
+        onion_address: str,
+        alert: ft.AlertDialog,
+    ) -> None:
+
+        # Check if everything provided
+        if not all([username, onion_address]):
+            return
+
+        # Generate new random uuid
+        contact_uuid: str = str(uuid.uuid4())
+
+        # Define contact data
+        contact_data: ContactData = {
+            "contact_uuid": contact_uuid,
+            "username": username,
+            "description": description,
+            "onion_address": onion_address,
+        }
+
+        # Create new contact widget
+        contact_widget: ContactWidget = ContactWidget(
+            contact_data=contact_data,
+            router=self._router,
+        )
+
+        # Add contact widget to list view
+        self._add_contact(contact_data=contact_data)
+
+        # Close alert
+        self._page.close(control=alert)
+
+        # Update page to apply changes
+        self._page.update()  # type:ignore
+
+        # Insert contact into database
+        self._db.insert_contact(contact_data=contact_data)
+
+    def _open_contact_alert(self) -> None:
+        # Create entries
+        username_entry: ft.TextField = ft.TextField(label="Username", autofocus=True)
+        description_entry: ft.TextField = ft.TextField(label="User Description")
+        onion_address_entry: ft.TextField = ft.TextField(label="IP Address")
+
+        # Open the alert
+        alert: ft.AlertDialog = ft.AlertDialog(
+            title=ft.Text("Add Contact"),
+            content=ft.Column(
+                controls=[username_entry, description_entry, onion_address_entry],
+                tight=True,
+            ),
+            actions=[
+                ft.TextButton(
+                    "Cancel",
+                    on_click=lambda e: self._page.close(alert),
+                ),
+                ft.TextButton(
+                    "Add",
+                    on_click=lambda _: self._on_add_contact_submit(
+                        username=str(username_entry.value),
+                        description=str(description_entry.value),
+                        onion_address=str(onion_address_entry.value),
+                        alert=alert,
+                    ),
+                ),
+            ],
+        )
+        self._page.open(alert)
+        self._page.update()  # type:ignore
+
+    def _add_contact(self, contact_data: ContactData) -> None:
+        self._contacts_list.controls.append(
+            ContactWidget(contact_data=contact_data, router=self._router).build()
+        )
+
+    def initialize(self) -> None:
+        self.initialize_database()
+        self.load_contacts()
+
+    def initialize_database(self) -> None:
+        # Initialize AES encryptor
+        self._aes_encryptor = AES(
+            derived_key=str_to_byte(
+                data=self._storages.session_storage.get(key=config.SS_USER_SESSION_KEY)
+            ),
+            salt=self._storages.client_storage.get(key=config.CS_USER_SALT),
+        )
+
+        # Initialize database
+        self._db = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
 
     def load_contacts(self) -> None:
-        # TODO: Use database class to retrieve contacts
-        # raise NotImplementedError("This function is not implemented yet!")
         print("Loading contacts...")
+
+        contacts: Optional[list[ContactData]] = self._db.retrieve_contacts()
+
+        # Check if contacts exist
+        if contacts is None:
+            print("No contacts found!")
+            return
+
+        # Load contacts
+        for contact_data in contacts:
+            self._add_contact(contact_data=contact_data)
+
+        # Update list view to apply changes
+        self._contacts_list.update()
 
     def build(self) -> ft.Container:
         return MasterContainer(
-            content=ft.Row(
+            content=ft.Stack(
                 controls=[
-                    ft.Column(
+                    ft.Row(
                         controls=[
-                            self._top_bar.build(),
-                            self._contacts_list,
+                            ft.Column(
+                                controls=[
+                                    self._top_bar.build(),
+                                    self._contacts_list,
+                                ],
+                                expand=True,
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            ),
                         ],
                         expand=True,
                         alignment=ft.MainAxisAlignment.CENTER,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                    ),
+                    ft.Container(
+                        content=ft.Column(
+                            controls=[self._add_user_button],
+                            spacing=10,
+                            alignment=ft.MainAxisAlignment.END,
+                        ),
+                        alignment=ft.alignment.bottom_right,
+                        margin=10,
+                        right=0,
+                        bottom=0,
                     ),
                 ],
-                expand=True,
-                alignment=ft.MainAxisAlignment.CENTER,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
             expand=True,
         )
