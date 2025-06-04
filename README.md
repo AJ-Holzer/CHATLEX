@@ -1,38 +1,37 @@
-# ZEPHRA
+<!-- trunk-ignore-all(markdownlint/MD026) -->
 
-A messenger, designed with a strong focus on security and anonymity.
+# 🔐 ZEPHRA – Secure. Anonymous. Decentralized.
 
-> 🚧 **Project in Progress!** – Regular updates are being made. View [Roadmap](#roadmap) for more info.
+A next-generation messenger designed with uncompromising focus on privacy, security, and anonymity.
 
-> **Contributions Welcome!**
+> 🚧 Active Development – Regular updates underway. Check the [Roadmap](#roadmap) for what’s coming next.
 >
-> This is an open-source project. If you'd like to help improve the messenger,
-> feel free to fork the repository, suggest enhancements, or report issues.
+> 🤝 Open Source & Community Driven
+> Contributions are welcome! If you have ideas, issues, or improvements, feel free to open an issue or submit a pull request.
 
-> ## ❗NOTE
+> ## ⚠️ Legal Disclaimer
 >
-> **ZEPHRA is intended for lawful use only. The developers do not condone illegal activity.**
+> ZEPHRA is created for lawful, educational, and research purposes only. Misuse is strictly discouraged.
+> By using this software, you accept full responsibility for ensuring your compliance with local
+> laws and regulations regarding encryption and communication.
+>
+> - We do not support or assist with illegal activities.
+> - Use of this software is entirely at your own risk.
+> - The developers and contributors assume no liability for any misuse or consequences arising from use.
 
-> ## ❗Legal Disclaimer
->
-> This project is provided for **educational and research purposes only**. The developers and contributors are **not responsible** for how this software is used.
->
-> Use of this software is at your own risk. You are solely responsible for complying with local laws and regulations regarding privacy, encryption, and communication.
->
-> We explicitly **do not condone illegal activity** and will not provide support for misuse of this project.
->
-> ## Important Notes
->
-> - We do not collect or store any data.
-> - We will not implement backdoors.
-> - This project is fully open-source under the AGPLv3 license.
+## 🔒 Our Security & Privacy Principles
+
+- No central servers – Peer-to-peer architecture only.
+- Zero data collection – We collect nothing from users.
+- No backdoors. **Ever**.
+- Fully open-source under AGPLv3.
+- End-to-end encrypted using modern cryptographic standards.
 
 ## Your ideas
 
-If you have any suggestions on how to enhance its safety and anonymity,
-feel free to open an issue in the GitHub repository.
+If you have any suggestions on how to enhance its safety and anonymity, feel free to open an issue in the GitHub repository.
 
-## Features
+## ✨ Core Features
 
 | Features                | Description                                                                                                            | Implemented |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------- |
@@ -49,16 +48,24 @@ feel free to open an issue in the GitHub repository.
 | Image Sharing           | Sharing high quality images                                                                                            |             |
 | Video Sharing           | Sharing high quality videos                                                                                            |             |
 
-## Roadmap
+## 📈 Roadmap
 
 - 🚧 Basic implementations like encrypting and sending (P2P)
 - Adding Contacts
 - Group Chats
+- Multi Device Sync
 - File Sharing
 - Image Sharing
 - Video Sharing
 
-## Fonts
+## 🛠 Current Tech Stack Hightlights
+
+- **Language:** Python
+- **Encryption:** AES-256-CBC,
+- **Hashing:** Argon2, HKDF
+- **Storage:** Encrypted SQLite3
+
+## 🧾 Fonts
 
 The fonts used in this project are sourced from [Google Fonts](https://fonts.google.com/).
 
@@ -66,3 +73,8 @@ The fonts used in this project are sourced from [Google Fonts](https://fonts.goo
 
 - Baloo Bhaijaan
 - Varela Round
+
+## 💬 Community & Support
+
+Have questions, concerns, or suggestions?
+Open an issue or contribute directly via GitHub.
