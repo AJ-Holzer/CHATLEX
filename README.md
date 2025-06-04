@@ -2,7 +2,7 @@
 
 A messenger, designed with a strong focus on security and anonymity.
 
-> 🚧 **Project in Progress!** – Regular updates are being made. View [Roadmap](#roadmap) for more info
+> 🚧 **Project in Progress!** – Regular updates are being made. View [Roadmap](#roadmap) for more info.
 
 > **Contributions Welcome!**
 >
@@ -47,8 +47,7 @@ feel free to open an issue in the GitHub repository.
 | Group Chats             | Group chats for chatting with multiple people - just like WhatsApp or Signal                                           |             |
 | File Sharing            | Sharing files up to 500 MB                                                                                             |             |
 | Image Sharing           | Sharing high quality images                                                                                            |             |
-
-📌 **Notice!** The project is still in progress-some features may not be included yet.
+| Video Sharing           | Sharing high quality videos                                                                                            |             |
 
 ## Roadmap
 
