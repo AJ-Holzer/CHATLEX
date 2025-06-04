@@ -1,3 +1,6 @@
+from typing import Literal
+
+
 class Config:
     # Window settings
     APP_TITLE: str = "ZEPHRA"
@@ -22,12 +25,20 @@ class Config:
     CS_LOGOUT_ON_LOST_FOCUS: str = "logout-on-lost-focus"
     SS_USER_SESSION_KEY: str = "session-key"
 
-    # Settings for Argon2 key derivation
+    # Settings for Argon2
     ARGON2_TIME_COST: int = 40  # Increase for more security (more iterations)
     ARGON2_MEMORY_COST: int = 65536  # 64 MB
     ARGON2_PARALLELISM: int = 2
     ARGON2_HASH_LEN: int = 32  # 256-bit key
+
+    # Salt settings
     SALT_LENGTH: int = 32
+
+    # Settings for HKDF
+    HKDF_LENGTH: int = 32
+    HKDF_INFO_MESSAGE: Literal[b"message-encryption-key"] = b"message-encryption-key"
+    HKDF_INFO_CONTACT: Literal[b"contact-encryption-key"] = b"contact-encryption-key"
+    HKDF_INFO_DEVICE: Literal[b"device-encryption-key"] = b"device-encryption-key"
 
     # Routes
     ROUTE_CONTACTS: str = "/contacts"
@@ -44,7 +55,7 @@ class Config:
     ENCRYPTION_SIGNED_ONION_DATA_FILE: str = "singed_onion_data.json"
 
     # Database settings
-    DATABASE_FILE: str = ""  # TODO: Add database file!
+    DATABASE_FILE: str = "data.db"  # TODO: Add database file!
 
     # Advanced security settings
     LOGOUT_ON_LOST_FOCUS_DEFAULT: bool = False

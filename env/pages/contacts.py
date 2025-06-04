@@ -12,7 +12,9 @@ class ContactsPage:
         self._storages: Storages = storages
         self._router: AppRouter = router
         self._top_bar: TopBar = TopBar(
-            page=self._page, router=self._router, storages=self._storages
+            page=self._page,
+            router=self._router,
+            storages=self._storages,
         )
 
         # Contacts list

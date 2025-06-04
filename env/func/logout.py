@@ -19,13 +19,12 @@ def logout_on_lost_focus(
             key=config.CS_LOGOUT_ON_LOST_FOCUS,
             default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT,
         )
-        or not force
+        and not force
     ):
         return
 
     # Check if focus lost
     if e is None or e.state != ft.AppLifecycleState.SHOW:
-        print("Logout detected!")
         # Clear session data and redirect to login
         storages.session_storage.clear()
         router.go(route=config.ROUTE_LOGIN)

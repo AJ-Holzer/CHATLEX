@@ -47,6 +47,7 @@ class TopBar:
                         e=None,
                         router=self._router,
                         storages=self._storages,
+                        force=True,
                     ),
                 ),
             ],

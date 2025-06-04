@@ -1,9 +1,14 @@
 import re
+from typing import Optional
 
 from argon2 import PasswordHasher
 from argon2.low_level import Type, hash_secret_raw
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 from env.config import config
+from env.func.generations import generate_salt
+from env.typing.hashing import HKDFInfoKey
 
 
 class ArgonHasher:
@@ -58,3 +63,29 @@ class ArgonHasher:
             hash_len=config.ARGON2_HASH_LEN,
             type=Type.ID,
         )
+
+
+class HKDFHasher:
+    def __init__(self, derived_key: bytes) -> None:
+        self.derived_key: bytes = derived_key
+
+    def _derive_key(self, info: HKDFInfoKey, salt: Optional[bytes] = None) -> bytes:
+        # Generate a new salt if nothing provided
+        new_salt: bytes = salt or generate_salt(salt_length=config.SALT_LENGTH)
+
+        hkdf: HKDF = HKDF(
+            algorithm=hashes.SHA256(),
+            length=config.HKDF_LENGTH,
+            salt=new_salt,
+            info=info,
+        )
+
+        return hkdf.derive(self.derived_key)
+
+    def derive_random_key(self, info: HKDFInfoKey) -> bytes:
+        return self._derive_key(
+            info=info,
+        )
+
+    def derive_key(self, info: HKDFInfoKey, salt: bytes) -> bytes:
+        return self._derive_key(info=info, salt=salt)

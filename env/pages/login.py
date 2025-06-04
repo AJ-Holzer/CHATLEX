@@ -4,12 +4,14 @@ import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.container import MasterContainer
 from env.classes.app_storage import Storages
-from env.classes.encryption import AES
 from env.classes.hashing import ArgonHasher
 from env.classes.paths import paths
 from env.classes.router import AppRouter
 from env.config import config
 from env.func.converter import byte_to_str, str_to_byte
+from env.func.generations import generate_iv, generate_salt
+
+# from env.classes.encryption import AES
 
 
 class LoginPage:
@@ -28,12 +30,39 @@ class LoginPage:
         self._password_hash: Optional[str] = storages.client_storage.get(
             key=config.CS_USER_PASSWORD_HASH
         )
-        self._salt: Optional[bytes] = str_to_byte(
-            data=self._storages.client_storage.get(key=config.CS_USER_SALT)
+
+        # Get salt
+        self._salt: bytes
+        stored_salt: Optional[str] = self._storages.client_storage.get(
+            key=config.CS_USER_SALT,
+            default=None,
         )
+        if stored_salt is None:
+            self._salt = generate_salt(salt_length=config.SALT_LENGTH)
+        elif len(str_to_byte(stored_salt)) == config.SALT_LENGTH:
+            self._salt = str_to_byte(stored_salt)
+        else:
+            raise ValueError(
+                f"Stored salt '{str(stored_salt)}' with length={len(stored_salt)} is invalid! Try reinstalling the app!"
+            )
+
+        # Get IV
+        self._iv: bytes
+        stored_iv: Optional[str] = self._storages.client_storage.get(
+            key=config.CS_USER_PASSWORD_IV,
+            default=None,
+        )
+        if stored_iv is None:
+            self._iv = generate_iv()
+        elif len(str_to_byte(stored_iv)) == 16:
+            self._iv = str_to_byte(stored_iv)
+        else:
+            raise ValueError(
+                f"Stored salt '{str(stored_salt)}' is invalid! Try reinstalling the app!"
+            )
 
         # Initialize hasher
-        self._hasher: ArgonHasher = ArgonHasher()
+        self._argon_hasher: ArgonHasher = ArgonHasher()
 
         # Entries
         self._entry_password: ft.TextField = ft.TextField(
@@ -152,40 +181,35 @@ class LoginPage:
         # Wait for the dialog to be closed
         while not info_alert_closed:
             self._page.update()  # type:ignore
+        print("Closed")
 
         # Check if user cancelled the action
         if cancelled:
+            print("Cancelled")
             return
-
-        # Initialize encryptor
-        encryptor: AES = AES(password=str(self._entry_password.value))
-
-        # Generate salt and iv
-        encryptor.generate_iv()
-        encryptor.generate_salt()
 
         # Show progress bar to indicate something is happening
         self._progress_visible(visible=True)
 
-        iv_raw: Optional[str] = byte_to_str(data=encryptor.iv)
-        salt_raw: Optional[str] = byte_to_str(data=encryptor.salt)
-
-        if not iv_raw or not salt_raw:
-            raise RuntimeError(
-                f"IV and SALT are not allowed to be of type 'None'. iv='{iv_raw}', salt='{salt_raw}'"
-            )
-        iv: str = iv_raw
-        salt: str = salt_raw
-        pwd_hash: str = self._hasher.hash_password(
+        # Generate password hash
+        pwd_hash: str = self._argon_hasher.hash_password(
             password=str(self._entry_password.value)
         )
-        self._storages.client_storage.set(key=config.CS_USER_PASSWORD_IV, value=iv)
+
+        # Store IV
         self._storages.client_storage.set(
-            key=config.CS_USER_PASSWORD_HASH, value=pwd_hash
+            key=config.CS_USER_PASSWORD_IV,
+            value=byte_to_str(self._iv),
         )
+        # Store password hash
+        self._storages.client_storage.set(
+            key=config.CS_USER_PASSWORD_HASH,
+            value=pwd_hash,
+        )
+        # Store salt
         self._storages.client_storage.set(
             key=config.CS_USER_SALT,
-            value=salt,
+            value=byte_to_str(self._salt),
         )
 
         # Hide progress bar
@@ -216,7 +240,7 @@ class LoginPage:
         self._button_clickable(clickable=False)
         self._progress_visible(visible=True)
 
-        if not self._password_hash or not self._hasher.verify_password(
+        if not self._password_hash or not self._argon_hasher.verify_password(
             hash=self._password_hash, password=str(self._entry_password.value)
         ):
             wrong_pwd_alert: ft.AlertDialog = ft.AlertDialog(
@@ -241,13 +265,16 @@ class LoginPage:
             return
 
         # Set key for this session for decrypting data later
-        if self._salt is None:
-            raise ValueError("No salt existing. Try to reinstall app!")
+        if not self._salt:
+            raise ValueError(
+                f"No salt existing. Salt='{self._salt}' Try to reinstall app!"
+            )
 
         self._storages.session_storage.set(
             key=config.SS_USER_SESSION_KEY,
-            value=self._hasher.derive_key(
-                password=str(self._entry_password.value), salt=self._salt
+            value=self._argon_hasher.derive_key(
+                password=str(self._entry_password.value),
+                salt=self._salt,
             ),
         )
 

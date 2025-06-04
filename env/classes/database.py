@@ -6,6 +6,7 @@ from env.classes.paths import paths
 from env.config import config
 from env.func.converter import byte_to_str, str_to_byte
 from env.typing.dicts import ContactData, DeviceData, MessageData
+from env.typing.hashing import HKDFInfoKey
 
 
 class SQLiteDatabase:
@@ -59,19 +60,25 @@ class SQLiteDatabase:
 
         self.commit()
 
-    def _encrypt(self, data: str) -> str:
+    def _encrypt(self, data: str, encryption_key_info: HKDFInfoKey) -> str:
         if not data:
             raise ValueError(f"Data has to contain a value, got '{data}' instead!")
 
-        # TODO: Use random IVs for every entry and store the IV along the encrypted data to be able to decrypt it again. ChatGPT said I should use AES-GCM or AES-CBC with random IVs
-        return byte_to_str(data=self._encryptor.encrypt(plaintext=data))
+        return byte_to_str(
+            data=self._encryptor.encrypt(
+                plaintext=data,
+                encryption_key_info=encryption_key_info,
+            )
+        )
 
-    def _decrypt(self, data: str) -> str:
+    def _decrypt(self, data: str, encryption_key_info: HKDFInfoKey) -> str:
         if not data:
             raise ValueError(f"Data has to contain a value, got '{data}' instead!")
 
-        # TODO: Update the function accordingly to the encrypt function
-        return self._encryptor.decrypt(ciphertext=str_to_byte(data=data))
+        return self._encryptor.decrypt(
+            encrypted_data=str_to_byte(data=data),
+            encryption_key_info=encryption_key_info,
+        )
 
     def insert_contact(
         self, contact_uuid: str, username: str, description: str, onion_address: str
@@ -81,10 +88,19 @@ class SQLiteDatabase:
             self._cur.execute(
                 "INSERT INTO contacts (contact_uuid, username, description, ip) VALUES (?, ?, ?, ?)",
                 (
-                    self._encrypt(data=contact_uuid),
-                    self._encrypt(data=username),
-                    self._encrypt(data=description),
-                    self._encrypt(data=onion_address),
+                    contact_uuid,  # Leave uuid decrypted to be able to find it
+                    self._encrypt(
+                        data=username,
+                        encryption_key_info=config.HKDF_INFO_CONTACT,
+                    ),
+                    self._encrypt(
+                        data=description,
+                        encryption_key_info=config.HKDF_INFO_CONTACT,
+                    ),
+                    self._encrypt(
+                        data=onion_address,
+                        encryption_key_info=config.HKDF_INFO_CONTACT,
+                    ),
                 ),
             )
         except Exception as e:
@@ -97,9 +113,15 @@ class SQLiteDatabase:
             self._cur.execute(
                 "INSERT INTO messages (contact_uuid, message, timestamp) VALUES (?, ?, ?)",
                 (
-                    self._encrypt(data=contact_uuid),  # TODO: Don't encrypt primary key
-                    self._encrypt(data=message),
-                    self._encrypt(data=str(timestamp)),
+                    contact_uuid,  # Leave uuid decrypted to be able to find it
+                    self._encrypt(
+                        data=message,
+                        encryption_key_info=config.HKDF_INFO_MESSAGE,
+                    ),
+                    self._encrypt(
+                        data=str(timestamp),
+                        encryption_key_info=config.HKDF_INFO_MESSAGE,
+                    ),
                 ),
             )
         except Exception as e:
@@ -112,9 +134,15 @@ class SQLiteDatabase:
             self._cur.execute(
                 "INSERT INTO devices (device_uuid, onion_address, name) VALUES (?, ?, ?)",
                 (
-                    self._encrypt(data=device_uuid),  # TODO: Don't encrypt primary key
-                    self._encrypt(data=onion_address),
-                    self._encrypt(data=name),
+                    device_uuid,  # Leave uuid decrypted to be able to find it
+                    self._encrypt(
+                        data=onion_address,
+                        encryption_key_info=config.HKDF_INFO_DEVICE,
+                    ),
+                    self._encrypt(
+                        data=name,
+                        encryption_key_info=config.HKDF_INFO_DEVICE,
+                    ),
                 ),
             )
         except Exception as e:
@@ -124,22 +152,28 @@ class SQLiteDatabase:
 
     def retrieve_contact(self, contact_uuid: str) -> Optional[ContactData]:
         try:
-            # Encrypt uuid to find it in the database
-            encrypted_uuid: str = self._encrypt(data=contact_uuid)
-
             # Select contact
             encrypted_username, encrypted_description, encrypted_onion_address = (
                 self._cur.execute(
                     "SELECT username, description, onion_address FROM contacts WHERE contact_uuid = ?",
-                    (encrypted_uuid,),  # TODO: Don't encrypt primary key
+                    (contact_uuid,),  # TODO: Don't encrypt primary key
                 ).fetchone()
             )
 
             return {
                 "contact_uuid": contact_uuid,
-                "username": self._decrypt(data=encrypted_username),
-                "description": self._decrypt(data=encrypted_description),
-                "onion_address": self._decrypt(data=encrypted_onion_address),
+                "username": self._decrypt(
+                    data=encrypted_username,
+                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                ),
+                "description": self._decrypt(
+                    data=encrypted_description,
+                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                ),
+                "onion_address": self._decrypt(
+                    data=encrypted_onion_address,
+                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                ),
             }
         except Exception as e:
             print(f"Could not retrieve contact with uuid='{contact_uuid}'. Error: {e}")
@@ -147,23 +181,28 @@ class SQLiteDatabase:
 
     def retrieve_messages(self, contact_uuid: str) -> Optional[list[MessageData]]:
         try:
-            # Encrypt uuid to find it in the database
-            encrypted_uuid: str = self._encrypt(data=contact_uuid)
-
             # Select messages
             rows: list[tuple[str, str, str]] = self._cur.execute(
                 "SELECT id, message, timestamp FROM messages WHERE contact_uuid = ? ORDER BY timestamp ASC",
-                (encrypted_uuid,),
+                (contact_uuid,),
             ).fetchall()
 
             messages: list[MessageData] = []
             for message_id, encrypted_message, encrypted_timestamp in rows:
                 messages.append(
                     {
-                        "id": message_id,  # TODO: Don't encrypt primary key
-                        "contact_uuid": contact_uuid,  # TODO: Don't encrypt uuid key
-                        "message": self._decrypt(data=encrypted_message),
-                        "timestamp": float(self._decrypt(data=encrypted_timestamp)),
+                        "id": message_id,
+                        "contact_uuid": contact_uuid,
+                        "message": self._decrypt(
+                            data=encrypted_message,
+                            encryption_key_info=config.HKDF_INFO_MESSAGE,
+                        ),
+                        "timestamp": float(
+                            self._decrypt(
+                                data=encrypted_timestamp,
+                                encryption_key_info=config.HKDF_INFO_MESSAGE,
+                            )
+                        ),
                     }
                 )
 
@@ -180,14 +219,18 @@ class SQLiteDatabase:
 
             devices: list[DeviceData] = []
 
-            for encrypted_device_uuid, encrypted_onion_address, encrypted_name in rows:
+            for device_uuid, encrypted_onion_address, encrypted_name in rows:
                 devices.append(
                     {
-                        "uuid": self._decrypt(
-                            data=encrypted_device_uuid
-                        ),  # TODO: Don't encrypt primary key
-                        "onion_address": self._decrypt(data=encrypted_onion_address),
-                        "name": self._decrypt(data=encrypted_name),
+                        "uuid": device_uuid,
+                        "onion_address": self._decrypt(
+                            data=encrypted_onion_address,
+                            encryption_key_info=config.HKDF_INFO_DEVICE,
+                        ),
+                        "name": self._decrypt(
+                            data=encrypted_name,
+                            encryption_key_info=config.HKDF_INFO_DEVICE,
+                        ),
                     },
                 )
 

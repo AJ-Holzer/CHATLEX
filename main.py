@@ -23,7 +23,7 @@ def main(page: ft.Page) -> None:
     storages: Storages = Storages(page=page)
 
     # TODO: This is only for debugging. Remove this line!
-    storages.client_storage.clear()
+    # storages.client_storage.clear()
 
     # Update page to apply visuals
     page.update()  # type:ignore
