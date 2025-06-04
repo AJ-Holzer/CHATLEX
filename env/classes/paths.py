@@ -1,32 +1,16 @@
 import os
-import platform
 import sys
-
-from env.config import config
-
-if platform.system() == "Android":
-    from android_storage import app_storage_path  # type:ignore
 
 
 class Paths:
     def __init__(self) -> None:
         # Define paths
-        self._app_storage_path: str
-
-        # Get app storage path
-        if sys.platform == "win32":
-            self._app_storage_path = os.path.join(
-                os.environ.get("APPDATA", os.path.expanduser("~")),
-                config.APP_TITLE.upper(),
-            )
-        elif sys.platform == "linux":
-            self._app_storage_path = os.path.join(
-                os.path.expanduser("~"), f".{config.APP_TITLE.lower()}"
-            )
-        elif platform.system() == "Android":
-            self._app_storage_path = app_storage_path()
-        else:
-            self._app_storage_path = os.path.expanduser("~")
+        self._app_storage_path: str = str(os.getenv("FLET_APP_STORAGE_DATA"))
+        self._base_path: str = (
+            sys._MEIPASS  # type:ignore
+            if hasattr(sys, "_MEIPASS")
+            else os.path.abspath("./")
+        )
 
     def _normalize_join_path(self, *paths: str) -> str:
         converted_paths: list[str] = [os.path.normpath(path) for path in paths]
@@ -52,10 +36,7 @@ class Paths:
 
     @property
     def base_path(self) -> str:
-        if not hasattr(sys, "_MEIPASS"):
-            return os.path.abspath("./")
-
-        return sys._MEIPASS  # type:ignore
+        return self._base_path
 
     @property
     def app_storage_path(self) -> str:

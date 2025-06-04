@@ -125,7 +125,9 @@ class ContactsPage:
 
     def _add_contact(self, contact_data: ContactData) -> None:
         self._contacts_list.controls.append(
-            ContactWidget(contact_data=contact_data, router=self._router).build()
+            ContactWidget(
+                page=self._page, contact_data=contact_data, router=self._router
+            ).build()
         )
 
     def initialize(self) -> None:
