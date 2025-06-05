@@ -2,8 +2,6 @@ from typing import Optional
 
 from env.typing.dicts import ContactData
 
-# TODO: Import database!
-
 
 class Contact:
     def __init__(self, contact_data: ContactData) -> None:

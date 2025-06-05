@@ -243,7 +243,79 @@ class SQLiteDatabase:
             print(f"Could not retrieve devices. Error: {e}")
             return None
 
-    # TODO: Add functions to update users and devices
+    def update_contact(self, contact_uuid: str, contact_data: ContactData) -> None:
+        """
+        Update an existing contact's information.
+        """
+        self._cur.execute(
+            """
+            UPDATE contacts
+            SET username = ?, description = ?, onion_address = ?
+            WHERE contact_uuid = ?
+            """,
+            (
+                self._encrypt(
+                    data=contact_data["username"],
+                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                ),
+                self._encrypt(
+                    data=contact_data["description"],
+                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                ),
+                self._encrypt(
+                    data=contact_data["onion_address"],
+                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                ),
+                contact_uuid,
+            ),
+        )
+        self.commit()
+
+    def update_device(self, device_uuid: str, device_data: DeviceData) -> None:
+        """
+        Update an existing contact's information.
+        """
+        self._cur.execute(
+            """
+            UPDATE devices
+            SET name = ?, onion_address = ?
+            WHERE device_uuid = ?
+            """,
+            (
+                self._encrypt(
+                    data=device_data["name"],
+                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                ),
+                self._encrypt(
+                    data=device_data["onion_address"],
+                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                ),
+                device_uuid,
+            ),
+        )
+        self.commit()
+
+    def delete_contact(self, contact_uuid: str) -> None:
+        """
+        Delete a contact and all associated messages from the database.
+        """
+        # Delete messages associated with the contact
+        self._cur.execute(
+            "DELETE FROM messages WHERE contact_uuid = ?", (contact_uuid,)
+        )
+        # Delete the contact itself
+        self._cur.execute(
+            "DELETE FROM contacts WHERE contact_uuid = ?", (contact_uuid,)
+        )
+        self.commit()
+
+    def delete_message(self, message_id: str) -> None:
+        self._cur.execute("DELETE FROM messages WHERE id = ?", (message_id,))
+        self.commit()
+
+    def delete_device(self, device_uuid: str) -> None:
+        self._cur.execute("DELETE FROM devices WHERE device_uuid = ?", (device_uuid,))
+        self.commit()
 
     def commit(self) -> None:
         self._conn.commit()
