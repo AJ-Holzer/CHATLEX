@@ -8,3 +8,4 @@ class ContactAction(Enum):
     BLOCK = "block"
     UNBLOCK = "unblock"
     MUTE = "mute"
+    UNMUTE = "unmute"

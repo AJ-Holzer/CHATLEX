@@ -28,7 +28,8 @@ class ContactsPage:
         )
 
         # Contacts list
-        self._contacts_list: ft.ListView = ft.ListView(
+        # Use ReorderableListView to allow manual arrangement of contacts
+        self._contacts_list: ft.ReorderableListView = ft.ReorderableListView(
             controls=[],
             expand=True,
         )
@@ -42,7 +43,6 @@ class ContactsPage:
 
         # Define types for encryptor and database
         self._aes_encryptor: AES
-        self._db: SQLiteDatabase
 
     def _on_add_contact_submit(
         self,
@@ -71,8 +71,11 @@ class ContactsPage:
         self._page.close(control=alert)
 
         try:
+            # Initialize new database instance to avoid thread error
+            db: SQLiteDatabase = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
+
             # Insert contact into database
-            self._db.insert_contact(contact_data=contact_data)
+            db.insert_contact(contact_data=contact_data)
         except Exception as e:
             self._page.open(
                 ft.SnackBar(
@@ -126,15 +129,19 @@ class ContactsPage:
     def _add_contact(self, contact_data: ContactData) -> None:
         self._contacts_list.controls.append(
             ContactWidget(
-                page=self._page, contact_data=contact_data, router=self._router
+                page=self._page,
+                contact_data=contact_data,
+                router=self._router,
+                contacts_list=self._contacts_list,
+                aes_encryptor=self._aes_encryptor,
             ).build()
         )
 
     def initialize(self) -> None:
-        self.initialize_database()
+        self.initialize_aes_encryptor()
         self.load_contacts()
 
-    def initialize_database(self) -> None:
+    def initialize_aes_encryptor(self) -> None:
         # Initialize AES encryptor
         self._aes_encryptor = AES(
             derived_key=str_to_byte(
@@ -143,17 +150,17 @@ class ContactsPage:
             salt=self._storages.client_storage.get(key=config.CS_USER_SALT),
         )
 
-        # Initialize database
-        self._db = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
-
     def load_contacts(self) -> None:
         print("Loading contacts...")
+
+        # Initialize a new database instance to avoid thread error
+        db: SQLiteDatabase = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
 
         # Empty contacts list to avoid duplicates
         if self._contacts_list.controls:
             self._contacts_list.controls = []
 
-        contacts: Optional[list[ContactData]] = self._db.retrieve_contacts()
+        contacts: Optional[list[ContactData]] = db.retrieve_contacts()
 
         # Check if contacts exist
         if contacts is None:
