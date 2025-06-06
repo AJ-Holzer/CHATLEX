@@ -2,8 +2,8 @@ from typing import Optional
 
 import flet as ft  # type:ignore[import-untyped]
 
-from env.classes.app_storage import Storages
 from env.classes.router import AppRouter
+from env.classes.storages import Storages
 from env.config import config
 
 

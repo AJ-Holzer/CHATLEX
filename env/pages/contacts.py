@@ -5,11 +5,11 @@ import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.contact import ContactWidget
 from env.app.widgets.container import MasterContainer
-from env.app.widgets.top_bar import TopBar
-from env.classes.app_storage import Storages
+from env.app.widgets.top_bars import TopBar
 from env.classes.database import SQLiteDatabase
 from env.classes.encryption import AES
 from env.classes.router import AppRouter
+from env.classes.storages import Storages
 from env.config import config
 from env.func.converter import str_to_byte
 from env.typing.dicts import ContactData

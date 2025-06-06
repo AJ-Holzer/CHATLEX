@@ -3,10 +3,10 @@ from typing import Optional
 import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.container import MasterContainer
-from env.classes.app_storage import Storages
 from env.classes.hashing import ArgonHasher
 from env.classes.paths import paths
 from env.classes.router import AppRouter
+from env.classes.storages import Storages
 from env.config import config
 from env.func.converter import byte_to_str, str_to_byte
 from env.func.generations import generate_iv, generate_salt

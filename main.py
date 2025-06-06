@@ -2,14 +2,15 @@ import os
 
 import flet as ft  # type:ignore[import-untyped]
 
-from env.classes.app_storage import Storages
 from env.classes.paths import paths
 from env.classes.router import AppRouter
+from env.classes.storages import Storages
 from env.config import config
 from env.func.logout import logout_on_lost_focus
 from env.func.update_themes import update_theme
 from env.pages.contacts import ContactsPage
 from env.pages.login import LoginPage
+from env.pages.settings import SettingsPage
 
 
 def main(page: ft.Page) -> None:
@@ -31,7 +32,7 @@ def main(page: ft.Page) -> None:
     storages: Storages = Storages(page=page)
 
     # TODO: This is only for debugging. Remove this line!
-    storages.client_storage.clear()
+    # storages.client_storage.clear()
 
     # Update page to apply visuals
     page.update()  # type:ignore
@@ -64,6 +65,24 @@ def main(page: ft.Page) -> None:
                 contacts_page.build(),
             ],
             "execute_function": contacts_page.initialize,
+            "function_args": None,
+        },
+    )
+
+    # Settings page
+    settings_page: SettingsPage = SettingsPage(
+        page=page,
+        router=router,
+        storages=storages,
+    )
+    router.add_route(
+        route=config.ROUTE_SETTINGS,
+        content={
+            "title": "Settings",
+            "page_content": [
+                settings_page.build(),
+            ],
+            "execute_function": None,
             "function_args": None,
         },
     )

@@ -3,6 +3,7 @@ from typing import Any, Optional
 import flet as ft  # type:ignore[import-untyped]
 
 from env.config import config
+from env.err.exceptions import ProgrammingError
 from env.typing.dicts import PageContent, PageRoute
 
 
@@ -25,7 +26,9 @@ class AppRouter:
 
         # Define routes
         self._routes: PageRoute = {}
-        self._current_router: Optional[str] = None
+
+        # Define last routes
+        self._last_routes: list[str] = []
 
     def add_route(self, route: str, content: PageContent) -> None:
         """Add a new route to the router.
@@ -70,6 +73,10 @@ class AppRouter:
         if route not in self._routes:
             raise ValueError(f"Route '{route}' does not exist.")
 
+        # Append current route to last routes if not the same route
+        if len(self._last_routes) < 1 or self._last_routes[-1] != route:
+            self._last_routes.append(route)
+
         self._page.clean()
 
         content: PageContent = self._routes[route]
@@ -92,3 +99,11 @@ class AppRouter:
                 func(**args)
             else:
                 func()
+
+    def pop(self) -> None:
+        if len(self._last_routes) < 2:
+            raise ProgrammingError(
+                f"No route to pop. Already at initial route '{self._last_routes[-1]}'"
+            )
+        self._last_routes.pop()
+        self.go(route=self._last_routes[-1])
