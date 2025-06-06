@@ -31,7 +31,9 @@ class SQLiteDatabase:
             contact_uuid TEXT PRIMARY KEY,
             username TEXT NOT NULL,
             description TEXT,
-            onion_address TEXT NOT NULL
+            onion_address TEXT NOT NULL,
+            muted BOOLEAN NOT NULL,
+            blocked BOOLEAN NOT NULL
             )
         """
         )
@@ -83,7 +85,7 @@ class SQLiteDatabase:
     def insert_contact(self, contact_data: ContactData) -> None:
         # Insert data (encrypted)
         self._cur.execute(
-            "INSERT INTO contacts (contact_uuid, username, description, onion_address) VALUES (?, ?, ?, ?)",
+            "INSERT INTO contacts (contact_uuid, username, description, onion_address, muted, blocked) VALUES (?, ?, ?, ?, ?, ?)",
             (
                 contact_data[
                     "contact_uuid"
@@ -100,6 +102,8 @@ class SQLiteDatabase:
                     data=contact_data["onion_address"],
                     encryption_key_info=config.HKDF_INFO_CONTACT,
                 ),
+                contact_data["muted"],
+                contact_data["blocked"],
             ),
         )
 
@@ -152,8 +156,8 @@ class SQLiteDatabase:
 
     def retrieve_contacts(self) -> Optional[list[ContactData]]:
         # Select contacts
-        rows: list[tuple[str, str, str, str]] = self._cur.execute(
-            "SELECT contact_uuid, username, description, onion_address FROM contacts"
+        rows: list[tuple[str, str, str, str, bool, bool]] = self._cur.execute(
+            "SELECT contact_uuid, username, description, onion_address, muted, blocked FROM contacts"
         ).fetchall()
 
         contacts: list[ContactData] = []
@@ -163,6 +167,8 @@ class SQLiteDatabase:
             encrypted_username,
             encrypted_description,
             encrypted_onion_address,
+            is_muted,
+            is_blocked,
         ) in rows:
             contacts.append(
                 {
@@ -179,8 +185,11 @@ class SQLiteDatabase:
                         data=encrypted_onion_address,
                         encryption_key_info=config.HKDF_INFO_CONTACT,
                     ),
+                    "muted": is_muted,
+                    "blocked": is_blocked,
                 }
             )
+
         return contacts
 
     def retrieve_messages(self, contact_uuid: str) -> Optional[list[MessageData]]:
@@ -250,7 +259,7 @@ class SQLiteDatabase:
         self._cur.execute(
             """
             UPDATE contacts
-            SET username = ?, description = ?, onion_address = ?
+            SET username = ?, description = ?, onion_address = ?, muted = ?, blocked = ?
             WHERE contact_uuid = ?
             """,
             (
@@ -266,6 +275,8 @@ class SQLiteDatabase:
                     data=contact_data["onion_address"],
                     encryption_key_info=config.HKDF_INFO_CONTACT,
                 ),
+                contact_data["muted"],
+                contact_data["blocked"],
                 contact_uuid,
             ),
         )

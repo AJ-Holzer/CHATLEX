@@ -103,33 +103,110 @@ class ContactWidget:
         )
         self._page.open(alert)
 
+    def _update_contact(self) -> None:
+        db: SQLiteDatabase = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
+
+        db.update_contact(
+            contact_uuid=self._contact.contact_uuid,
+            contact_data=self._contact.contact_data,
+        )
+
     def open_action_menu(self, e: ft.ControlEvent) -> None:
         def handle_click(action: ContactAction) -> None:
+            def update_sheet(
+                action_sheet: ft.CupertinoActionSheetAction,
+                text: str,
+            ) -> None:
+                # Update the label of the given action sheet button
+                if hasattr(action_sheet, "content") and isinstance(
+                    action_sheet.content, ft.Text
+                ):
+                    action_sheet.content.value = text
+                    action_sheet.content.update()
+                action_sheet.update()
+
             match action:
+                case ContactAction.RENAME:
+                    # TODO: Add an alert to ask for the new username
+                    pass
+
                 case ContactAction.DELETE:
                     self._remove_contact()
+
                 case ContactAction.CANCEL:
-                    self._page.close(bottom_sheet)  # Close alert
-                    return
+                    self._page.close(bottom_sheet)
+
                 case ContactAction.MUTE:
-                    # TODO: Mute contact
-                    return
+                    update_sheet(action_sheet=button_mute_unmute, text="Unmute")
+                    button_mute_unmute.update()
+
+                    self._contact.is_muted = True
+                    self._update_contact()
+
                 case ContactAction.UNMUTE:
-                    # TODO: Unmute contact
-                    return
-                case ContactAction.RENAME:
-                    # TODO: Rename contact
-                    return
-                case ContactAction.UNBLOCK:
-                    # TODO: Unblock contact
-                    return
+                    update_sheet(action_sheet=button_mute_unmute, text="Mute")
+                    button_mute_unmute.update()
+
+                    self._contact.is_muted = False
+                    self._update_contact()
+
                 case ContactAction.BLOCK:
-                    # TODO: Block contact
-                    return
+                    update_sheet(action_sheet=button_block_unblock, text="Unblock")
+                    button_block_unblock.disabled = True
+                    button_block_unblock.update()
+
+                    self._contact.is_blocked = True
+                    self._update_contact()
+
+                case ContactAction.UNBLOCK:
+                    update_sheet(action_sheet=button_block_unblock, text="Block")
+                    button_block_unblock.disabled = True
+                    button_mute_unmute.update()
+
+                    self._contact.is_blocked = False
+                    self._update_contact()
+                    pass
+
                 case _:
                     raise ValueError(f"Action '{action.value}' not available!")
 
-        # TODO: Add missing actions (listed in types)
+            action_alert.update()
+
+        button_rename: ft.CupertinoActionSheetAction = ft.CupertinoActionSheetAction(
+            content=ft.Text("Rename"),
+            on_click=lambda _: handle_click(action=ContactAction.RENAME),
+        )
+        button_mute_unmute: ft.CupertinoActionSheetAction = (
+            ft.CupertinoActionSheetAction(
+                content=ft.Text(("Mute" if not self._contact.is_muted else "Unmute")),
+                on_click=lambda _: handle_click(
+                    action=(
+                        ContactAction.MUTE
+                        if not self._contact.is_muted
+                        else ContactAction.UNMUTE
+                    )
+                ),
+            )
+        )
+        button_block_unblock: ft.CupertinoActionSheetAction = (
+            ft.CupertinoActionSheetAction(
+                content=ft.Text("Block" if not self._contact.is_blocked else "Unblock"),
+                on_click=lambda _: handle_click(
+                    action=(
+                        ContactAction.BLOCK
+                        if not self._contact.is_blocked
+                        else ContactAction.UNBLOCK
+                    )
+                ),
+            )
+        )
+        button_delete: ft.CupertinoActionSheetAction = ft.CupertinoActionSheetAction(
+            content=ft.Text("Delete"),
+            is_destructive_action=True,
+            on_click=lambda _: handle_click(action=ContactAction.DELETE),
+        )
+
+        # Create action alert
         action_alert: ft.CupertinoActionSheet = ft.CupertinoActionSheet(
             title=ft.Row(
                 controls=[
@@ -146,15 +223,14 @@ class ContactWidget:
                 is_default_action=True,
             ),
             actions=[
-                ft.CupertinoActionSheetAction(
-                    content=ft.Text("Mute"),
-                    on_click=lambda _: handle_click(action=ContactAction.DELETE),
-                ),
-                ft.CupertinoActionSheetAction(
-                    content=ft.Text("Delete"),
-                    is_destructive_action=True,
-                    on_click=lambda _: handle_click(action=ContactAction.DELETE),
-                ),
+                # Rename
+                button_rename,
+                # Mute/Unmute
+                button_mute_unmute,
+                # Block/Unblock
+                button_block_unblock,
+                # Delete
+                button_delete,
             ],
         )
 

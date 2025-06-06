@@ -2,8 +2,3 @@ flet
 cryptography
 argon2-cffi
 pynacl
-transformers
-rapidfuzz
-torch
-torchvision
-torchaudio

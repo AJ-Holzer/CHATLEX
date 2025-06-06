@@ -65,6 +65,8 @@ class ContactsPage:
             "username": username,
             "description": description,
             "onion_address": onion_address,
+            "muted": False,
+            "blocked": False,
         }
 
         # Close alert

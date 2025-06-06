@@ -16,6 +16,8 @@ def main(page: ft.Page) -> None:
     # Create app path if it doesn't already exist yet
     os.makedirs(name=paths.app_storage_path, exist_ok=True)
 
+    print(paths.app_storage_path)
+
     # Initialize window
     page.title = config.APP_TITLE
     page.window.resizable = config.APP_RESIZABLE
@@ -29,7 +31,7 @@ def main(page: ft.Page) -> None:
     storages: Storages = Storages(page=page)
 
     # TODO: This is only for debugging. Remove this line!
-    # storages.client_storage.clear()
+    storages.client_storage.clear()
 
     # Update page to apply visuals
     page.update()  # type:ignore

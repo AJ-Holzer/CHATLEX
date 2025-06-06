@@ -15,6 +15,8 @@ class ContactData(TypedDict):
     username: str
     description: str
     onion_address: str
+    muted: bool
+    blocked: bool
 
 
 class MessageData(TypedDict):
