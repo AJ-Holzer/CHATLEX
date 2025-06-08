@@ -1,81 +1,87 @@
-# App app
+<!-- trunk-ignore-all(markdownlint/MD026) -->
 
-## Run the app
+# 🔐 ZEPHRA – Secure. Anonymous. Decentralized.
 
-### uv
+A next-generation messenger designed with uncompromising focus on privacy, security, and anonymity.
 
-Run as a desktop app:
+> ## ℹ️ Important Info
+> Due to compatibility issues and performance concerns, this messenger will be completely rewritten in c++.
+> Stay tuned for updates!
 
-```
-uv run flet run
-```
+> 🚧 Active Development – Regular updates underway. Check the
+> [Roadmap](https://github.com/AJ-Holzer/High-security-messenger/?tab=readme-ov-file#-roadmap)
+> for what’s coming next.
+>
+> 🤝 Open Source & Community Driven
+> Contributions are welcome! If you have ideas, issues, or improvements, feel free to open an issue or submit a pull request.
 
-Run as a web app:
+> ## ⚠️ Legal Disclaimer
+>
+> **ZEPHRA** is created for lawful, educational, and research purposes only. Misuse is strictly discouraged.
+> By using this software, you accept full responsibility for ensuring your compliance with local
+> laws and regulations regarding encryption and communication.
+>
+> - We do NOT support or assist with illegal activities.
+> - Use of this software is entirely at your own risk.
+> - The developers and contributors assume no liability for any misuse or consequences arising from use.
 
-```
-uv run flet run --web
-```
+## 🔒 Our Security & Privacy Principles
 
-### Poetry
+- No central servers – Peer-to-peer architect ure only.
+- Zero data collection – We collect nothing from users.
+- No backdoors. **Ever**.
+- Fully open-source under AGPLv3.
+- End-to-end encrypted using modern cryptographic standards.
 
-Install dependencies from `pyproject.toml`:
+## 💡 Suggest Enhancements
 
-```
-poetry install
-```
+You have any suggestions on how to enhance its safety and anonymity?
+Feel free to open an issue or start a discussion in the GitHub Repository.
 
-Run as a desktop app:
+## ✨ Core Features
 
-```
-poetry run flet run
-```
+| Features                | Description                                                                                                            | Implemented |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------- |
+| Decentralized Messenger | No server between your messages                                                                                        | ✅          |
+| Encryption              | AES-265, ECDHE, Kyber                                                                                                  |             |
+| Password Generation     | A key will be derived with salt and pepper to make the entered password unique                                         | ✅          |
+| Data                    | Your data will be stored **locally only**, encrypted                                                                   | ✅          |
+| Platforms               | Android                                                                                                                | ✅          |
+| Data Transmission       | The data will be sent over the Tor network to anonymize the traffic                                                    |             |
+| Open Source             | Transparent codebase for public scrutiny and trust                                                                     | ✅          |
+| Key Derivation          | The code uses Argon2 to derive the master key and AES-CBC to derive a new key for each message to encrypt the messages | ✅          |
+| Group Chats             | Group chats for chatting with multiple people - just like WhatsApp or Signal                                           |             |
+| File Sharing            | Sharing files up to 500 MB                                                                                             |             |
+| Image Sharing           | Sharing high quality images                                                                                            |             |
+| Video Sharing           | Sharing high quality videos                                                                                            |             |
 
-Run as a web app:
+## 📈 Roadmap
 
-```
-poetry run flet run --web
-```
+- 🚧 Basic implementations like encrypting and sending (P2P)
+- Adding Contacts
+- Group Chats
+- Multi Device Sync
+- File Sharing
+- Image Sharing
+- Video Sharing
 
-For more details on running the app, refer to the [Getting Started Guide](https://flet.dev/docs/getting-started/).
+## 🛠 Current Tech Stack Highlights
 
-## Build the app
+- **Language:** Python
+- **Encryption:** AES-256-CBC,
+- **Hashing:** Argon2, HKDF
+- **Storage:** Encrypted SQLite3
 
-### Android
+## 🧾 Fonts
 
-```
-flet build apk -v
-```
+The fonts used in this project are sourced from [Google Fonts](https://fonts.google.com/).
 
-For more details on building and signing `.apk` or `.aab`, refer to the [Android Packaging Guide](https://flet.dev/docs/publish/android/).
+**Currently supported:**
 
-### iOS
+- Baloo Bhaijaan
+- Varela Round
 
-```
-flet build ipa -v
-```
+## 💬 Community & Support
 
-For more details on building and signing `.ipa`, refer to the [iOS Packaging Guide](https://flet.dev/docs/publish/ios/).
-
-### macOS
-
-```
-flet build macos -v
-```
-
-For more details on building macOS package, refer to the [macOS Packaging Guide](https://flet.dev/docs/publish/macos/).
-
-### Linux
-
-```
-flet build linux -v
-```
-
-For more details on building Linux package, refer to the [Linux Packaging Guide](https://flet.dev/docs/publish/linux/).
-
-### Windows
-
-```
-flet build windows -v
-```
-
-For more details on building Windows package, refer to the [Windows Packaging Guide](https://flet.dev/docs/publish/windows/).
+Have questions, concerns, or suggestions?
+Open an issue or contribute directly via GitHub.
