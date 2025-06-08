@@ -4,9 +4,9 @@
 
 ## Roadmap
 
-- 🚧 UI
-- Encryption (AES-256-CBC, ECDHE, Kyber, E2EE)
+- 🚧 Encryption (AES-256-CBC, ECDHE, Kyber, E2EE)
 - Database
+- UI
 - Add contacts
 - Add devices
 - Connection (Tor)
