@@ -24,6 +24,22 @@ class ContactWidget:
         self._contacts_list: ft.ReorderableListView = contacts_list
         self._aes_encryptor: AES = aes_encryptor
 
+        # Initialize status icons
+        self._muted_icon: ft.Icon = ft.Icon(
+            name=ft.Icons.VOLUME_OFF,
+            visible=self._contact.is_muted,
+            tooltip="Muted",
+        )
+        self._blocked_icon: ft.Icon = ft.Icon(
+            name=ft.Icons.BLOCK,
+            visible=self._contact.is_blocked,
+            tooltip="Blocked",
+        )
+
+        # Add page to icons
+        self._muted_icon.page = self._page
+        self._blocked_icon.page = self._page
+
         # Initialize icon
         self._icon_background: ft.CircleAvatar = ft.CircleAvatar(
             content=ft.Text(value=self._contact.initials),
@@ -53,11 +69,25 @@ class ContactWidget:
         # Initialize text label
         self._username_label: ft.Text = ft.Text(value=self._contact.username)
 
+        # Finalize contact widget
         self._contact_widget: ft.Container = ft.Container(
             content=ft.Row(
                 controls=[
                     self._icon,
                     self._username_label,
+                    ft.Container(
+                        content=ft.Row(
+                            controls=[
+                                self._muted_icon,
+                                self._blocked_icon,
+                            ],
+                            spacing=5,
+                            alignment=ft.MainAxisAlignment.END,
+                            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        ),
+                        expand=True,
+                        alignment=ft.alignment.center_right,
+                    ),
                 ],
                 spacing=10,
                 alignment=ft.MainAxisAlignment.START,
@@ -110,6 +140,13 @@ class ContactWidget:
             contact_uuid=self._contact.contact_uuid,
             contact_data=self._contact.contact_data,
         )
+
+    def refresh_icons(self) -> None:
+        self._muted_icon.update()
+        self._blocked_icon.update()
+
+    def update(self) -> None:
+        self._contact_widget.update()
 
     def open_action_menu(self, e: ft.ControlEvent) -> None:
         def handle_click(action: ContactAction) -> None:
@@ -164,7 +201,7 @@ class ContactWidget:
                     self._page.close(bottom_sheet)
 
                 case ContactAction.TOGGLE_MUTE:
-                    self._contact.is_muted = not self._contact.is_muted
+                    self.muted = not self._contact.is_muted
 
                     update_sheet(
                         action_sheet=button_toggle_mute,
@@ -175,7 +212,7 @@ class ContactWidget:
                     self._update_contact()
 
                 case ContactAction.TOGGLE_BLOCK:
-                    self._contact.is_blocked = not self._contact.is_blocked
+                    self.blocked = not self._contact.is_blocked
 
                     update_sheet(
                         action_sheet=button_toggle_block,
@@ -191,7 +228,7 @@ class ContactWidget:
                 case _:
                     raise ValueError(f"Action '{action.value}' not available!")
 
-            action_alert.update()
+            self.update()
 
         # Create buttons
         button_rename: ft.CupertinoActionSheetAction = ft.CupertinoActionSheetAction(
@@ -248,4 +285,25 @@ class ContactWidget:
         self._page.open(bottom_sheet)
 
     def build(self) -> ft.Container:
+        self.refresh_icons()
         return self._contact_widget
+
+    @property
+    def muted(self) -> bool:
+        return self._contact.is_muted
+
+    @muted.setter
+    def muted(self, value: bool) -> None:
+        self._contact.is_muted = value
+        self._muted_icon.visible = value
+        self._muted_icon.update()
+
+    @property
+    def blocked(self) -> bool:
+        return self._contact.is_blocked
+
+    @blocked.setter
+    def blocked(self, value: bool) -> None:
+        self._contact.is_blocked = value
+        self._blocked_icon.visible = value
+        self._blocked_icon.update()
