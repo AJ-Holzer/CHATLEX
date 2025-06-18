@@ -28,7 +28,7 @@ class TopBar:
             on_click=lambda _: self._router.go(route=config.ROUTE_PROFILE),
         )
         self._settings_button: ft.IconButton = ft.IconButton(
-            icon=ft.CupertinoIcons.LINE_HORIZONTAL_3,
+            icon=ft.Icons.SETTINGS_OUTLINED,
             tooltip="Settings",
             height=config.TOP_BAR_HEIGHT,
             icon_size=config.TOP_BAR_HEIGHT - 15,

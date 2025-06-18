@@ -10,6 +10,7 @@ from env.func.logout import logout_on_lost_focus
 from env.func.update_themes import update_theme
 from env.pages.contacts import ContactsPage
 from env.pages.login import LoginPage
+from env.pages.profiles import UserProfilePage
 from env.pages.settings import SettingsPage
 
 
@@ -78,6 +79,24 @@ def main(page: ft.Page) -> None:
             "title": "Settings",
             "page_content": [
                 settings_page.build(),
+            ],
+            "execute_function": None,
+            "function_args": None,
+        },
+    )
+
+    # User profile page
+    user_profile_page: UserProfilePage = UserProfilePage(
+        page=page,
+        router=router,
+        storages=storages,
+    )
+    router.add_route(
+        route="/profile",
+        content={
+            "title": "Profile",
+            "page_content": [
+                user_profile_page.build(),
             ],
             "execute_function": None,
             "function_args": None,

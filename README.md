@@ -4,7 +4,6 @@
 
 A next-generation messenger designed with uncompromising focus on privacy, security, and anonymity.
 
-
 > 🚧 Active Development – Regular updates underway. Check the
 > [Roadmap](https://github.com/AJ-Holzer/High-security-messenger/?tab=readme-ov-file#-roadmap)
 > for what’s coming next.
@@ -55,7 +54,6 @@ Feel free to open an issue or start a discussion in the GitHub Repository.
 ## 📈 Roadmap
 
 - ✅ Storage logic (encryption, database)
-- ✅ Contacts page
 - 🚧 Pages
 - sending (P2P)
 - Adding Contacts

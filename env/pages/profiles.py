@@ -6,13 +6,13 @@ from env.classes.router import AppRouter
 from env.classes.storages import Storages
 
 
-class SettingsPage:
+class UserProfilePage:
     def __init__(self, page: ft.Page, router: AppRouter, storages: Storages) -> None:
         self._page: ft.Page = page
         self._router: AppRouter = router
         self._storages: Storages = storages
 
-        # TODO: Add settings to customize UI and chat experience!
+        # TODO: Add statistics and about section!
 
     def build(self) -> ft.Container:
         return MasterContainer(
@@ -24,7 +24,7 @@ class SettingsPage:
                                 page=self._page,
                                 router=self._router,
                                 storages=self._storages,
-                                title="Settings",
+                                title="Profile",
                             ).build(),
                             ft.Text("TEST"),
                         ],
@@ -38,3 +38,6 @@ class SettingsPage:
                 vertical_alignment=ft.CrossAxisAlignment.START,
             ),
         )
+
+
+# TODO: Add 'ContactProfilePage'!
