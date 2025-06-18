@@ -16,7 +16,7 @@ from env.func.validations import is_valid_onion_address
 from env.typing.dicts import ContactData
 
 
-# TODO: Add custom arrangement to the contacts list
+# TODO: Add automatic arrangement to the contacts list (sorted by last message)
 class ContactsPage:
     def __init__(self, page: ft.Page, storages: Storages, router: AppRouter) -> None:
         self._page: ft.Page = page
@@ -30,14 +30,7 @@ class ContactsPage:
 
         # Contacts list
         # Use ReorderableListView to allow manual arrangement of contacts
-        self._contacts_list: ft.ReorderableListView = ft.ReorderableListView(
-            controls=[],
-            expand=True,
-            on_reorder=self._reorder_contacts,
-            # show_default_drag_handles=False,
-        )
-        # Create a list containing all contact widgets for easier access
-        self._contact_widgets: list[ContactWidget] = []
+        self._contacts_list: ft.ListView = ft.ListView(controls=[], expand=True)
 
         # Buttons
         self._add_user_button: ft.FloatingActionButton = ft.FloatingActionButton(
@@ -78,7 +71,6 @@ class ContactsPage:
         # Define contact data
         contact_data: ContactData = {
             "contact_uuid": contact_uuid,
-            "order_index": None,
             "username": username,
             "description": description,
             "onion_address": onion_address,
@@ -144,7 +136,6 @@ class ContactsPage:
         self._page.update()  # type:ignore
 
     def _add_contact(self, contact_data: ContactData) -> None:
-
         # Create new contact widget
         contact_widget: ContactWidget = ContactWidget(
             page=self._page,
@@ -156,15 +147,6 @@ class ContactsPage:
 
         # Add contact widget
         self._contacts_list.controls.append(contact_widget.build())
-        self._contact_widgets.append(contact_widget)
-
-    def _update_contacts_list(self) -> None:
-        # Update contacts list
-        self._contacts_list.update()
-
-        # Update contact widgets
-        for contact_widget in self._contact_widgets:
-            contact_widget.update()
 
     def _initialize_aes_encryptor(self) -> None:
         # Initialize AES encryptor
@@ -182,7 +164,6 @@ class ContactsPage:
         db: SQLiteDatabase = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
 
         # Empty contacts list to avoid duplicates
-        self._contact_widgets.clear()
         self._contacts_list.controls.clear()
 
         # Retrieve contacts
@@ -200,39 +181,9 @@ class ContactsPage:
         # Update list view to apply changes
         self._contacts_list.update()
 
-    def _save_order_indexes(self) -> None:
-        # Initialize database
-        db: SQLiteDatabase = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
-
-        # Update the order index in the database
-        for i, widget in enumerate(self._contact_widgets):
-            widget.order_index = i
-
-            db.update_contact_order_index(
-                contact_uuid=widget.contact_uuid,
-                order_index=widget.order_index,
-            )
-
-    def _reorder_contacts(self, e: ft.OnReorderEvent) -> None:
-        # Skip if no widget moved
-        if e.old_index is None or e.new_index is None:
-            print(
-                f"Old index or new index of the widget to reorder is None. old_index='{e.old_index}', new_index='{e.new_index}'"
-            )
-            return
-
-        # Get moved widget
-        moved_widget: ContactWidget = self._contact_widgets.pop(e.old_index)
-
-        # Move the widget in the contact widget list
-        self._contact_widgets.insert(e.new_index, moved_widget)
-
-        self._save_order_indexes()
-
     def initialize(self) -> None:
         self._initialize_aes_encryptor()
         self._load_contacts()
-        self._update_contacts_list()
 
     def build(self) -> ft.Container:
         return MasterContainer(

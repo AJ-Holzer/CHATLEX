@@ -22,19 +22,6 @@ class Contact:
         return self._contact_data["contact_uuid"]
 
     @property
-    def order_index(self) -> int:
-        if self._contact_data["order_index"] is None:
-            raise ValueError(
-                f"No order index provided for contact {self._contact_data['contact_uuid']}!"
-            )
-
-        return self._contact_data["order_index"]
-
-    @order_index.setter
-    def order_index(self, value: int) -> None:
-        self._contact_data["order_index"] = value
-
-    @property
     def initials(self) -> str:
         return self._initials
 

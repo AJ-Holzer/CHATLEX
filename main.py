@@ -31,9 +31,6 @@ def main(page: ft.Page) -> None:
     # Initialize storage
     storages: Storages = Storages(page=page)
 
-    # TODO: This is only for debugging. Remove this line!
-    # storages.client_storage.clear()
-
     # Update page to apply visuals
     page.update()  # type:ignore
 
@@ -91,7 +88,7 @@ def main(page: ft.Page) -> None:
     router.go(route=config.ROUTE_LOGIN)
 
     # Add events
-    # TODO: Add the ability to logout on shaking --> https://flet.dev/docs/controls/shakedetector
+    # TODO: Add the ability to logout on shaking (but only on android) --> https://flet.dev/docs/controls/shakedetector
     page.on_platform_brightness_change = lambda _: update_theme(page=page)
     page.on_app_lifecycle_state_change = lambda e: logout_on_lost_focus(
         e=e, router=router, storages=storages

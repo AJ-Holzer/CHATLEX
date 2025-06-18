@@ -12,7 +12,6 @@ class PageContent(TypedDict):
 
 class ContactData(TypedDict):
     contact_uuid: str
-    order_index: Optional[int]
     username: str
     description: str
     onion_address: str

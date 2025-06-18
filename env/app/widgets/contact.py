@@ -15,13 +15,13 @@ class ContactWidget:
         page: ft.Page,
         contact_data: ContactData,
         router: AppRouter,
-        contacts_list: ft.ReorderableListView,
+        contacts_list: ft.ListView,
         aes_encryptor: AES,
     ) -> None:
         self._page: ft.Page = page
         self._contact: Contact = Contact(contact_data=contact_data)
         self._router: AppRouter = router
-        self._contacts_list: ft.ReorderableListView = contacts_list
+        self._contacts_list: ft.ListView = contacts_list
         self._aes_encryptor: AES = aes_encryptor
 
         # Initialize status icons
@@ -96,7 +96,6 @@ class ContactWidget:
         )
 
     def _open_chat(self, e: ft.ControlEvent) -> None:
-        # TODO: Add open chat logic here!
         # TODO: Load messages, open chat and load contact info
         raise NotImplementedError("Function not implemented yet!")
 
@@ -318,11 +317,3 @@ class ContactWidget:
     def blocked(self, value: bool) -> None:
         self._contact.is_blocked = value
         self._refresh_status_icons()
-
-    @property
-    def order_index(self) -> int:
-        return self._contact.order_index
-
-    @order_index.setter
-    def order_index(self, value: int) -> None:
-        self._contact.order_index = value

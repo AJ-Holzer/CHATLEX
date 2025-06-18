@@ -54,7 +54,10 @@ Feel free to open an issue or start a discussion in the GitHub Repository.
 
 ## 📈 Roadmap
 
-- 🚧 Basic implementations like encrypting and sending (P2P)
+- ✅ Storage logic (encryption, database)
+- ✅ Contacts page
+- 🚧 Pages
+- sending (P2P)
 - Adding Contacts
 - Group Chats
 - Multi Device Sync
