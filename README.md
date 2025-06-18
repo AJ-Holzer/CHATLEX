@@ -5,7 +5,7 @@
 A next-generation messenger designed with uncompromising focus on privacy, security, and anonymity.
 
 > 🚧 Active Development – Regular updates underway. Check the
-> [Roadmap](https://github.com/AJ-Holzer/High-security-messenger/?tab=readme-ov-file#-roadmap)
+> [Roadmap](https://github.com/AJ-Holzer/ZEPHRA/?tab=readme-ov-file#-roadmap)
 > for what’s coming next.
 >
 > 🤝 Open Source & Community Driven
@@ -55,7 +55,7 @@ Feel free to open an issue or start a discussion in the GitHub Repository.
 
 - ✅ Storage logic (encryption, database)
 - 🚧 Pages
-- sending (P2P)
+- Sending (P2P)
 - Adding Contacts
 - Group Chats
 - Multi Device Sync
