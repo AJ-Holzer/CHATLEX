@@ -1,40 +1,26 @@
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.primitives.ciphers import (
-    Cipher,
-    CipherContext,
-    algorithms,
-    modes,
-)
+import platform
+
+import pyaes  # type:ignore[import-untyped]
 
 from env.classes.hashing import HKDFHasher
 from env.config import config
 from env.func.generations import generate_iv, generate_salt
 from env.typing.hashing import HKDFInfoKey
 
+IS_ANDROID: bool = (
+    "android" in platform.system().lower()
+    or "linux" in platform.platform().lower()
+    and "arm" in platform.machine()
+)
+
 
 class AES:
     def __init__(self, derived_key: bytes, salt: bytes) -> None:
-        """Initializes an instance of the class.
-
-        Args:
-            self(Self): The instance of the class.
-            password(str): The password to be stored.
-            salt(Optional[bytes]): The salt to be used for password hashing. If None, a new salt will be generated.
-            iv(Optional[bytes]): The initialization vector (IV) to be used for encryption. If None, a new IV will be generated.
-
-        Returns:
-            None: No return value.
-
-        Raises:
-            ValueError: If the password is empty or None.
-        """
         self._salt: bytes = salt
         self._derived_key: bytes = derived_key
         self._hkdf_hasher: HKDFHasher = HKDFHasher(derived_key=self._derived_key)
 
     def encrypt(self, plaintext: str, encryption_key_info: HKDFInfoKey) -> bytes:
-        # Generate a new IV, salt and key
         iv: bytes = generate_iv()
         salt: bytes = generate_salt(config.SALT_LENGTH)
         encryption_key: bytes = self._hkdf_hasher.derive_key(
@@ -42,41 +28,75 @@ class AES:
             salt=salt,
         )
 
-        padder: padding.PaddingContext = padding.PKCS7(128).padder()
-        padded_data: bytes = (
-            padder.update(plaintext.encode(config.ENCODING)) + padder.finalize()
-        )
+        if IS_ANDROID:
+            pad_len: int = 16 - (len(plaintext.encode(config.ENCODING)) % 16)
+            padded: bytes = plaintext.encode(config.ENCODING) + bytes(
+                [pad_len] * pad_len
+            )
 
-        cipher: Cipher[modes.CBC] = Cipher(
-            algorithm=algorithms.AES256(key=encryption_key),
-            mode=modes.CBC(iv),
-            backend=default_backend(),
-        )
-        encryptor: CipherContext = cipher.encryptor()
-        cipher_text: bytes = encryptor.update(padded_data) + encryptor.finalize()
+            aes = pyaes.AESModeOfOperationCBC(encryption_key, iv=iv)
+            ciphertext: bytes = aes.encrypt(padded)  # type: ignore
+        else:
+            # Defer cryptography imports so type checkers don't fail on Android
+            from cryptography.hazmat.backends import default_backend
+            from cryptography.hazmat.primitives import padding
+            from cryptography.hazmat.primitives.ciphers import (
+                Cipher,
+                algorithms,
+                modes,
+            )
 
-        return salt + iv + cipher_text
+            padder = padding.PKCS7(128).padder()
+            padded_data = (
+                padder.update(plaintext.encode(config.ENCODING)) + padder.finalize()
+            )
+
+            cipher = Cipher(
+                algorithm=algorithms.AES(encryption_key),
+                mode=modes.CBC(iv),
+                backend=default_backend(),
+            )
+            encryptor = cipher.encryptor()
+            ciphertext = encryptor.update(padded_data) + encryptor.finalize()
+
+        return salt + iv + ciphertext
 
     def decrypt(self, encrypted_data: bytes, encryption_key_info: HKDFInfoKey) -> str:
-        # Retrieve salt, IV and ciphertext
-        salt = encrypted_data[: config.SALT_LENGTH :]
-        iv = encrypted_data[config.SALT_LENGTH : config.SALT_LENGTH + 16 :]
+        salt: bytes = encrypted_data[: config.SALT_LENGTH]
+        iv: bytes = encrypted_data[config.SALT_LENGTH : config.SALT_LENGTH + 16]
+        ciphertext: bytes = encrypted_data[config.SALT_LENGTH + 16 :]
+
         decryption_key: bytes = self._hkdf_hasher.derive_key(
             info=encryption_key_info,
             salt=salt,
         )
 
-        ciphertext = encrypted_data[config.SALT_LENGTH + 16 : :]
+        if IS_ANDROID:
+            aes: pyaes.AESModeOfOperationCBC = pyaes.AESModeOfOperationCBC(
+                decryption_key, iv=iv
+            )
+            decrypted: bytes = aes.decrypt(ciphertext)  # type: ignore
+            pad_len: int = decrypted[-1]
+            return decrypted[:-pad_len].decode(config.ENCODING)
+        else:
+            from cryptography.hazmat.backends import default_backend
+            from cryptography.hazmat.primitives import padding
+            from cryptography.hazmat.primitives.ciphers import (
+                Cipher,
+                CipherContext,
+                algorithms,
+                modes,
+            )
+            from cryptography.hazmat.primitives.padding import PaddingContext
 
-        cipher: Cipher[modes.CBC] = Cipher(
-            algorithm=algorithms.AES256(key=decryption_key),
-            mode=modes.CBC(iv),
-            backend=default_backend(),
-        )
-        decryptor: CipherContext = cipher.decryptor()
-        padded_data: bytes = decryptor.update(ciphertext) + decryptor.finalize()
+            cipher: Cipher[modes.CBC] = Cipher(
+                algorithm=algorithms.AES(decryption_key),
+                mode=modes.CBC(iv),
+                backend=default_backend(),
+            )
+            decryptor: CipherContext = cipher.decryptor()
+            padded_data: bytes = decryptor.update(ciphertext) + decryptor.finalize()
 
-        unpadder: padding.PaddingContext = padding.PKCS7(128).unpadder()
-        cipher_text: bytes = unpadder.update(padded_data) + unpadder.finalize()
-
-        return cipher_text.decode(config.ENCODING)
+            unpadder: PaddingContext = padding.PKCS7(128).unpadder()
+            plaintext: bytes = unpadder.update(padded_data) + unpadder.finalize()
+            return plaintext.decode(config.ENCODING)

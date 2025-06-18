@@ -29,13 +29,14 @@ class SQLiteDatabase:
             """
             CREATE TABLE IF NOT EXISTS contacts (
             contact_uuid TEXT PRIMARY KEY,
-            username TEXT NOT NULL,
+            order_index INTEGER NOT NULL,
+            username TEXT NOT NULL UNIQUE,
             description TEXT,
-            onion_address TEXT NOT NULL,
+            onion_address TEXT NOT NULL UNIQUE,
             muted BOOLEAN NOT NULL,
             blocked BOOLEAN NOT NULL
             )
-        """
+            """
         )
         # Message table
         self._cur.execute(
@@ -82,14 +83,23 @@ class SQLiteDatabase:
             encryption_key_info=encryption_key_info,
         )
 
+    def _next_order_index(self) -> int:
+        last_num: Optional[int] = self._cur.execute(
+            "SELECT MAX(order_index) FROM contacts"
+        ).fetchone()[0]
+        return 0 if last_num is None else last_num + 1
+
     def insert_contact(self, contact_data: ContactData) -> None:
+        if contact_data["order_index"]:
+            raise ValueError("Got order index. Expected 'None'!")
         # Insert data (encrypted)
         self._cur.execute(
-            "INSERT INTO contacts (contact_uuid, username, description, onion_address, muted, blocked) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO contacts (contact_uuid, order_index, username, description, onion_address, muted, blocked) VALUES (?, ?, ?, ?, ?, ?, ?)",
             (
                 contact_data[
                     "contact_uuid"
                 ],  # Leave uuid decrypted to be able to find it
+                self._next_order_index(),
                 self._encrypt(
                     data=contact_data["username"],
                     encryption_key_info=config.HKDF_INFO_CONTACT,
@@ -156,14 +166,15 @@ class SQLiteDatabase:
 
     def retrieve_contacts(self) -> Optional[list[ContactData]]:
         # Select contacts
-        rows: list[tuple[str, str, str, str, bool, bool]] = self._cur.execute(
-            "SELECT contact_uuid, username, description, onion_address, muted, blocked FROM contacts"
+        rows: list[tuple[str, int, str, str, str, int, int]] = self._cur.execute(
+            "SELECT contact_uuid, order_index, username, description, onion_address, muted, blocked FROM contacts ORDER BY order_index ASC"
         ).fetchall()
 
         contacts: list[ContactData] = []
 
         for (
             uuid,
+            order_index,
             encrypted_username,
             encrypted_description,
             encrypted_onion_address,
@@ -173,6 +184,7 @@ class SQLiteDatabase:
             contacts.append(
                 {
                     "contact_uuid": uuid,
+                    "order_index": order_index,
                     "username": self._decrypt(
                         data=encrypted_username,
                         encryption_key_info=config.HKDF_INFO_CONTACT,
@@ -185,8 +197,8 @@ class SQLiteDatabase:
                         data=encrypted_onion_address,
                         encryption_key_info=config.HKDF_INFO_CONTACT,
                     ),
-                    "muted": is_muted,
-                    "blocked": is_blocked,
+                    "muted": bool(is_muted),
+                    "blocked": bool(is_blocked),
                 }
             )
 
@@ -259,10 +271,11 @@ class SQLiteDatabase:
         self._cur.execute(
             """
             UPDATE contacts
-            SET username = ?, description = ?, onion_address = ?, muted = ?, blocked = ?
+            SET order_index = ?, username = ?, description = ?, onion_address = ?, muted = ?, blocked = ?
             WHERE contact_uuid = ?
             """,
             (
+                contact_data["order_index"],
                 self._encrypt(
                     data=contact_data["username"],
                     encryption_key_info=config.HKDF_INFO_CONTACT,
@@ -279,6 +292,20 @@ class SQLiteDatabase:
                 contact_data["blocked"],
                 contact_uuid,
             ),
+        )
+        self.commit()
+
+    def update_contact_order_index(self, contact_uuid: str, order_index: int) -> None:
+        """
+        Update the order_index of a contact.
+        """
+        self._cur.execute(
+            """
+            UPDATE contacts
+            SET order_index = ?
+            WHERE contact_uuid = ?
+            """,
+            (order_index, contact_uuid),
         )
         self.commit()
 

@@ -3,3 +3,7 @@
 /.vscode/
 /storage/
 __pycache__/
+/build/
+/tests/
+pyproject.toml
+count_lines.py

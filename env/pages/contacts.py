@@ -12,6 +12,7 @@ from env.classes.router import AppRouter
 from env.classes.storages import Storages
 from env.config import config
 from env.func.converter import str_to_byte
+from env.func.validations import is_valid_onion_address
 from env.typing.dicts import ContactData
 
 
@@ -32,7 +33,11 @@ class ContactsPage:
         self._contacts_list: ft.ReorderableListView = ft.ReorderableListView(
             controls=[],
             expand=True,
+            on_reorder=self._reorder_contacts,
+            # show_default_drag_handles=False,
         )
+        # Create a list containing all contact widgets for easier access
+        self._contact_widgets: list[ContactWidget] = []
 
         # Buttons
         self._add_user_button: ft.FloatingActionButton = ft.FloatingActionButton(
@@ -54,7 +59,18 @@ class ContactsPage:
 
         # Check if everything provided
         if not all([username, onion_address]):
+            print(
+                f"Username and onion address have to be provided to add contact! Got username='{username}', onion_address='{onion_address}'"
+            )
             return
+
+        # Check if onion address is valid
+        if not is_valid_onion_address(addr=onion_address):
+            print(f"Onion address not valid! addr='{onion_address}'")
+            return
+
+        # Initialize new database instance to avoid thread error
+        db: SQLiteDatabase = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
 
         # Generate new random uuid
         contact_uuid: str = str(uuid.uuid4())
@@ -62,6 +78,7 @@ class ContactsPage:
         # Define contact data
         contact_data: ContactData = {
             "contact_uuid": contact_uuid,
+            "order_index": None,
             "username": username,
             "description": description,
             "onion_address": onion_address,
@@ -69,16 +86,11 @@ class ContactsPage:
             "blocked": False,
         }
 
-        # Close alert
-        self._page.close(control=alert)
-
+        # Insert contact into database
         try:
-            # Initialize new database instance to avoid thread error
-            db: SQLiteDatabase = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
-
-            # Insert contact into database
             db.insert_contact(contact_data=contact_data)
         except Exception as e:
+            # Show the error
             self._page.open(
                 ft.SnackBar(
                     content=ft.Text(
@@ -89,6 +101,9 @@ class ContactsPage:
                 )
             )
             return
+
+        # Close alert
+        self._page.close(control=alert)
 
         # Add contact widget to list view
         self._add_contact(contact_data=contact_data)
@@ -129,21 +144,29 @@ class ContactsPage:
         self._page.update()  # type:ignore
 
     def _add_contact(self, contact_data: ContactData) -> None:
-        self._contacts_list.controls.append(
-            ContactWidget(
-                page=self._page,
-                contact_data=contact_data,
-                router=self._router,
-                contacts_list=self._contacts_list,
-                aes_encryptor=self._aes_encryptor,
-            ).build()
+
+        # Create new contact widget
+        contact_widget: ContactWidget = ContactWidget(
+            page=self._page,
+            contact_data=contact_data,
+            router=self._router,
+            contacts_list=self._contacts_list,
+            aes_encryptor=self._aes_encryptor,
         )
 
-    def initialize(self) -> None:
-        self.initialize_aes_encryptor()
-        self.load_contacts()
+        # Add contact widget
+        self._contacts_list.controls.append(contact_widget.build())
+        self._contact_widgets.append(contact_widget)
 
-    def initialize_aes_encryptor(self) -> None:
+    def _update_contacts_list(self) -> None:
+        # Update contacts list
+        self._contacts_list.update()
+
+        # Update contact widgets
+        for contact_widget in self._contact_widgets:
+            contact_widget.update()
+
+    def _initialize_aes_encryptor(self) -> None:
         # Initialize AES encryptor
         self._aes_encryptor = AES(
             derived_key=str_to_byte(
@@ -152,29 +175,64 @@ class ContactsPage:
             salt=self._storages.client_storage.get(key=config.CS_USER_SALT),
         )
 
-    def load_contacts(self) -> None:
+    def _load_contacts(self) -> None:
         print("Loading contacts...")
 
         # Initialize a new database instance to avoid thread error
         db: SQLiteDatabase = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
 
         # Empty contacts list to avoid duplicates
-        if self._contacts_list.controls:
-            self._contacts_list.controls = []
+        self._contact_widgets.clear()
+        self._contacts_list.controls.clear()
 
+        # Retrieve contacts
         contacts: Optional[list[ContactData]] = db.retrieve_contacts()
 
-        # Check if contacts exist
+        # Skip if no contacts
         if contacts is None:
             print("No contacts found!")
             return
 
-        # Load contacts
+        # Add contacts
         for contact_data in contacts:
             self._add_contact(contact_data=contact_data)
 
         # Update list view to apply changes
         self._contacts_list.update()
+
+    def _save_order_indexes(self) -> None:
+        # Initialize database
+        db: SQLiteDatabase = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
+
+        # Update the order index in the database
+        for i, widget in enumerate(self._contact_widgets):
+            widget.order_index = i
+
+            db.update_contact_order_index(
+                contact_uuid=widget.contact_uuid,
+                order_index=widget.order_index,
+            )
+
+    def _reorder_contacts(self, e: ft.OnReorderEvent) -> None:
+        # Skip if no widget moved
+        if e.old_index is None or e.new_index is None:
+            print(
+                f"Old index or new index of the widget to reorder is None. old_index='{e.old_index}', new_index='{e.new_index}'"
+            )
+            return
+
+        # Get moved widget
+        moved_widget: ContactWidget = self._contact_widgets.pop(e.old_index)
+
+        # Move the widget in the contact widget list
+        self._contact_widgets.insert(e.new_index, moved_widget)
+
+        self._save_order_indexes()
+
+    def initialize(self) -> None:
+        self._initialize_aes_encryptor()
+        self._load_contacts()
+        self._update_contacts_list()
 
     def build(self) -> ft.Container:
         return MasterContainer(

@@ -22,12 +22,14 @@ class TopBar:
         # Initialize buttons
         self._home_button: ft.IconButton = ft.IconButton(
             icon=ft.Icons.PERSON_OUTLINE,
+            tooltip="Profile",
             height=config.TOP_BAR_HEIGHT,
             icon_size=config.TOP_BAR_HEIGHT - 15,
             on_click=lambda _: self._router.go(route=config.ROUTE_PROFILE),
         )
         self._settings_button: ft.IconButton = ft.IconButton(
             icon=ft.CupertinoIcons.LINE_HORIZONTAL_3,
+            tooltip="Settings",
             height=config.TOP_BAR_HEIGHT,
             icon_size=config.TOP_BAR_HEIGHT - 15,
             on_click=lambda _: self._router.go(route=config.ROUTE_SETTINGS),
@@ -98,6 +100,7 @@ class SubPageTopBar:
         # Initialize buttons
         self._back_button: ft.IconButton = ft.IconButton(
             icon=ft.Icons.ARROW_BACK_IOS_ROUNDED,
+            tooltip="Back",
             height=config.TOP_BAR_HEIGHT,
             icon_size=config.TOP_BAR_HEIGHT - 15,
             on_click=lambda _: self._router.pop(),

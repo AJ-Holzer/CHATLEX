@@ -27,7 +27,7 @@ class ContactWidget:
         # Initialize status icons
         self._muted_icon: ft.Icon = ft.Icon(
             name=ft.Icons.VOLUME_OFF,
-            visible=self._contact.is_muted,
+            visible=self._contact.is_muted and not self._contact.is_blocked,
             tooltip="Muted",
         )
         self._blocked_icon: ft.Icon = ft.Icon(
@@ -36,14 +36,10 @@ class ContactWidget:
             tooltip="Blocked",
         )
 
-        # Add page to icons
-        self._muted_icon.page = self._page
-        self._blocked_icon.page = self._page
-
         # Initialize icon
         self._icon_background: ft.CircleAvatar = ft.CircleAvatar(
             content=ft.Text(value=self._contact.initials),
-            max_radius=17,
+            max_radius=20,
             bgcolor=ft.Colors.PURPLE_900,
             color=ft.Colors.WHITE,
         )
@@ -133,7 +129,16 @@ class ContactWidget:
         )
         self._page.open(alert)
 
-    def _update_contact(self) -> None:
+    def _refresh_status_icons(self) -> None:
+        self._muted_icon.visible = (
+            self._contact.is_muted and not self._contact.is_blocked
+        )
+        self._blocked_icon.visible = self._contact.is_blocked
+
+        self._muted_icon.update()
+        self._blocked_icon.update()
+
+    def _update_database(self) -> None:
         db: SQLiteDatabase = SQLiteDatabase(aes_encryptor=self._aes_encryptor)
 
         db.update_contact(
@@ -141,12 +146,10 @@ class ContactWidget:
             contact_data=self._contact.contact_data,
         )
 
-    def refresh_icons(self) -> None:
-        self._muted_icon.update()
-        self._blocked_icon.update()
-
     def update(self) -> None:
         self._contact_widget.update()
+        self._muted_icon.update()
+        self._blocked_icon.update()
 
     def open_action_menu(self, e: ft.ControlEvent) -> None:
         def handle_click(action: ContactAction) -> None:
@@ -169,7 +172,7 @@ class ContactWidget:
 
                 self._contact.username = new_username
                 self._username_label.value = new_username
-                self._update_contact()
+                self._update_database()
                 self._page.close(username_alert)
                 self._username_label.update()
 
@@ -209,10 +212,15 @@ class ContactWidget:
                     )
                     button_toggle_mute.update()
 
-                    self._update_contact()
+                    self._update_database()
 
                 case ContactAction.TOGGLE_BLOCK:
                     self.blocked = not self._contact.is_blocked
+
+                    # Update opacity of mute action to visualize if the action is clickable
+                    button_toggle_mute.opacity = (
+                        0.5 if self._contact.is_blocked else 1.0
+                    )
 
                     update_sheet(
                         action_sheet=button_toggle_block,
@@ -223,7 +231,7 @@ class ContactWidget:
                     )
                     button_toggle_mute.update()
 
-                    self._update_contact()
+                    self._update_database()
 
                 case _:
                     raise ValueError(f"Action '{action.value}' not available!")
@@ -237,8 +245,10 @@ class ContactWidget:
         )
         button_toggle_mute: ft.CupertinoActionSheetAction = (
             ft.CupertinoActionSheetAction(
-                content=ft.Text(("Mute" if not self._contact.is_muted else "Unmute")),
+                content=ft.Text("Mute" if not self._contact.is_muted else "Unmute"),
+                disabled=self._contact.is_blocked,
                 on_click=lambda _: handle_click(action=ContactAction.TOGGLE_MUTE),
+                opacity=0.5 if self._contact.is_blocked else 1.0,
             )
         )
         button_toggle_block: ft.CupertinoActionSheetAction = (
@@ -285,8 +295,11 @@ class ContactWidget:
         self._page.open(bottom_sheet)
 
     def build(self) -> ft.Container:
-        self.refresh_icons()
         return self._contact_widget
+
+    @property
+    def contact_uuid(self) -> str:
+        return self._contact.contact_uuid
 
     @property
     def muted(self) -> bool:
@@ -295,8 +308,7 @@ class ContactWidget:
     @muted.setter
     def muted(self, value: bool) -> None:
         self._contact.is_muted = value
-        self._muted_icon.visible = value
-        self._muted_icon.update()
+        self._refresh_status_icons()
 
     @property
     def blocked(self) -> bool:
@@ -305,5 +317,12 @@ class ContactWidget:
     @blocked.setter
     def blocked(self, value: bool) -> None:
         self._contact.is_blocked = value
-        self._blocked_icon.visible = value
-        self._blocked_icon.update()
+        self._refresh_status_icons()
+
+    @property
+    def order_index(self) -> int:
+        return self._contact.order_index
+
+    @order_index.setter
+    def order_index(self, value: int) -> None:
+        self._contact.order_index = value
