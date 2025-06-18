@@ -15,6 +15,7 @@ class ContactData(TypedDict):
     username: str
     description: str
     onion_address: str
+    last_message_timestamp: Optional[float]
     muted: bool
     blocked: bool
 

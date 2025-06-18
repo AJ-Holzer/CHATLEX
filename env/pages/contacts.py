@@ -74,6 +74,7 @@ class ContactsPage:
             "username": username,
             "description": description,
             "onion_address": onion_address,
+            "last_message_timestamp": None,
             "muted": False,
             "blocked": False,
         }

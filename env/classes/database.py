@@ -32,6 +32,7 @@ class SQLiteDatabase:
             username TEXT NOT NULL UNIQUE,
             description TEXT,
             onion_address TEXT NOT NULL UNIQUE,
+            last_message_timestamp FLOAT DEFAULT NULL,
             muted BOOLEAN NOT NULL,
             blocked BOOLEAN NOT NULL
             )
@@ -44,7 +45,7 @@ class SQLiteDatabase:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             contact_uuid TEXT NOT NULL,
             message TEXT NOT NULL,
-            timestamp TEXT NOT NULL,
+            timestamp FLOAT NOT NULL,
             FOREIGN KEY(contact_uuid) REFERENCES contacts(contact_uuid)
             )
         """
@@ -85,7 +86,7 @@ class SQLiteDatabase:
     def insert_contact(self, contact_data: ContactData) -> None:
         # Insert data (encrypted)
         self._cur.execute(
-            "INSERT INTO contacts (contact_uuid, username, description, onion_address, muted, blocked) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO contacts (contact_uuid, username, description, onion_address, last_message_timestamp, muted, blocked) VALUES (?, ?, ?, ?, ?, ?, ?)",
             (
                 contact_data[
                     "contact_uuid"
@@ -102,6 +103,7 @@ class SQLiteDatabase:
                     data=contact_data["onion_address"],
                     encryption_key_info=config.HKDF_INFO_CONTACT,
                 ),
+                contact_data["last_message_timestamp"],
                 contact_data["muted"],
                 contact_data["blocked"],
             ),
@@ -111,6 +113,7 @@ class SQLiteDatabase:
 
     def insert_message(self, contact_uuid: str, message: str, timestamp: float) -> None:
         try:
+            # Insert timestamp for message
             self._cur.execute(
                 "INSERT INTO messages (contact_uuid, message, timestamp) VALUES (?, ?, ?)",
                 (
@@ -119,11 +122,14 @@ class SQLiteDatabase:
                         data=message,
                         encryption_key_info=config.HKDF_INFO_MESSAGE,
                     ),
-                    self._encrypt(
-                        data=str(timestamp),
-                        encryption_key_info=config.HKDF_INFO_MESSAGE,
-                    ),
+                    timestamp,
                 ),
+            )
+
+            # Update timestamp for contact
+            self._cur.execute(
+                "UPDATE contacts SET last_message_timestamp = ? WHERE contact_uuid = ?",
+                (timestamp, contact_uuid),
             )
             self.commit()
         except Exception as e:
@@ -156,8 +162,12 @@ class SQLiteDatabase:
 
     def retrieve_contacts(self) -> Optional[list[ContactData]]:
         # Select contacts
-        rows: list[tuple[str, str, str, str, int, int]] = self._cur.execute(
-            "SELECT contact_uuid, username, description, onion_address, muted, blocked FROM contacts"
+        rows: list[tuple[str, str, str, str, float, int, int]] = self._cur.execute(
+            """
+            SELECT contact_uuid, username, description, onion_address, muted, blocked
+            FROM contacts
+            ORDER BY last_message_timestamp, rowidx ASC
+            """
         ).fetchall()
 
         contacts: list[ContactData] = []
@@ -167,6 +177,7 @@ class SQLiteDatabase:
             encrypted_username,
             encrypted_description,
             encrypted_onion_address,
+            last_message_timestamp,
             is_muted,
             is_blocked,
         ) in rows:
@@ -185,6 +196,7 @@ class SQLiteDatabase:
                         data=encrypted_onion_address,
                         encryption_key_info=config.HKDF_INFO_CONTACT,
                     ),
+                    "last_message_timestamp": last_message_timestamp,
                     "muted": bool(is_muted),
                     "blocked": bool(is_blocked),
                 }
@@ -195,13 +207,13 @@ class SQLiteDatabase:
     def retrieve_messages(self, contact_uuid: str) -> Optional[list[MessageData]]:
         try:
             # Select messages
-            rows: list[tuple[str, str, str]] = self._cur.execute(
+            rows: list[tuple[str, str, float]] = self._cur.execute(
                 "SELECT id, message, timestamp FROM messages WHERE contact_uuid = ? ORDER BY timestamp ASC",
                 (contact_uuid,),
             ).fetchall()
 
             messages: list[MessageData] = []
-            for message_id, encrypted_message, encrypted_timestamp in rows:
+            for message_id, encrypted_message, timestamp in rows:
                 messages.append(
                     {
                         "id": message_id,
@@ -210,12 +222,7 @@ class SQLiteDatabase:
                             data=encrypted_message,
                             encryption_key_info=config.HKDF_INFO_MESSAGE,
                         ),
-                        "timestamp": float(
-                            self._decrypt(
-                                data=encrypted_timestamp,
-                                encryption_key_info=config.HKDF_INFO_MESSAGE,
-                            )
-                        ),
+                        "timestamp": timestamp,
                     }
                 )
 
@@ -322,6 +329,12 @@ class SQLiteDatabase:
 
     def delete_message(self, message_id: str) -> None:
         self._cur.execute("DELETE FROM messages WHERE id = ?", (message_id,))
+        self.commit()
+
+    def delete_user_messages(self, contact_uuid: str) -> None:
+        self._cur.execute(
+            "DELETE FROM messages WHERE contact_uuid = ?", (contact_uuid,)
+        )
         self.commit()
 
     def delete_device(self, device_uuid: str) -> None:
