@@ -9,6 +9,7 @@ from env.typing.dicts import ContactData, DeviceData, MessageData
 from env.typing.hashing import HKDFInfoKey
 
 
+# TODO: Add single functions to mute/block a user. Don't update the whole row (too much computing)!
 class SQLiteDatabase:
     def __init__(self, aes_encryptor: AES) -> None:
         self._db_path: str = paths.join_with_app_storage(path=config.DATABASE_FILE)
