@@ -28,13 +28,13 @@ class SQLiteDatabase:
         self._cur.execute(
             """
             CREATE TABLE IF NOT EXISTS contacts (
-            contact_uuid TEXT PRIMARY KEY,
+            contact_uuid TEXT PRIMARY KEY NOT NULL,
             username TEXT NOT NULL UNIQUE,
-            description TEXT,
+            description TEXT DEFAULT NULL,
             onion_address TEXT NOT NULL UNIQUE,
             last_message_timestamp FLOAT DEFAULT NULL,
-            muted BOOLEAN NOT NULL,
-            blocked BOOLEAN NOT NULL
+            muted BOOLEAN NOT NULL DEFAULT FALSE,
+            blocked BOOLEAN NOT NULL DEFAULT FALSE
             )
             """
         )
@@ -42,7 +42,7 @@ class SQLiteDatabase:
         self._cur.execute(
             """
             CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             contact_uuid TEXT NOT NULL,
             message TEXT NOT NULL,
             timestamp FLOAT NOT NULL,
@@ -54,7 +54,7 @@ class SQLiteDatabase:
         self._cur.execute(
             """
             CREATE TABLE IF NOT EXISTS devices (
-                device_uuid TEXT PRIMARY KEY,
+                device_uuid TEXT PRIMARY KEY NOT NULL,
                 onion_address TEXT NOT NULL,
                 name TEXT NOT NULL
             )
@@ -95,9 +95,13 @@ class SQLiteDatabase:
                     data=contact_data["username"],
                     encryption_key_info=config.HKDF_INFO_CONTACT,
                 ),
-                self._encrypt(
-                    data=contact_data["description"],
-                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                (
+                    self._encrypt(
+                        data=contact_data["description"],
+                        encryption_key_info=config.HKDF_INFO_CONTACT,
+                    )
+                    if contact_data["description"] is not None
+                    else None
                 ),
                 self._encrypt(
                     data=contact_data["onion_address"],
@@ -164,9 +168,9 @@ class SQLiteDatabase:
         # Select contacts
         rows: list[tuple[str, str, str, str, float, int, int]] = self._cur.execute(
             """
-            SELECT contact_uuid, username, description, onion_address, muted, blocked
+            SELECT contact_uuid, username, description, onion_address, last_message_timestamp, muted, blocked
             FROM contacts
-            ORDER BY last_message_timestamp, rowidx ASC
+            ORDER BY last_message_timestamp ASC
             """
         ).fetchall()
 
@@ -274,9 +278,13 @@ class SQLiteDatabase:
                     data=contact_data["username"],
                     encryption_key_info=config.HKDF_INFO_CONTACT,
                 ),
-                self._encrypt(
-                    data=contact_data["description"],
-                    encryption_key_info=config.HKDF_INFO_CONTACT,
+                (
+                    self._encrypt(
+                        data=contact_data["description"],
+                        encryption_key_info=config.HKDF_INFO_CONTACT,
+                    )
+                    if contact_data["description"] is not None
+                    else None
                 ),
                 self._encrypt(
                     data=contact_data["onion_address"],

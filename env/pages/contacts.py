@@ -16,7 +16,6 @@ from env.func.validations import is_valid_onion_address
 from env.typing.dicts import ContactData
 
 
-# TODO: Add automatic arrangement to the contacts list (sorted by last message)
 class ContactsPage:
     def __init__(self, page: ft.Page, storages: Storages, router: AppRouter) -> None:
         self._page: ft.Page = page
@@ -45,7 +44,7 @@ class ContactsPage:
     def _on_add_contact_submit(
         self,
         username: str,
-        description: str,
+        description: Optional[str],
         onion_address: str,
         alert: ft.AlertDialog,
     ) -> None:
@@ -108,7 +107,7 @@ class ContactsPage:
         # Create entries
         username_entry: ft.TextField = ft.TextField(label="Username", autofocus=True)
         description_entry: ft.TextField = ft.TextField(label="User Description")
-        onion_address_entry: ft.TextField = ft.TextField(label="IP Address")
+        onion_address_entry: ft.TextField = ft.TextField(label="Onion Address")
 
         # Open the alert
         alert: ft.AlertDialog = ft.AlertDialog(
@@ -126,7 +125,7 @@ class ContactsPage:
                     "Add",
                     on_click=lambda _: self._on_add_contact_submit(
                         username=str(username_entry.value),
-                        description=str(description_entry.value),
+                        description=description_entry.value,
                         onion_address=str(onion_address_entry.value),
                         alert=alert,
                     ),

@@ -13,7 +13,7 @@ class PageContent(TypedDict):
 class ContactData(TypedDict):
     contact_uuid: str
     username: str
-    description: str
+    description: Optional[str]
     onion_address: str
     last_message_timestamp: Optional[float]
     muted: bool
