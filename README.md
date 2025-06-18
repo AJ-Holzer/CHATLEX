@@ -4,9 +4,6 @@
 
 A next-generation messenger designed with uncompromising focus on privacy, security, and anonymity.
 
-> ## ℹ️ Important Info
-> Due to compatibility issues and performance concerns, this messenger will be completely rewritten in c++.
-> Stay tuned for updates!
 
 > 🚧 Active Development – Regular updates underway. Check the
 > [Roadmap](https://github.com/AJ-Holzer/High-security-messenger/?tab=readme-ov-file#-roadmap)
