@@ -5,7 +5,7 @@
 A next-generation messenger designed with uncompromising focus on privacy, security, and anonymity.
 
 > 🚧 Active Development – Regular updates underway. Check the
-> [Roadmap](https://github.com/AJ-Holzer/ZEPHRA/?tab=readme-ov-file#-roadmap)
+> [Roadmap](#-roadmap)
 > for what’s coming next.
 >
 > 🤝 Open Source & Community Driven
