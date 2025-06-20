@@ -54,7 +54,7 @@ Feel free to open an issue or start a discussion in the GitHub Repository.
 ## 📈 Roadmap
 
 - ✅ Storage logic (encryption, database)
-- 🚧 Pages
+- 🚧 Pages and appearance management
 - Sending (P2P)
 - Adding Contacts
 - Group Chats
