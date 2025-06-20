@@ -25,6 +25,8 @@ class Config:
     CS_USER_PASSWORD_IV: str = "password-iv"
     CS_USER_SALT: str = "salt"
     CS_LOGOUT_ON_LOST_FOCUS: str = "logout-on-lost-focus"
+    CS_SHAKE_DETECTION: str = "shake-detection"
+    CS_COLOR_SEED: str = "color-seed"
     SS_USER_SESSION_KEY: str = "session-key"
 
     # Settings for Argon2
@@ -70,6 +72,15 @@ class Config:
     # Contact settings
     COLOR_ONLINE: ft.ColorValue = ft.Colors.GREEN
     COLOR_OFFLINE: ft.ColorValue = ft.Colors.RED_400
+
+    # Shake settings (for logout)
+    SHAKE_THRESHOLD_GRAVITY: float = (
+        2.0  # How strong the phone has to be shaken to trigger logout function
+    )
+    SHAKE_ENABLED_DEFAULT: bool = True
+
+    # Default appearance settings
+    APPEARANCE_COLOR_SEED_DEFAULT: ft.ColorValue = ft.Colors.PURPLE
 
 
 config = Config()

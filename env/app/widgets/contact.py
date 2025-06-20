@@ -177,7 +177,11 @@ class ContactWidget:
 
             match action:
                 case ContactAction.RENAME:
-                    username_entry: ft.TextField = ft.TextField(label="New username")
+                    username_entry: ft.TextField = ft.TextField(
+                        label="New username",
+                        value=self._contact.username,
+                        autofocus=True,
+                    )
 
                     username_alert: ft.AlertDialog = ft.AlertDialog(
                         title=ft.Text(value=f"Rename '{self._contact.username}'"),

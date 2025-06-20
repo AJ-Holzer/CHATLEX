@@ -7,13 +7,19 @@ from env.classes.storages import Storages
 from env.config import config
 
 
+def logout(router: AppRouter, storages: Storages) -> None:
+    # Clear session data and redirect to login
+    storages.session_storage.clear()
+    router.go(route=config.ROUTE_LOGIN)
+
+
 def logout_on_lost_focus(
     e: Optional[ft.AppLifecycleStateChangeEvent],
     router: AppRouter,
     storages: Storages,
     force: bool = False,
 ) -> None:
-    # Skip if setting is not explicitly set to 'True'
+    # Skip logout if setting is not explicitly set to 'True'
     if (
         not storages.client_storage.get(
             key=config.CS_LOGOUT_ON_LOST_FOCUS,
@@ -25,6 +31,4 @@ def logout_on_lost_focus(
 
     # Check if focus lost
     if e is None or e.state != ft.AppLifecycleState.SHOW:
-        # Clear session data and redirect to login
-        storages.session_storage.clear()
-        router.go(route=config.ROUTE_LOGIN)
+        logout(router=router, storages=storages)

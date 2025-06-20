@@ -5,21 +5,30 @@ import flet as ft  # type:ignore[import-untyped]
 from env.app.widgets.container import MasterContainer
 from env.classes.hashing import ArgonHasher
 from env.classes.paths import paths
+from env.classes.phone_sensors import ShakeDetector
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
 from env.config import config
 from env.func.converter import byte_to_str, str_to_byte
 from env.func.generations import generate_iv, generate_salt
 
-# from env.classes.encryption import AES
-
 
 class LoginPage:
-    def __init__(self, page: ft.Page, storages: Storages, router: AppRouter) -> None:
+    def __init__(
+        self,
+        page: ft.Page,
+        storages: Storages,
+        router: AppRouter,
+        shake_detector: ShakeDetector,
+    ) -> None:
         # Initialize page
         self._page: ft.Page = page
         self._storages: Storages = storages
         self._router: AppRouter = router
+        self._shake_detector: ShakeDetector = shake_detector
+
+        # Disable shake detection to avoid logging out when already logged out
+        self._shake_detector.disable()
 
         # User stuff
         self._user_already_exists: bool = bool(
@@ -66,7 +75,10 @@ class LoginPage:
 
         # Entries
         self._entry_password: ft.TextField = ft.TextField(
-            label="Password", password=True, on_change=self._validate
+            label="Password",
+            password=True,
+            on_change=self._validate,
+            autofocus=True,
         )
         if not self._user_already_exists:
             self._entry_password_confirmation: ft.TextField = ft.TextField(
@@ -116,7 +128,7 @@ class LoginPage:
         self._button_submit.update()  # type:ignore
 
     def _create_account(self, e: ft.ControlEvent) -> None:
-        # Give the user feedback that something happens
+        # Give the user feedback that something is happening
         self._button_clickable(clickable=False)
         self._progress_visible(visible=True)
 
@@ -227,6 +239,7 @@ class LoginPage:
                         page=self._page,
                         storages=self._storages,
                         router=self._router,
+                        shake_detector=self._shake_detector,
                     ).build(),
                 ],
                 "execute_function": None,
@@ -292,6 +305,12 @@ class LoginPage:
         self._entry_password.update()
         if not self._user_already_exists:
             self._entry_password_confirmation.update()
+
+        # Enable shake detection if setting set to 'True'
+        if self._storages.client_storage.get(
+            key=config.CS_SHAKE_DETECTION, default=config.SHAKE_ENABLED_DEFAULT
+        ):
+            self._shake_detector.enable()
 
         self._router.go(config.ROUTE_CONTACTS)
 

@@ -1,16 +1,34 @@
 import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.container import MasterContainer
+from env.app.widgets.sections import Section
 from env.app.widgets.top_bars import SubPageTopBar
+from env.classes.phone_sensors import ShakeDetector
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
 
 
 class SettingsPage:
-    def __init__(self, page: ft.Page, router: AppRouter, storages: Storages) -> None:
+    def __init__(
+        self,
+        page: ft.Page,
+        router: AppRouter,
+        storages: Storages,
+        shake_detector: ShakeDetector,
+    ) -> None:
         self._page: ft.Page = page
         self._router: AppRouter = router
         self._storages: Storages = storages
+        self._shake_detector: ShakeDetector = shake_detector
+
+        # Create sections
+        # TODO: Add the ability to change color seed, font family and font size!
+        self._appearance_section: Section = Section(
+            title="Appearance",
+            content=[
+                ft.TextButton(text="Test Button"),
+            ],
+        )
 
         # TODO: Use sections (custom class for easier access and management
         # TODO: Add font settings (size, family, ...)
@@ -33,7 +51,13 @@ class SettingsPage:
                                 storages=self._storages,
                                 title="Settings",
                             ).build(),
-                            ft.Text("TEST"),
+                            ft.ListView(
+                                controls=[
+                                    self._appearance_section.build(),
+                                ],
+                                expand=True,
+                                spacing=20,
+                            ),
                         ],
                         expand=True,
                         alignment=ft.MainAxisAlignment.START,

@@ -3,15 +3,17 @@ import os
 import flet as ft  # type:ignore[import-untyped]
 
 from env.classes.paths import paths
+from env.classes.phone_sensors import ShakeDetector
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
 from env.config import config
 from env.func.logout import logout_on_lost_focus
-from env.func.update_themes import update_theme
+from env.func.update_themes import set_theme
 from env.pages.contacts import ContactsPage
 from env.pages.login import LoginPage
 from env.pages.profiles import UserProfilePage
 from env.pages.settings import SettingsPage
+from env.themes.themes import Themes
 
 
 def main(page: ft.Page) -> None:
@@ -32,11 +34,31 @@ def main(page: ft.Page) -> None:
     # Initialize storage
     storages: Storages = Storages(page=page)
 
+    # Initialize shake detector for logging out on shaking
+    shake_detector: ShakeDetector = ShakeDetector(
+        page=page,
+        router=router,
+        storages=storages,
+    )
+
+    # Initialize themes
+    themes: Themes = Themes(
+        color_seed=storages.client_storage.get(
+            key=config.CS_COLOR_SEED,
+            default=config.APPEARANCE_COLOR_SEED_DEFAULT,
+        )
+    )
+
     # Update page to apply visuals
     page.update()  # type:ignore
 
     # Login page
-    login_page: LoginPage = LoginPage(page=page, storages=storages, router=router)
+    login_page: LoginPage = LoginPage(
+        page=page,
+        storages=storages,
+        router=router,
+        shake_detector=shake_detector,
+    )
     router.add_route(
         route=config.ROUTE_LOGIN,
         content={
@@ -72,6 +94,7 @@ def main(page: ft.Page) -> None:
         page=page,
         router=router,
         storages=storages,
+        shake_detector=shake_detector,
     )
     router.add_route(
         route=config.ROUTE_SETTINGS,
@@ -106,15 +129,16 @@ def main(page: ft.Page) -> None:
     # Go to login page
     router.go(route=config.ROUTE_LOGIN)
 
+    # Create shake detection logout function
+
     # Add events
-    # TODO: Add the ability to logout on shaking (but only on android) --> https://flet.dev/docs/controls/shakedetector
-    page.on_platform_brightness_change = lambda _: update_theme(page=page)
+    page.on_platform_brightness_change = lambda _: set_theme(page=page, themes=themes)
     page.on_app_lifecycle_state_change = lambda e: logout_on_lost_focus(
         e=e, router=router, storages=storages
     )
 
     # Update theme
-    update_theme(page=page)
+    set_theme(page=page, themes=themes)
 
 
 if __name__ == "__main__":
