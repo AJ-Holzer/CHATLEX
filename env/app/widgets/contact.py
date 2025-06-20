@@ -145,7 +145,7 @@ class ContactWidget:
             contact_data=self._contact.contact_data,
         )
 
-    def update(self) -> None:
+    def refresh_widget(self) -> None:
         self._contact_widget.update()
         self._muted_icon.update()
         self._blocked_icon.update()
@@ -235,7 +235,7 @@ class ContactWidget:
                 case _:
                     raise ValueError(f"Action '{action.value}' not available!")
 
-            self.update()
+            self.refresh_widget()
 
         # Create buttons
         button_rename: ft.CupertinoActionSheetAction = ft.CupertinoActionSheetAction(

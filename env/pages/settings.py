@@ -12,7 +12,14 @@ class SettingsPage:
         self._router: AppRouter = router
         self._storages: Storages = storages
 
-        # TODO: Add settings to customize UI and chat experience!
+        # TODO: Use sections (custom class for easier access and management
+        # TODO: Add font settings (size, family, ...)
+        # TODO: Add shake detection settings (threshold_gravity, minimum_shake) --> for logging out
+        # TODO: Add auto logout on lost focus
+        # TODO: Add donation button
+        # TODO: Add about section
+        # TODO: Add delete data button
+        # TODO: Add color change settings (theme color)
 
     def build(self) -> ft.Container:
         return MasterContainer(
