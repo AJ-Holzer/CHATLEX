@@ -27,9 +27,6 @@ class LoginPage:
         self._router: AppRouter = router
         self._shake_detector: ShakeDetector = shake_detector
 
-        # Disable shake detection to avoid logging out when already logged out
-        self._shake_detector.disable()
-
         # User stuff
         self._user_already_exists: bool = bool(
             self._storages.client_storage.get(key=config.CS_USER_PASSWORD_HASH)
@@ -137,7 +134,7 @@ class LoginPage:
 
         if self._entry_password.value != self._entry_password_confirmation.value:
             pwd_not_equal_alert: ft.AlertDialog = ft.AlertDialog(
-                modal=True,
+                modal=False,
                 title=ft.Text(value="Incorrect Password!"),
                 content=ft.Text(
                     value="The passwords you entered are not equal! Please enter them again."
@@ -319,6 +316,11 @@ class LoginPage:
             self._shake_detector.enable()
 
         self._router.go(config.ROUTE_CONTACTS)
+
+    def _initialize(self) -> None:
+        # Disable shake detector when showing login page to avoid logging out
+        # when not logged in
+        self._shake_detector.disable()
 
     def build(self) -> ft.Container:
         return MasterContainer(
