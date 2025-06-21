@@ -44,17 +44,15 @@ def main(page: ft.Page) -> None:
 
     # Initialize themes
     themes: Themes = Themes(
+        page=page,
         color_seed=storages.client_storage.get(
             key=config.CS_COLOR_SEED,
             default=config.APPEARANCE_COLOR_SEED_DEFAULT,
-        )
+        ),
     )
 
     # Update page to apply visuals
     page.update()  # type:ignore
-
-    # TODO: Remove this line!
-    storages.client_storage.clear()
 
     # Login page
     login_page: LoginPage = LoginPage(
@@ -99,6 +97,7 @@ def main(page: ft.Page) -> None:
         router=router,
         storages=storages,
         shake_detector=shake_detector,
+        themes=themes,
     )
     router.add_route(
         route=config.ROUTE_SETTINGS,

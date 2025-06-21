@@ -17,6 +17,7 @@ class TopBar:
             value=config.APP_TITLE,
             weight=ft.FontWeight.BOLD,
             size=config.TOP_BAR_LABEL_HEIGHT,
+            color=ft.Colors.PRIMARY,
         )
 
         # Initialize buttons
@@ -95,6 +96,7 @@ class SubPageTopBar:
             size=config.TOP_BAR_LABEL_HEIGHT,
             text_align=ft.TextAlign.CENTER,
             expand=True,
+            color=ft.Colors.PRIMARY,
         )
 
         # Initialize buttons

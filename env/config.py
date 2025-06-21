@@ -85,5 +85,12 @@ class Config:
     # Default appearance settings
     APPEARANCE_COLOR_SEED_DEFAULT: ft.ColorValue = ft.Colors.PURPLE
 
+    # Color picker settings
+    COLOR_PICKER_AMOUNT_COLORS: int = (
+        16  # The amount of color available in the color picker
+    )
+    COLOR_PICKER_BUTTON_SIZE: int = 20
+    COLOR_PICKER_BUTTON_SPACING: int = 10
+
 
 config = Config()
