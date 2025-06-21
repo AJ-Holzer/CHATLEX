@@ -9,7 +9,6 @@ from env.classes.phone_sensors import ShakeDetector
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
 from env.config import config
-from env.func.update_themes import set_theme
 from env.themes.themes import Themes
 
 
@@ -31,11 +30,51 @@ class SettingsPage:
         # Initialize color picker
         self._theme_color_picker: ColorPicker = ColorPicker(
             page=self._page,
-            on_color_click=self._change_theme_color,
+            on_color_click=self._themes.change_seed_color,
+        )
+
+        # Create font family chooser
+        if self._page.fonts:
+            font_options = [
+                ft.dropdown.Option(key=font_family, text=font_family)
+                for font_family in self._page.fonts.keys()
+            ]
+        else:
+            font_options = [
+                ft.dropdown.Option(
+                    key=self._themes.font_family,
+                    text=self._themes.font_family,
+                )
+            ]
+        self._font_family_chooser: ft.Dropdown = ft.Dropdown(
+            value=self._themes.font_family,
+            options=font_options,
+            label="Font Family",
+            on_change=self._change_font_family,
+        )
+
+        # Crate font size slider
+        # TODO: Create a 'DescriptiveSlider' class instead!
+        self._font_size_label: ft.Container = ft.Container(
+            content=ft.Text(
+                value="Font Size",
+                expand=True,
+                text_align=ft.TextAlign.CENTER,
+                theme_style=ft.TextThemeStyle.HEADLINE_SMALL,
+            ),
+            padding=ft.padding.only(top=10),
+        )
+        self._font_size_slider: ft.Slider = ft.Slider(
+            value=self._themes.font_size,
+            min=config.FONT_SIZE_MIN,
+            max=config.FONT_SIZE_MAX,
+            on_change_end=self._change_font_size,
+            label="Font Size: {value}",
+            divisions=abs(config.FONT_SIZE_MAX - config.FONT_SIZE_MIN),
+            expand=True,
         )
 
         # Create sections
-        # TODO: Add the ability to change color seed, font family and font size!
         self._appearance_section: Section = Section(
             title="Appearance",
             content=[
@@ -44,6 +83,9 @@ class SettingsPage:
                     icon=ft.Icons.COLOR_LENS_OUTLINED,
                     func=lambda: self._page.open(self._theme_color_picker.build()),
                 ).build(),
+                self._font_family_chooser,
+                self._font_size_label,
+                self._font_size_slider,
             ],
         )
 
@@ -55,11 +97,22 @@ class SettingsPage:
         # TODO: Add about section
         # TODO: Add delete data button
         # TODO: Add color change settings (theme color)
+        # TODO: Add password changing
 
-    def _change_theme_color(self, color: ft.ColorValue) -> None:
-        self._storages.client_storage.set(key=config.CS_COLOR_SEED, value=color)
-        self._themes.change_seed_color(new_color=color)
-        set_theme(page=self._page, themes=self._themes)
+    def _change_font_family(self, e: ft.ControlEvent) -> None:
+        if not e.data:
+            raise ValueError(
+                f"There is no drop down option when changing font family. Got '{e}'!"
+            )
+        self._themes.change_font_family(new_font_family=str(e.data))
+
+    def _change_font_size(self, e: ft.ControlEvent) -> None:
+        if e.data is None:
+            raise ValueError("No font size provided!")
+        if float(e.data) < 0.0:
+            raise ValueError("Font size is not allowed to be negative!")
+
+        self._themes.change_font_size(new_font_size=int(float(e.data)))
 
     def build(self) -> ft.Container:
         return MasterContainer(
@@ -83,7 +136,7 @@ class SettingsPage:
                         ],
                         expand=True,
                         alignment=ft.MainAxisAlignment.START,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                     ),
                 ],
                 expand=True,

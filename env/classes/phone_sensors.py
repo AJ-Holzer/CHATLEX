@@ -19,13 +19,18 @@ class ShakeDetector:
         )
 
     def enable(self) -> None:
+        if self._shake_detector in self._page.overlay:
+            return
+
         self._page.overlay.append(self._shake_detector)
+        self._page.update()  # type:ignore
 
     def disable(self) -> None:
         if self._shake_detector not in self._page.overlay:
             return
 
         self._page.overlay.remove(self._shake_detector)
+        self._page.update()  # type:ignore
 
     @property
     def shake_detector(self) -> ft.ShakeDetector:

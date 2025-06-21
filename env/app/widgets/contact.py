@@ -37,10 +37,13 @@ class ContactWidget:
         )
 
         # Initialize icon
+        # TODO: Update the logo if username changed!
+        # TODO: Check if font is updated too!
+        # TODO: Use font size of 20!
         self._icon_background: ft.CircleAvatar = ft.CircleAvatar(
-            content=ft.Text(value=self._contact.initials),
+            content=ft.Text(value=self._contact.initials, size=15),
             max_radius=20,
-            bgcolor=ft.Colors.PURPLE_900,
+            bgcolor=ft.Colors.PRIMARY,
             color=ft.Colors.WHITE,
         )
         self._icon_online_indicator: ft.CircleAvatar = ft.CircleAvatar(

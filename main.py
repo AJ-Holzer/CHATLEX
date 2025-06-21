@@ -8,7 +8,6 @@ from env.classes.router import AppRouter
 from env.classes.storages import Storages
 from env.config import config
 from env.func.logout import logout_on_lost_focus
-from env.func.update_themes import set_theme
 from env.pages.calibration import CalibrationsPage
 from env.pages.contacts import ContactsPage
 from env.pages.login import LoginPage
@@ -29,6 +28,10 @@ def main(page: ft.Page) -> None:
     page.window.width = config.APP_WIDTH
     page.window.height = config.APP_HEIGHT
 
+    # TODO: Add the ability to add more fonts (online)
+    # Add global fonts
+    page.fonts = config.FONT_FAMILIES_LOCAL
+
     # Initialize router
     router: AppRouter = AppRouter(page=page)
 
@@ -43,13 +46,7 @@ def main(page: ft.Page) -> None:
     )
 
     # Initialize themes
-    themes: Themes = Themes(
-        page=page,
-        color_seed=storages.client_storage.get(
-            key=config.CS_COLOR_SEED,
-            default=config.APPEARANCE_COLOR_SEED_DEFAULT,
-        ),
-    )
+    themes: Themes = Themes(page=page, storages=storages)
 
     # Update page to apply visuals
     page.update()  # type:ignore
@@ -146,13 +143,13 @@ def main(page: ft.Page) -> None:
     )
 
     # Update theme
-    set_theme(page=page, themes=themes)
+    themes.set_theme()
 
     # Go to login page
     router.go(route=config.ROUTE_CALIBRATIONS)
 
     # Add events
-    page.on_platform_brightness_change = lambda _: set_theme(page=page, themes=themes)
+    page.on_platform_brightness_change = lambda _: themes.set_theme()
     page.on_app_lifecycle_state_change = lambda e: logout_on_lost_focus(
         e=e, router=router, storages=storages
     )

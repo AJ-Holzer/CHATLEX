@@ -48,6 +48,8 @@ class ContactsPage:
         onion_address: str,
         alert: ft.AlertDialog,
     ) -> None:
+        # Add '.onion' suffix to onion address
+        modified_onion_address: str = onion_address + ".onion"
 
         # Check if everything provided
         if not all([username, onion_address]):
@@ -57,7 +59,7 @@ class ContactsPage:
             return
 
         # Check if onion address is valid
-        if not is_valid_onion_address(addr=onion_address):
+        if not is_valid_onion_address(addr=modified_onion_address):
             print(f"Onion address not valid! addr='{onion_address}'")
             return
 
@@ -72,7 +74,7 @@ class ContactsPage:
             "contact_uuid": contact_uuid,
             "username": username,
             "description": description,
-            "onion_address": onion_address,
+            "onion_address": modified_onion_address,
             "last_message_timestamp": None,
             "muted": False,
             "blocked": False,
@@ -107,7 +109,10 @@ class ContactsPage:
         # Create entries
         username_entry: ft.TextField = ft.TextField(label="Username", autofocus=True)
         description_entry: ft.TextField = ft.TextField(label="User Description")
-        onion_address_entry: ft.TextField = ft.TextField(label="Onion Address")
+        onion_address_entry: ft.TextField = ft.TextField(
+            label="Onion Address",
+            suffix_text=".onion",
+        )
 
         # Open the alert
         alert: ft.AlertDialog = ft.AlertDialog(

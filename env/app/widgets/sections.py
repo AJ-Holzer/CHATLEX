@@ -21,7 +21,11 @@ class Section:
         self._content: ft.Container = ft.Container(
             content=ft.Row(
                 controls=[
-                    ft.Column(controls=content),
+                    ft.Column(
+                        controls=content,
+                        expand=True,
+                        horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+                    ),
                 ],
                 expand=True,
             ),
@@ -41,13 +45,17 @@ class Section:
                         ],
                         expand=True,
                         alignment=ft.MainAxisAlignment.CENTER,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                     ),
                 ],
                 expand=True,
                 alignment=ft.MainAxisAlignment.CENTER,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
-            border=ft.border.all(width=1, color=ft.Colors.PRIMARY),
+            border=ft.border.all(
+                width=1,
+                color=ft.Colors.PRIMARY,
+            ),
             border_radius=15,
+            expand=True,
         )

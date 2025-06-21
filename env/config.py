@@ -28,6 +28,8 @@ class Config:
     CS_LOGOUT_ON_LOST_FOCUS: str = "logout-on-lost-focus"
     CS_SHAKE_DETECTION: str = "shake-detection"
     CS_COLOR_SEED: str = "color-seed"
+    CS_FONT_FAMILY: str = "font"
+    CS_FONT_SIZE: str = "font-size"
     SS_USER_SESSION_KEY: str = "session-key"
 
     # Settings for Argon2
@@ -84,13 +86,24 @@ class Config:
 
     # Default appearance settings
     APPEARANCE_COLOR_SEED_DEFAULT: ft.ColorValue = ft.Colors.PURPLE
-
+    APPEARANCE_FONT_FAMILY_DEFAULT: str = "varela-round"
+    APPEARANCE_FONT_SIZE_DEFAULT: int = 20
     # Color picker settings
     COLOR_PICKER_AMOUNT_COLORS: int = (
         16  # The amount of color available in the color picker
     )
     COLOR_PICKER_BUTTON_SIZE: int = 20
     COLOR_PICKER_BUTTON_SPACING: int = 10
+
+    # Fonts
+    FONT_FAMILIES_LOCAL: dict[str, str] = {
+        "varela-round": "fonts/varela_round.ttf",
+        "baloo-bhaijaan": "fonts/baloo_bhaijaan.ttf",
+    }
+
+    # Font settings
+    FONT_SIZE_MIN: int = 10
+    FONT_SIZE_MAX: int = 30
 
 
 config = Config()
