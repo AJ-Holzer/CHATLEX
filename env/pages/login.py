@@ -73,10 +73,14 @@ class LoginPage:
             password=True,
             on_change=self._validate,
             autofocus=True,
+            autocorrect=False,
         )
         if not self._user_already_exists:
             self._entry_password_confirmation: ft.TextField = ft.TextField(
-                label="Confirm Password", password=True, on_change=self._validate
+                label="Confirm Password",
+                password=True,
+                on_change=self._validate,
+                autocorrect=False,
             )
 
         # Buttons
