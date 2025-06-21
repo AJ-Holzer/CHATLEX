@@ -2,7 +2,6 @@ import os
 
 line_num: int = 0
 
-
 # Count all lines in every file
 for root, _, filenames in os.walk("./"):
     if any(word in root for word in ["build", ".history", ".backup", ".trunk"]):
@@ -24,6 +23,5 @@ for root, _, filenames in os.walk("./"):
                     continue
 
                 line_num += 1
-
 
 print(line_num)
