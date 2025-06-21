@@ -3,9 +3,9 @@ cls
 
 @REM Build apk
 flet build apk ^
-    --description "ZEPHRA -- Secure. Anonymous. Decentralized." ^
-    --project "ZEPHRA" ^
-    --product "ZEPHRA" ^
+    --description "ChatLex -- Secure. Anonymous. Decentralized." ^
+    --project "ChatLex" ^
+    --product "ChatLex" ^
     --org "sites.ajservers" ^
     --source-packages certifi pyaes argon2 ^
     --clear-cache ^

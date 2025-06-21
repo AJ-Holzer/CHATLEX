@@ -1,6 +1,6 @@
 <!-- trunk-ignore-all(markdownlint/MD026) -->
 
-# 🔐 ZEPHRA – Secure. Anonymous. Decentralized.
+# 🔐 ChatLex – Secure. Anonymous. Decentralized.
 
 A next-generation messenger designed with uncompromising focus on privacy, security, and anonymity.
 
@@ -13,7 +13,7 @@ A next-generation messenger designed with uncompromising focus on privacy, secur
 
 > ## ⚠️ Legal Disclaimer
 >
-> **ZEPHRA** is created for lawful, educational, and research purposes only. Misuse is strictly discouraged.
+> **ChatLex** is created for lawful, educational, and research purposes only. Misuse is strictly discouraged.
 > By using this software, you accept full responsibility for ensuring your compliance with local
 > laws and regulations regarding encryption and communication.
 >

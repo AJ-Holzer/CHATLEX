@@ -5,7 +5,7 @@ import flet as ft  # type:ignore[import-untyped]
 
 class Config:
     # Window settings
-    APP_TITLE: str = "ZEPHRA"
+    APP_TITLE: str = "ChatLex"
     APP_TITLE_SEPARATOR: str = " - "
     APP_RESIZABLE: bool = False
     APP_WIDTH: int = 400

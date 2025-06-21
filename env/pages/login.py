@@ -317,7 +317,7 @@ class LoginPage:
 
         self._router.go(config.ROUTE_CONTACTS)
 
-    def _initialize(self) -> None:
+    def initialize(self) -> None:
         # Disable shake detector when showing login page to avoid logging out
         # when not logged in
         self._shake_detector.disable()

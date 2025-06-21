@@ -68,7 +68,7 @@ def main(page: ft.Page) -> None:
             "page_content": [
                 login_page.build(),
             ],
-            "execute_function": None,
+            "execute_function": login_page.initialize,
             "function_args": None,
         },
     )
