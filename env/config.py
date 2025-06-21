@@ -24,16 +24,18 @@ class Config:
     CS_USER_PASSWORD_HASH: str = "password-hash"
     CS_USER_PASSWORD_IV: str = "password-iv"
     CS_USER_SALT: str = "salt"
+    CS_PASSWORD_HASH_TIME_COST: str = "pwd-hash-time-cost"
     CS_LOGOUT_ON_LOST_FOCUS: str = "logout-on-lost-focus"
     CS_SHAKE_DETECTION: str = "shake-detection"
     CS_COLOR_SEED: str = "color-seed"
     SS_USER_SESSION_KEY: str = "session-key"
 
     # Settings for Argon2
-    ARGON2_TIME_COST: int = 40  # Increase for more security (more iterations)
     ARGON2_MEMORY_COST: int = 65536  # 64 MB
     ARGON2_PARALLELISM: int = 2
     ARGON2_HASH_LEN: int = 32  # 256-bit key
+    ARGON2_MAX_TIME_COST_CALIBRATION: int = 70  # The max time cost for password hashing
+    ARGON2_TARGET_PASSWORD_DURATION: float = 0.5  # The duration for password hashing
 
     # Salt settings
     SALT_LENGTH: int = 32
@@ -49,6 +51,7 @@ class Config:
     ROUTE_LOGIN: str = "/login"
     ROUTE_PROFILE: str = "/profile"
     ROUTE_SETTINGS: str = "/settings"
+    ROUTE_CALIBRATIONS: str = "/calibrations"
 
     # Encoding settings
     ENCODING: str = "UTF-8"

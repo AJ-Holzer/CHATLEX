@@ -70,9 +70,6 @@ class LoginPage:
                 f"Stored salt '{str(stored_salt)}' is invalid! Try reinstalling the app!"
             )
 
-        # Initialize hasher
-        self._argon_hasher: ArgonHasher = ArgonHasher()
-
         # Entries
         self._entry_password: ft.TextField = ft.TextField(
             label="Password",
@@ -127,7 +124,13 @@ class LoginPage:
 
         self._button_submit.update()  # type:ignore
 
+    def _get_argon2_hasher(self) -> ArgonHasher:
+        return ArgonHasher(storages=self._storages)
+
     def _create_account(self, e: ft.ControlEvent) -> None:
+        # Initialize Argon2 hasher
+        argon_hasher: ArgonHasher = self._get_argon2_hasher()
+
         # Give the user feedback that something is happening
         self._button_clickable(clickable=False)
         self._progress_visible(visible=True)
@@ -204,7 +207,7 @@ class LoginPage:
         self._progress_visible(visible=True)
 
         # Generate password hash
-        pwd_hash: str = self._argon_hasher.hash_password(
+        pwd_hash: str = argon_hasher.hash_password(
             password=str(self._entry_password.value)
         )
 
@@ -249,11 +252,14 @@ class LoginPage:
         self._router.go(config.ROUTE_LOGIN)
 
     def _login(self, e: ft.ControlEvent) -> None:
+        # Initialize Argon2 hasher
+        argon_hasher: ArgonHasher = self._get_argon2_hasher()
+
         # Give the user feedback that something happens
         self._button_clickable(clickable=False)
         self._progress_visible(visible=True)
 
-        if not self._password_hash or not self._argon_hasher.verify_password(
+        if not self._password_hash or not argon_hasher.verify_password(
             hash=self._password_hash, password=str(self._entry_password.value)
         ):
             wrong_pwd_alert: ft.AlertDialog = ft.AlertDialog(
@@ -287,7 +293,7 @@ class LoginPage:
         self._storages.session_storage.set(
             key=config.SS_USER_SESSION_KEY,
             value=byte_to_str(
-                data=self._argon_hasher.derive_key(
+                data=argon_hasher.derive_key(
                     password=str(self._entry_password.value),
                     salt=self._salt,
                 )

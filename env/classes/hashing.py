@@ -6,19 +6,35 @@ from argon2.low_level import Type, hash_secret_raw
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
+from env.classes.storages import Storages
 from env.config import config
 from env.func.generations import generate_salt
 from env.typing.hashing import HKDFInfoKey
 
 
 class ArgonHasher:
-    def __init__(self) -> None:
-        self.ARGON2_HASH_PATTERN: re.Pattern[str] = re.compile(
+    def __init__(self, storages: Storages) -> None:
+        self._storages: Storages = storages
+
+        # Get time cost
+        self._storage_time_cost: Optional[int] = self._storages.client_storage.get(
+            key=config.CS_PASSWORD_HASH_TIME_COST, default=None
+        )
+
+        # Check if time cost is defined
+        if self._storage_time_cost is None:
+            raise ValueError("No time cost provided!")
+
+        # Define time cost
+        self._time_cost: int = self._storage_time_cost
+
+        # Create Argon2 hash pattern
+        self._ARGON2_HASH_PATTERN: re.Pattern[str] = re.compile(
             r"^\$argon2(id|i)\$v=\d+\$m=\d+,t=\d+,p=\d+\$.+"
         )
 
     def _validate_hash(self, hash: str) -> bool:
-        return bool(self.ARGON2_HASH_PATTERN.match(string=hash))
+        return bool(self._ARGON2_HASH_PATTERN.match(string=hash))
 
     def hash_password(self, password: str) -> str:
         # Check if password exists
@@ -27,7 +43,7 @@ class ArgonHasher:
 
         # Initialize hasher
         ph: PasswordHasher = PasswordHasher(
-            time_cost=config.ARGON2_TIME_COST,
+            time_cost=self._time_cost,
             memory_cost=config.ARGON2_MEMORY_COST,
             parallelism=config.ARGON2_PARALLELISM,
             hash_len=config.ARGON2_HASH_LEN,
@@ -42,7 +58,7 @@ class ArgonHasher:
 
         # Initialize hasher
         ph: PasswordHasher = PasswordHasher(
-            time_cost=config.ARGON2_TIME_COST,
+            time_cost=self._time_cost,
             memory_cost=config.ARGON2_MEMORY_COST,
             parallelism=config.ARGON2_PARALLELISM,
             hash_len=config.ARGON2_HASH_LEN,
@@ -57,7 +73,7 @@ class ArgonHasher:
         return hash_secret_raw(
             secret=password.encode(config.ENCODING),
             salt=salt,
-            time_cost=config.ARGON2_TIME_COST,
+            time_cost=self._time_cost,
             memory_cost=config.ARGON2_MEMORY_COST,
             parallelism=config.ARGON2_PARALLELISM,
             hash_len=config.ARGON2_HASH_LEN,

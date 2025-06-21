@@ -7,3 +7,4 @@ __pycache__/
 /tests/
 pyproject.toml
 count_lines.py
+run_test.py

@@ -9,6 +9,7 @@ from env.classes.storages import Storages
 from env.config import config
 from env.func.logout import logout_on_lost_focus
 from env.func.update_themes import set_theme
+from env.pages.calibration import CalibrationsPage
 from env.pages.contacts import ContactsPage
 from env.pages.login import LoginPage
 from env.pages.profiles import UserProfilePage
@@ -51,6 +52,9 @@ def main(page: ft.Page) -> None:
 
     # Update page to apply visuals
     page.update()  # type:ignore
+
+    # TODO: Remove this line!
+    storages.client_storage.clear()
 
     # Login page
     login_page: LoginPage = LoginPage(
@@ -126,19 +130,33 @@ def main(page: ft.Page) -> None:
         },
     )
 
-    # Go to login page
-    router.go(route=config.ROUTE_LOGIN)
+    # Calibration page
+    calibration_page: CalibrationsPage = CalibrationsPage(
+        page=page,
+        router=router,
+        storages=storages,
+    )
+    router.add_route(
+        route=config.ROUTE_CALIBRATIONS,
+        content={
+            "title": "Calibration",
+            "page_content": [calibration_page.build()],
+            "execute_function": calibration_page.calibrate,
+            "function_args": None,
+        },
+    )
 
-    # Create shake detection logout function
+    # Update theme
+    set_theme(page=page, themes=themes)
+
+    # Go to login page
+    router.go(route=config.ROUTE_CALIBRATIONS)
 
     # Add events
     page.on_platform_brightness_change = lambda _: set_theme(page=page, themes=themes)
     page.on_app_lifecycle_state_change = lambda e: logout_on_lost_focus(
         e=e, router=router, storages=storages
     )
-
-    # Update theme
-    set_theme(page=page, themes=themes)
 
 
 if __name__ == "__main__":
