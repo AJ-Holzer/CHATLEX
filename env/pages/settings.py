@@ -6,7 +6,6 @@ from env.app.widgets.container import MasterContainer
 from env.app.widgets.sections import Section
 from env.app.widgets.sliders import DescriptiveSlider
 from env.app.widgets.top_bars import SubPageTopBar
-from env.classes.phone_sensors import ShakeDetector
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
 from env.config import config
@@ -19,13 +18,11 @@ class SettingsPage:
         page: ft.Page,
         router: AppRouter,
         storages: Storages,
-        shake_detector: ShakeDetector,
         themes: Themes,
     ) -> None:
         self._page: ft.Page = page
         self._router: AppRouter = router
         self._storages: Storages = storages
-        self._shake_detector: ShakeDetector = shake_detector
         self._themes: Themes = themes
 
         " === Controls Appearance Section === "
@@ -101,20 +98,18 @@ class SettingsPage:
                 SectionToggle(
                     text="Logout on Shake Detection",
                     toggle_value=self._storages.client_storage.get(
-                        key=config.CS_SHAKE_DETECTION,
-                        default=config.SHAKE_ENABLED_DEFAULT,
+                        key=config.CS_SHAKE_DETECTION_ENABLED,
+                        default=config.SHAKE_DETECTION_ENABLED_DEFAULT,
                     ),
                     on_click=self._toggle_logout_shake_detection,
                 ).build(),
             ],
         )
 
-        # TODO: Add shake detection settings (threshold_gravity, minimum_shake) --> for logging out
-        # TODO: Add auto logout on lost focus
-        # TODO: Add donation button
-        # TODO: Add about section
+        # TODO: Add 'Support' section (--> donation, about)
         # TODO: Add delete data button
-        # TODO: Add password changing
+        # TODO: Add update button
+        # TODO: Add change password button
 
     def _change_font_family(self, e: ft.ControlEvent) -> None:
         if not e.data:
@@ -143,7 +138,7 @@ class SettingsPage:
         value: bool = True if e.data == "true" else False
 
         self._storages.client_storage.set(
-            key=config.CS_SHAKE_DETECTION,
+            key=config.CS_SHAKE_DETECTION_ENABLED,
             value=value,
         )
 

@@ -26,10 +26,11 @@ class Config:
     CS_USER_SALT: str = "salt"
     CS_PASSWORD_HASH_TIME_COST: str = "pwd-hash-time-cost"
     CS_LOGOUT_ON_LOST_FOCUS: str = "logout-on-lost-focus"
-    CS_SHAKE_DETECTION: str = "shake-detection"
+    CS_SHAKE_DETECTION_ENABLED: str = "shake-detection-enabled"
     CS_COLOR_SEED: str = "color-seed"
     CS_FONT_FAMILY: str = "font"
     CS_FONT_SIZE: str = "font-size"
+    CS_SHAKE_DETECTION_THRESHOLD_GRAVITY: str = "shake-detection-threshold-gravity"
     SS_USER_SESSION_KEY: str = "session-key"
 
     # Settings for Argon2
@@ -79,10 +80,12 @@ class Config:
     COLOR_OFFLINE: ft.ColorValue = ft.Colors.RED_400
 
     # Shake settings (for logout)
-    SHAKE_THRESHOLD_GRAVITY: float = (
+    SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT: float = (
         2.0  # How strong the phone has to be shaken to trigger logout function
     )
-    SHAKE_ENABLED_DEFAULT: bool = True
+    SHAKE_DETECTION_THRESHOLD_GRAVITY_MIN: float = 1.3
+    SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX: float = 2.5
+    SHAKE_DETECTION_ENABLED_DEFAULT: bool = False
 
     # Default appearance settings
     APPEARANCE_COLOR_SEED_DEFAULT: ft.ColorValue = ft.Colors.PURPLE

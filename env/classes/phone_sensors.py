@@ -12,25 +12,17 @@ class ShakeDetector:
         self._router: AppRouter = router
         self._storages: Storages = storages
 
-        # Whether shake detection is enabled
-        self._enabled: bool = self._storages.client_storage.get(
-            key=config.CS_SHAKE_DETECTION,
-            default=config.SHAKE_ENABLED_DEFAULT,
-        )
-
         # Initialize shake detector instance
         self._shake_detector: ft.ShakeDetector = ft.ShakeDetector(
-            shake_threshold_gravity=config.SHAKE_THRESHOLD_GRAVITY,
-            on_shake=lambda _: self._logout(),
+            SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT,
+            on_shake=self._logout,
         )
 
-    def _logout(self) -> None:
+    def _logout(self, e: ft.ControlEvent) -> None:
         # Skip if setting is set to 'False'
-        if (
-            not self._storages.client_storage.get(
-                key=config.CS_SHAKE_DETECTION, default=config.SHAKE_ENABLED_DEFAULT
-            )
-            or not self._enabled
+        if not self._storages.client_storage.get(
+            key=config.CS_SHAKE_DETECTION_ENABLED,
+            default=config.SHAKE_DETECTION_ENABLED_DEFAULT,
         ):
             return
 
@@ -49,7 +41,3 @@ class ShakeDetector:
 
         self._page.overlay.remove(self._shake_detector)
         self._page.update()  # type:ignore
-
-    @property
-    def shake_detector(self) -> ft.ShakeDetector:
-        return self._shake_detector

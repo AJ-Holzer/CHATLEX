@@ -37,10 +37,6 @@ class ContactWidget:
         )
 
         # Initialize icon
-        # TODO: Update the logo if username changed!
-        # TODO: Check if font is updated too!
-        # TODO: Use font size of 20-25!
-        # TODO: Improve icon color (currently not readable)!
         self._icon_background: ft.CircleAvatar = ft.CircleAvatar(
             content=ft.Text(value=self._contact.initials, size=15),
             max_radius=20,
@@ -174,9 +170,14 @@ class ContactWidget:
                     return
 
                 self._contact.username = new_username
-                self._username_label.value = new_username
                 self._update_database()
                 self._page.close(username_alert)
+
+                # Update icon and username label
+                self._username_label.value = new_username
+                if isinstance(self._icon_background.content, ft.Text):
+                    self._icon_background.content.value = self._contact.initials
+                    self._icon_background.update()
                 self._username_label.update()
 
             match action:

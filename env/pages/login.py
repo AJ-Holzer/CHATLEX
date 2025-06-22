@@ -314,10 +314,7 @@ class LoginPage:
             self._entry_password_confirmation.update()
 
         # Enable shake detection if setting set to 'True'
-        if self._storages.client_storage.get(
-            key=config.CS_SHAKE_DETECTION, default=config.SHAKE_ENABLED_DEFAULT
-        ):
-            self._shake_detector.enable()
+        self._shake_detector.enable()
 
         self._router.go(config.ROUTE_CONTACTS)
 
