@@ -14,7 +14,7 @@ class ShakeDetector:
 
         # Initialize shake detector instance
         self._shake_detector: ft.ShakeDetector = ft.ShakeDetector(
-            SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT,
+            shake_threshold_gravity=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT,
             on_shake=self._logout,
         )
 
