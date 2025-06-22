@@ -41,3 +41,8 @@ class ShakeDetector:
 
         self._page.overlay.remove(self._shake_detector)
         self._page.update()  # type:ignore
+
+    def update_threshold_gravity(self, value: float) -> None:
+        self._shake_detector.shake_threshold_gravity = value
+
+        self._page.update()  # type:ignore

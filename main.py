@@ -97,6 +97,7 @@ def main(page: ft.Page) -> None:
         router=router,
         storages=storages,
         themes=themes,
+        shake_detector=shake_detector,
     )
     router.add_route(
         route=config.ROUTE_SETTINGS,

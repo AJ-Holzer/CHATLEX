@@ -6,6 +6,7 @@ from env.app.widgets.container import MasterContainer
 from env.app.widgets.sections import Section
 from env.app.widgets.sliders import DescriptiveSlider
 from env.app.widgets.top_bars import SubPageTopBar
+from env.classes.phone_sensors import ShakeDetector
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
 from env.config import config
@@ -19,11 +20,13 @@ class SettingsPage:
         router: AppRouter,
         storages: Storages,
         themes: Themes,
+        shake_detector: ShakeDetector,
     ) -> None:
         self._page: ft.Page = page
         self._router: AppRouter = router
         self._storages: Storages = storages
         self._themes: Themes = themes
+        self._shake_detector: ShakeDetector = shake_detector
 
         " === Controls Appearance Section === "
         # Theme color picker
@@ -103,6 +106,28 @@ class SettingsPage:
                     ),
                     on_click=self._toggle_logout_shake_detection,
                 ).build(),
+                # Gravity threshold slider for shake detection
+                DescriptiveSlider(
+                    page=self._page,
+                    description="Shake Threshold Gravity",
+                    slider_value=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
+                    * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+                    slider_min=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MIN
+                    * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+                    slider_max=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX
+                    * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+                    on_change_end=self._change_shake_detection_gravity_threshold,
+                    slider_label="Gravity Threshold: {value}",
+                    slider_divisions=int(
+                        abs(
+                            config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX
+                            - config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MIN
+                        )
+                        * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER
+                    ),
+                    slider_default_value=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
+                    * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+                ).build(),
             ],
         )
 
@@ -141,6 +166,26 @@ class SettingsPage:
             key=config.CS_SHAKE_DETECTION_ENABLED,
             value=value,
         )
+
+    def _change_shake_detection_gravity_threshold(self, e: ft.ControlEvent) -> None:
+        if e.data is None:
+            raise ValueError("No gravity threshold provided!")
+
+        # Divide gravity to store as actual number
+        new_threshold: float = (
+            float(e.data) / config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER
+        )
+
+        print(f"{new_threshold=}")
+
+        # Update client storage
+        self._storages.client_storage.set(
+            key=config.CS_SHAKE_DETECTION_THRESHOLD_GRAVITY,
+            value=new_threshold,
+        )
+
+        # Update shake detector
+        self._shake_detector.update_threshold_gravity(value=new_threshold)
 
     def build(self) -> ft.Container:
         return MasterContainer(

@@ -27,12 +27,15 @@ class DescriptiveSlider:
         self._slider_default_value: Optional[ft.OptionalNumber] = slider_default_value
 
         # Descriptive text above the slider
+        # TODO: Make the text to be able to wrap!
         self._description_label: ft.Text = ft.Text(
             value=self._description,
             theme_style=ft.TextThemeStyle.TITLE_SMALL,
             weight=ft.FontWeight.W_500,
-            text_align=ft.TextAlign.CENTER,
+            text_align=ft.TextAlign.START,
             color=ft.Colors.ON_SURFACE_VARIANT,
+            no_wrap=False,
+            max_lines=None,
         )
 
         # Show reset button only if default value is set
@@ -72,10 +75,20 @@ class DescriptiveSlider:
                 controls=[
                     ft.Container(
                         content=ft.Row(
-                            controls=[self._description_label, self._reset_button],
+                            controls=[
+                                ft.Column(
+                                    controls=[self._description_label],
+                                    expand=True,
+                                ),
+                                ft.Column(
+                                    controls=[self._reset_button],
+                                ),
+                            ],
                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                            expand=True,
                         ),
                         padding=ft.Padding(left=25, top=0, right=20, bottom=0),
+                        expand=True,
                     ),
                     self._slider,
                 ],
