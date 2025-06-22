@@ -16,7 +16,7 @@ class TopBar:
         self._label: ft.Text = ft.Text(
             value=config.APP_TITLE,
             weight=ft.FontWeight.BOLD,
-            size=config.TOP_BAR_LABEL_HEIGHT,
+            theme_style=ft.TextThemeStyle.TITLE_LARGE,
             color=ft.Colors.PRIMARY,
         )
 
@@ -40,7 +40,6 @@ class TopBar:
         self._home_button_row: ft.Row = ft.Row(
             controls=[self._home_button],
             alignment=ft.MainAxisAlignment.START,
-            expand=True,
         )
         self._label_row: ft.Row = ft.Row(
             controls=[
@@ -60,7 +59,6 @@ class TopBar:
         self._settings_button_row: ft.Row = ft.Row(
             controls=[self._settings_button],
             alignment=ft.MainAxisAlignment.END,
-            expand=True,
         )
 
     def build(self) -> ft.Container:
@@ -93,9 +91,9 @@ class SubPageTopBar:
         self._label: ft.Text = ft.Text(
             value=self._title,
             weight=ft.FontWeight.BOLD,
-            size=config.TOP_BAR_LABEL_HEIGHT,
             text_align=ft.TextAlign.CENTER,
-            expand=True,
+            # expand=True,
+            theme_style=ft.TextThemeStyle.TITLE_LARGE,
             color=ft.Colors.PRIMARY,
         )
 
@@ -125,17 +123,10 @@ class SubPageTopBar:
                         force=True,
                     ),
                     expand=True,
+                    padding=ft.padding.only(right=30),
                 ),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
-            expand=True,
-        )
-
-        # ADD EMPTY RIGHT COLUMN to balance layout
-        self._spacer_row: ft.Row = ft.Row(
-            controls=[],  # intentionally empty
-            alignment=ft.MainAxisAlignment.END,
-            expand=True,
         )
 
     def build(self) -> ft.Container:
@@ -146,7 +137,6 @@ class SubPageTopBar:
                         controls=[
                             self._back_button_row,
                             self._label_row,
-                            self._spacer_row,
                         ],
                     ),
                     ft.Divider(height=1, thickness=1),

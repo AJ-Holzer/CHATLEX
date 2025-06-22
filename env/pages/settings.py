@@ -4,6 +4,7 @@ from env.app.widgets.buttons_and_toggles import SectionButton
 from env.app.widgets.color_picker import ColorPicker
 from env.app.widgets.container import MasterContainer
 from env.app.widgets.sections import Section
+from env.app.widgets.sliders import DescriptiveSlider
 from env.app.widgets.top_bars import SubPageTopBar
 from env.classes.phone_sensors import ShakeDetector
 from env.classes.router import AppRouter
@@ -54,24 +55,14 @@ class SettingsPage:
         )
 
         # Crate font size slider
-        # TODO: Create a 'DescriptiveSlider' class instead!
-        self._font_size_label: ft.Container = ft.Container(
-            content=ft.Text(
-                value="Font Size",
-                expand=True,
-                text_align=ft.TextAlign.CENTER,
-                theme_style=ft.TextThemeStyle.HEADLINE_SMALL,
-            ),
-            padding=ft.padding.only(top=10),
-        )
-        self._font_size_slider: ft.Slider = ft.Slider(
-            value=self._themes.font_size,
-            min=config.FONT_SIZE_MIN,
-            max=config.FONT_SIZE_MAX,
+        self._font_size_slider: DescriptiveSlider = DescriptiveSlider(
+            description="Font Size",
+            slider_value=self._themes.font_size,
+            slider_min=config.FONT_SIZE_MIN,
+            slider_max=config.FONT_SIZE_MAX,
             on_change_end=self._change_font_size,
-            label="Font Size: {value}",
-            divisions=abs(config.FONT_SIZE_MAX - config.FONT_SIZE_MIN),
-            expand=True,
+            slider_label="Font Size: {value}",
+            slider_divisions=abs(config.FONT_SIZE_MAX - config.FONT_SIZE_MIN),
         )
 
         # Create sections
@@ -83,9 +74,13 @@ class SettingsPage:
                     icon=ft.Icons.COLOR_LENS_OUTLINED,
                     func=lambda: self._page.open(self._theme_color_picker.build()),
                 ).build(),
-                self._font_family_chooser,
-                self._font_size_label,
-                self._font_size_slider,
+                ft.Divider(),
+                ft.Row(
+                    controls=[self._font_family_chooser],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                ft.Divider(),
+                self._font_size_slider.build(),
             ],
         )
 

@@ -99,6 +99,7 @@ class Config:
     FONT_FAMILIES_LOCAL: dict[str, str] = {
         "varela-round": "fonts/varela_round.ttf",
         "baloo-bhaijaan": "fonts/baloo_bhaijaan.ttf",
+        "dosis-semibold": "fonts/dosis_semibold.ttf",
     }
 
     # Font settings

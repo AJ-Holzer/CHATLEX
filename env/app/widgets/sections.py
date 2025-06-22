@@ -54,7 +54,7 @@ class Section:
             ),
             border=ft.border.all(
                 width=1,
-                color=ft.Colors.PRIMARY,
+                color=ft.Colors.with_opacity(0.5, ft.Colors.PRIMARY),
             ),
             border_radius=15,
             expand=True,

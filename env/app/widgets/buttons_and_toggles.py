@@ -29,7 +29,7 @@ class SectionButton:
             ),
             on_click=self._on_click,
             style=ft.ButtonStyle(
-                padding=ft.Padding(16, 12, 16, 12),
+                padding=ft.Padding(left=16, top=12, right=16, bottom=12),
                 shape=ft.RoundedRectangleBorder(radius=12),
                 elevation=4,
                 overlay_color=ft.Colors.with_opacity(0.08, ft.Colors.ON_PRIMARY),

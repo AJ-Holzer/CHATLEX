@@ -6,6 +6,7 @@ from env.config import config
 from env.func.colors import generate_color_wheel_hex
 
 
+# FIXME: The UI elements are arranged really ugly!
 class ColorPicker:
     def __init__(
         self,
