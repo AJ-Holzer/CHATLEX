@@ -56,6 +56,7 @@ class SettingsPage:
 
         # Crate font size slider
         self._font_size_slider: DescriptiveSlider = DescriptiveSlider(
+            page=self._page,
             description="Font Size",
             slider_value=self._themes.font_size,
             slider_min=config.FONT_SIZE_MIN,
@@ -63,6 +64,7 @@ class SettingsPage:
             on_change_end=self._change_font_size,
             slider_label="Font Size: {value}",
             slider_divisions=abs(config.FONT_SIZE_MAX - config.FONT_SIZE_MIN),
+            slider_default_value=config.APPEARANCE_FONT_SIZE_DEFAULT,
         )
 
         # Create sections

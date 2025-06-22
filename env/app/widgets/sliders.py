@@ -6,6 +6,7 @@ import flet as ft  # type: ignore[import-untyped]
 class DescriptiveSlider:
     def __init__(
         self,
+        page: ft.Page,
         description: str,
         slider_value: ft.OptionalNumber,
         slider_min: ft.OptionalNumber,
@@ -13,7 +14,9 @@ class DescriptiveSlider:
         on_change_end: ft.OptionalControlEventCallable,
         slider_label: Optional[str] = None,
         slider_divisions: Optional[int] = None,
+        slider_default_value: Optional[ft.OptionalNumber] = None,
     ) -> None:
+        self._page: ft.Page = page
         self._description: str = description
         self._slider_value: ft.OptionalNumber = slider_value
         self._slider_min: ft.OptionalNumber = slider_min
@@ -21,6 +24,7 @@ class DescriptiveSlider:
         self._on_change_end: ft.OptionalControlEventCallable = on_change_end
         self._slider_divisions: Optional[int] = slider_divisions
         self._slider_label: Optional[str] = slider_label
+        self._slider_default_value: Optional[ft.OptionalNumber] = slider_default_value
 
         # Descriptive text above the slider
         self._description_label: ft.Text = ft.Text(
@@ -29,6 +33,13 @@ class DescriptiveSlider:
             weight=ft.FontWeight.W_500,
             text_align=ft.TextAlign.CENTER,
             color=ft.Colors.ON_SURFACE_VARIANT,
+        )
+
+        # Show reset button only if default value is set
+        self._reset_button: ft.IconButton = ft.IconButton(
+            icon=ft.Icons.SETTINGS_BACKUP_RESTORE_ROUNDED,
+            visible=True if self._slider_default_value is not None else False,
+            on_click=lambda _: self._reset_value(),
         )
 
         # Slider widget
@@ -42,10 +53,29 @@ class DescriptiveSlider:
             expand=True,
         )
 
+    def _reset_value(self) -> None:
+        if self._on_change_end:
+            self._slider.value = self._slider_default_value
+            self._on_change_end(
+                ft.ControlEvent(
+                    data=str(self._slider.value),
+                    control=self._slider,
+                    name="on_change_end",
+                    page=self._page,
+                    target=str(self._slider),
+                )
+            )
+
     def build(self) -> ft.Container:
         return ft.Container(
             content=ft.Column(
-                controls=[self._description_label, self._slider],
+                controls=[
+                    ft.Row(
+                        controls=[self._description_label, self._reset_button],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
+                    self._slider,
+                ],
                 spacing=10,
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,

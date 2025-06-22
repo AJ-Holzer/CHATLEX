@@ -27,6 +27,8 @@ def main(page: ft.Page) -> None:
     page.window.resizable = config.APP_RESIZABLE
     page.window.width = config.APP_WIDTH
     page.window.height = config.APP_HEIGHT
+    # Set app to light mode
+    page.theme_mode = ft.ThemeMode.LIGHT
 
     # TODO: Add the ability to add more fonts (online)
     # Add global fonts
@@ -47,6 +49,9 @@ def main(page: ft.Page) -> None:
 
     # Initialize themes
     themes: Themes = Themes(page=page, storages=storages)
+
+    # Apply theme
+    themes.set_theme()
 
     # Update page to apply visuals
     page.update()  # type:ignore
@@ -141,9 +146,6 @@ def main(page: ft.Page) -> None:
             "function_args": None,
         },
     )
-
-    # Update theme
-    themes.set_theme()
 
     # Go to login page
     router.go(route=config.ROUTE_CALIBRATIONS)

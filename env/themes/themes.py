@@ -24,19 +24,16 @@ class Themes:
         )
         self._font_size: int = self._storages.client_storage.get(key=config.CS_FONT_SIZE, default=config.APPEARANCE_FONT_SIZE_DEFAULT)
 
-        # Set sub themes
-        self._text_theme: ft.TextTheme = self._generate_text_theme()
-
         # Set themes
         self._light: ft.Theme = ft.Theme(
             color_scheme_seed=self._color_seed,
             use_material3=True,
-            text_theme=self._text_theme,
+            text_theme=self._generate_text_theme(),
         )
         self._dark: ft.Theme = ft.Theme(
             color_scheme_seed=self._color_seed,
             use_material3=True,
-            text_theme=self._text_theme,
+            text_theme=self._generate_text_theme(),
         )
         self._all_themes: list[ft.Theme] = [self._light, self._dark]
 
@@ -49,34 +46,38 @@ class Themes:
         self.set_theme()
 
     def _generate_text_theme(self) -> ft.TextTheme:
+        def ts(size_multiplier: float) -> ft.TextStyle:
+            return ft.TextStyle(
+                size=self._font_size * size_multiplier,
+                font_family=self._font_family,
+                color=ft.Colors.ON_SURFACE
+            )
+
         return ft.TextTheme(
-            body_large=ft.TextStyle(size=self._font_size * 1.1, font_family=self._font_family),
-            body_medium=ft.TextStyle(size=self._font_size, font_family=self._font_family),
-            body_small=ft.TextStyle(size=self._font_size * 0.85, font_family=self._font_family),
+            body_large=ts(size_multiplier= 1.1),
+            body_medium=ts(self._font_size),
+            body_small=ts(size_multiplier= 0.85),
 
-            display_large=ft.TextStyle(size=self._font_size * 2.2, font_family=self._font_family),
-            display_medium=ft.TextStyle(size=self._font_size * 1.8, font_family=self._font_family),
-            display_small=ft.TextStyle(size=self._font_size * 1.5, font_family=self._font_family),
+            display_large=ts(size_multiplier= 2.2),
+            display_medium=ts(size_multiplier= 1.8),
+            display_small=ts(size_multiplier= 1.5),
 
-            headline_large=ft.TextStyle(size=self._font_size * 1.7, font_family=self._font_family),
-            headline_medium=ft.TextStyle(size=self._font_size * 1.5, font_family=self._font_family),
-            headline_small=ft.TextStyle(size=self._font_size * 1.3, font_family=self._font_family),
+            headline_large=ts(size_multiplier= 1.7),
+            headline_medium=ts(size_multiplier= 1.5),
+            headline_small=ts(size_multiplier= 1.3),
 
-            label_large=ft.TextStyle(size=self._font_size * 0.95, font_family=self._font_family),
-            label_medium=ft.TextStyle(size=self._font_size * 0.85, font_family=self._font_family),
-            label_small=ft.TextStyle(size=self._font_size * 0.75, font_family=self._font_family),
+            label_large=ts(size_multiplier= 0.95),
+            label_medium=ts(size_multiplier= 0.85),
+            label_small=ts(size_multiplier= 0.75),
 
-            title_large=ft.TextStyle(size=self._font_size * 1.4, font_family=self._font_family),
-            title_medium=ft.TextStyle(size=self._font_size * 1.2, font_family=self._font_family),
-            title_small=ft.TextStyle(size=self._font_size, font_family=self._font_family),
+            title_large=ts(size_multiplier= 1.4),
+            title_medium=ts(size_multiplier= 1.2),
+            title_small=ts(self._font_size),
         )
 
     def _update_text_themes(self) -> None:
-        self._text_theme = self._generate_text_theme()
-
-        # Update themes
         for theme in self._all_themes:
-            theme.text_theme = self._text_theme
+            theme.text_theme = self._generate_text_theme()
 
     def set_theme(self) -> None:
         if self._page.platform_brightness == ft.Brightness.DARK:

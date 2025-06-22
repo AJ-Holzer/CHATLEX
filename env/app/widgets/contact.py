@@ -45,7 +45,7 @@ class ContactWidget:
             content=ft.Text(value=self._contact.initials, size=15),
             max_radius=20,
             bgcolor=ft.Colors.with_opacity(0.8, ft.Colors.PRIMARY),
-            color=ft.Colors.BLACK,
+            color=ft.Colors.ON_PRIMARY,
         )
         self._icon_online_indicator: ft.CircleAvatar = ft.CircleAvatar(
             bgcolor=(
