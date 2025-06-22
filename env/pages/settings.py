@@ -1,6 +1,6 @@
 import flet as ft  # type:ignore[import-untyped]
 
-from env.app.widgets.buttons_and_toggles import SectionButton
+from env.app.widgets.buttons_and_toggles import SectionButton, SectionToggle
 from env.app.widgets.color_picker import ColorPicker
 from env.app.widgets.container import MasterContainer
 from env.app.widgets.sections import Section
@@ -28,12 +28,12 @@ class SettingsPage:
         self._shake_detector: ShakeDetector = shake_detector
         self._themes: Themes = themes
 
-        # Initialize color picker
+        " === Controls Appearance Section === "
+        # Theme color picker
         self._theme_color_picker: ColorPicker = ColorPicker(
             page=self._page,
             on_color_click=self._themes.change_seed_color,
         )
-
         # Create font family chooser
         if self._page.fonts:
             font_options = [
@@ -53,7 +53,6 @@ class SettingsPage:
             label="Font Family",
             on_change=self._change_font_family,
         )
-
         # Crate font size slider
         self._font_size_slider: DescriptiveSlider = DescriptiveSlider(
             page=self._page,
@@ -67,6 +66,8 @@ class SettingsPage:
             slider_default_value=config.APPEARANCE_FONT_SIZE_DEFAULT,
         )
 
+        " === Controls Security Section === "
+
         # Create sections
         self._appearance_section: Section = Section(
             title="Appearance",
@@ -76,24 +77,43 @@ class SettingsPage:
                     icon=ft.Icons.COLOR_LENS_OUTLINED,
                     func=lambda: self._page.open(self._theme_color_picker.build()),
                 ).build(),
-                ft.Divider(),
                 ft.Row(
                     controls=[self._font_family_chooser],
                     alignment=ft.MainAxisAlignment.CENTER,
                 ),
-                ft.Divider(),
                 self._font_size_slider.build(),
             ],
         )
 
-        # TODO: Use sections (custom class for easier access and management
-        # TODO: Add font settings (size, family, ...)
+        self._security_section: Section = Section(
+            title="Security",
+            content=[
+                # Logout on lost focus
+                SectionToggle(
+                    text="Logout on Lost Focus",
+                    toggle_value=self._storages.client_storage.get(
+                        key=config.CS_LOGOUT_ON_LOST_FOCUS,
+                        default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT,
+                    ),
+                    on_click=self._toggle_logout_lost_focus,
+                ).build(),
+                # Logout on on shake detection
+                SectionToggle(
+                    text="Logout on Shake Detection",
+                    toggle_value=self._storages.client_storage.get(
+                        key=config.CS_SHAKE_DETECTION,
+                        default=config.SHAKE_ENABLED_DEFAULT,
+                    ),
+                    on_click=self._toggle_logout_shake_detection,
+                ).build(),
+            ],
+        )
+
         # TODO: Add shake detection settings (threshold_gravity, minimum_shake) --> for logging out
         # TODO: Add auto logout on lost focus
         # TODO: Add donation button
         # TODO: Add about section
         # TODO: Add delete data button
-        # TODO: Add color change settings (theme color)
         # TODO: Add password changing
 
     def _change_font_family(self, e: ft.ControlEvent) -> None:
@@ -111,6 +131,22 @@ class SettingsPage:
 
         self._themes.change_font_size(new_font_size=int(float(e.data)))
 
+    def _toggle_logout_lost_focus(self, e: ft.ControlEvent) -> None:
+        value: bool = True if e.data == "true" else False
+
+        self._storages.client_storage.set(
+            key=config.CS_LOGOUT_ON_LOST_FOCUS,
+            value=value,
+        )
+
+    def _toggle_logout_shake_detection(self, e: ft.ControlEvent) -> None:
+        value: bool = True if e.data == "true" else False
+
+        self._storages.client_storage.set(
+            key=config.CS_SHAKE_DETECTION,
+            value=value,
+        )
+
     def build(self) -> ft.Container:
         return MasterContainer(
             content=ft.Row(
@@ -126,6 +162,7 @@ class SettingsPage:
                             ft.ListView(
                                 controls=[
                                     self._appearance_section.build(),
+                                    self._security_section.build(),
                                 ],
                                 expand=True,
                                 spacing=20,

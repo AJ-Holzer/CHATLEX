@@ -70,9 +70,12 @@ class DescriptiveSlider:
         return ft.Container(
             content=ft.Column(
                 controls=[
-                    ft.Row(
-                        controls=[self._description_label, self._reset_button],
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ft.Container(
+                        content=ft.Row(
+                            controls=[self._description_label, self._reset_button],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        ),
+                        padding=ft.Padding(left=25, top=0, right=20, bottom=0),
                     ),
                     self._slider,
                 ],
@@ -81,5 +84,4 @@ class DescriptiveSlider:
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 expand=True,
             ),
-            padding=10,
         )

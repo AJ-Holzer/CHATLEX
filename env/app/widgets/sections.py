@@ -15,14 +15,21 @@ class Section:
             padding=ft.Padding(left=20, top=20, right=20, bottom=0),
         )
         self._divider: ft.Container = ft.Container(
-            ft.Divider(),
+            ft.Divider(color=ft.Colors.PRIMARY),
             padding=ft.Padding(left=30, top=0, right=30, bottom=0),
         )
         self._content: ft.Container = ft.Container(
             content=ft.Row(
                 controls=[
                     ft.Column(
-                        controls=content,
+                        controls=[
+                            (
+                                item
+                                if i == len(content) - 1
+                                else ft.Column([item, ft.Divider()])
+                            )
+                            for i, item in enumerate(content)
+                        ],
                         expand=True,
                         horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                     ),

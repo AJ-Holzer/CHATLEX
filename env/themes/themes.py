@@ -54,25 +54,25 @@ class Themes:
             )
 
         return ft.TextTheme(
-            body_large=ts(size_multiplier= 1.1),
-            body_medium=ts(self._font_size),
-            body_small=ts(size_multiplier= 0.85),
+            body_large=ts(size_multiplier=1.1),
+            body_medium=ts(size_multiplier=1.0),
+            body_small=ts(size_multiplier=0.85),
 
-            display_large=ts(size_multiplier= 2.2),
-            display_medium=ts(size_multiplier= 1.8),
-            display_small=ts(size_multiplier= 1.5),
+            display_large=ts(size_multiplier=2.2),
+            display_medium=ts(size_multiplier=1.8),
+            display_small=ts(size_multiplier=1.5),
 
-            headline_large=ts(size_multiplier= 1.7),
-            headline_medium=ts(size_multiplier= 1.5),
-            headline_small=ts(size_multiplier= 1.3),
+            headline_large=ts(size_multiplier=1.7),
+            headline_medium=ts(size_multiplier=1.5),
+            headline_small=ts(size_multiplier=1.3),
 
-            label_large=ts(size_multiplier= 0.95),
-            label_medium=ts(size_multiplier= 0.85),
-            label_small=ts(size_multiplier= 0.75),
+            label_large=ts(size_multiplier=0.95),
+            label_medium=ts(size_multiplier=0.85),
+            label_small=ts(size_multiplier=0.75),
 
-            title_large=ts(size_multiplier= 1.4),
-            title_medium=ts(size_multiplier= 1.2),
-            title_small=ts(self._font_size),
+            title_large=ts(size_multiplier=1.4),
+            title_medium=ts(size_multiplier=1.2),
+            title_small=ts(size_multiplier=1.0),
         )
 
     def _update_text_themes(self) -> None:

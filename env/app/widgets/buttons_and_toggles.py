@@ -20,8 +20,25 @@ class SectionButton:
         self._text_button: ft.ElevatedButton = ft.ElevatedButton(
             content=ft.Row(
                 controls=[
-                    ft.Icon(self._icon, size=20) if self._icon else ft.Container(),
-                    ft.Text(self._text, theme_style=ft.TextThemeStyle.BODY_LARGE),
+                    ft.Column(
+                        controls=[
+                            (
+                                ft.Icon(self._icon, size=20)
+                                if self._icon
+                                else ft.Container()
+                            ),
+                        ],
+                    ),
+                    ft.Column(
+                        controls=[
+                            ft.Text(
+                                self._text,
+                                theme_style=ft.TextThemeStyle.BODY_LARGE,
+                                max_lines=None,
+                            ),
+                        ],
+                        expand=True,
+                    ),
                 ],
                 spacing=10,
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -46,17 +63,45 @@ class SectionButton:
     def build(self) -> ft.Container:
         return ft.Container(
             content=self._text_button,
-            padding=8,
+            padding=20,
             alignment=ft.alignment.center,
             expand=True,
         )
 
 
 class SectionToggle:
-    def __init__(self) -> None:
-        # TODO: Add toggle button code!
-        raise NotImplementedError("This function is not implemented yet!")
+    def __init__(
+        self,
+        text: str,
+        toggle_value: bool,
+        on_click: ft.OptionalControlEventCallable,
+    ) -> None:
+        self._text: str = text
+        self._toggle_value: bool = toggle_value
+        self._on_click: ft.OptionalControlEventCallable = on_click
+
+        # Create toggle
+        self._toggle: ft.CupertinoSwitch = ft.CupertinoSwitch(
+            value=self._toggle_value,
+            on_change=self._on_click,
+        )
+
+        # Create label
+        self._label: ft.Text = ft.Text(value=self._text, expand=True)
 
     def build(self) -> ft.Container:
-        # TODO: Add build code!
-        return ft.Container()
+        return ft.Container(
+            content=ft.Row(
+                controls=[
+                    ft.Column(
+                        controls=[self._label],
+                        expand=True,
+                    ),
+                    ft.Column(
+                        controls=[self._toggle],
+                    ),
+                ],
+                expand=True,
+            ),
+            padding=ft.Padding(left=20, top=0, right=20, bottom=20),
+        )

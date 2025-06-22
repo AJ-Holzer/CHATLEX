@@ -27,8 +27,6 @@ def main(page: ft.Page) -> None:
     page.window.resizable = config.APP_RESIZABLE
     page.window.width = config.APP_WIDTH
     page.window.height = config.APP_HEIGHT
-    # Set app to light mode
-    page.theme_mode = ft.ThemeMode.LIGHT
 
     # TODO: Add the ability to add more fonts (online)
     # Add global fonts

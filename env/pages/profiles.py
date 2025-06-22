@@ -24,7 +24,7 @@ class UserProfilePage:
                                 page=self._page,
                                 router=self._router,
                                 storages=self._storages,
-                                title="Profile",
+                                title="Your Profile",
                             ).build(),
                             ft.Text("TEST"),
                         ],
