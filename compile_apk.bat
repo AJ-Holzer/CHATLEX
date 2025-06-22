@@ -3,9 +3,9 @@ cls
 
 @REM Build apk
 flet build apk ^
-    --description "ChatLex -- Secure. Anonymous. Decentralized." ^
-    --project "ChatLex" ^
-    --product "ChatLex" ^
+    --description "CHATLEX - Secure. Anonymous. Decentralized." ^
+    --project "CHATLEX" ^
+    --product "CHATLEX" ^
     --org "sites.ajservers" ^
     --source-packages certifi pyaes argon2 ^
     --clear-cache ^
