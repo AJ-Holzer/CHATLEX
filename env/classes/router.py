@@ -53,7 +53,7 @@ class AppRouter:
     def remove_route(self, route: str) -> None:
         if route not in self._routes:
             return
-        
+
         del self._routes[route]
 
     def go(self, route: str) -> None:

@@ -27,13 +27,11 @@ class DescriptiveSlider:
         self._slider_default_value: Optional[ft.OptionalNumber] = slider_default_value
 
         # Descriptive text above the slider
-        # TODO: Make the text to be able to wrap!
         self._description_label: ft.Text = ft.Text(
             value=self._description,
             theme_style=ft.TextThemeStyle.TITLE_SMALL,
             weight=ft.FontWeight.W_500,
             text_align=ft.TextAlign.START,
-            color=ft.Colors.ON_SURFACE_VARIANT,
             no_wrap=False,
             max_lines=None,
         )
@@ -98,3 +96,11 @@ class DescriptiveSlider:
                 expand=True,
             ),
         )
+
+    @property
+    def slider_value(self) -> float:
+        return self._slider.value
+
+    @slider_value.setter
+    def slider_value(self, value: float | int) -> None:
+        self._slider.value = value

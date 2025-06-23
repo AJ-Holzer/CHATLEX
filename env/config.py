@@ -19,6 +19,7 @@ class Config:
     TOP_BAR_HEIGHT: int = 50
     TOP_BAR_LABEL_HEIGHT: int = 25
     TOP_BAR_ICON_SIZE: int = TOP_BAR_HEIGHT - 15
+    TOP_BAR_LOGOUT_ON_LABEL_CLICK_DEFAULT: bool = True
 
     # Storage settings
     CS_USER_PASSWORD_HASH: str = "password-hash"
@@ -31,6 +32,7 @@ class Config:
     CS_FONT_FAMILY: str = "font"
     CS_FONT_SIZE: str = "font-size"
     CS_SHAKE_DETECTION_THRESHOLD_GRAVITY: str = "shake-detection-threshold-gravity"
+    CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK: str = "logout-on-top-bar-label-click"
     SS_USER_SESSION_KEY: str = "session-key"
 
     # Settings for Argon2
@@ -86,7 +88,9 @@ class Config:
     SHAKE_DETECTION_THRESHOLD_GRAVITY_MIN: float = 1.3
     SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX: float = 2.5
     SHAKE_DETECTION_ENABLED_DEFAULT: bool = False
-    SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER: int = 10
+    SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER: int = (
+        10  # Value needs to be multiplied since the flet slider isn't able to use float for division
+    )
 
     # Default appearance settings
     APPEARANCE_COLOR_SEED_DEFAULT: ft.ColorValue = ft.Colors.PURPLE
@@ -109,6 +113,10 @@ class Config:
     # Font settings
     FONT_SIZE_MIN: int = 10
     FONT_SIZE_MAX: int = 30
+
+    # File settings
+    FILE_INFOS: str = "data/infos.json"
+    FILE_ABOUT: str = "data/about.json"
 
 
 config = Config()

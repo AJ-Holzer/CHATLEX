@@ -106,7 +106,7 @@ def main(page: ft.Page) -> None:
             "page_content": [
                 settings_page.build(),
             ],
-            "execute_function": None,
+            "execute_function": settings_page.initialize,
             "function_args": None,
         },
     )

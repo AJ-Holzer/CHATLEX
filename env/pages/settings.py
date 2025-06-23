@@ -1,8 +1,13 @@
+import json
+import os
+from typing import Literal
+
 import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.buttons_and_toggles import SectionButton, SectionToggle
 from env.app.widgets.color_picker import ColorPicker
 from env.app.widgets.container import MasterContainer
+from env.app.widgets.info import InfoButtonAlert
 from env.app.widgets.sections import Section
 from env.app.widgets.sliders import DescriptiveSlider
 from env.app.widgets.top_bars import SubPageTopBar
@@ -28,7 +33,7 @@ class SettingsPage:
         self._themes: Themes = themes
         self._shake_detector: ShakeDetector = shake_detector
 
-        " === Controls Appearance Section === "
+        " === CONTROLS APPEARANCE SECTION === "
         # Theme color picker
         self._theme_color_picker: ColorPicker = ColorPicker(
             page=self._page,
@@ -66,8 +71,77 @@ class SettingsPage:
             slider_default_value=config.APPEARANCE_FONT_SIZE_DEFAULT,
         )
 
-        " === Controls Security Section === "
+        " === CONTROLS SECURITY SECTION === "
+        # TODO: Add safety checks if files exist and a class for easier access for file content
+        for file_path in [
+            config.FILE_INFOS,
+            config.FILE_ABOUT,
+        ]:
+            if not os.path.exists(path=file_path):
+                raise FileNotFoundError(f"File {file_path} not found!")
+        # Load infos and their descriptions
+        with open(
+            file=config.FILE_INFOS,
+            mode="r",
+            encoding="UTF-8",
+        ) as i, open(
+            file=config.FILE_ABOUT,
+            mode="r",
+            encoding="UTF-8",
+        ) as a:
+            infos: dict[str, dict[Literal["content", "icon"], str]] = json.load(i)
+            about: dict[str, dict[Literal["content", "icon"], str]] = json.load(a)
+        # Logout on lost focus
+        self._toggle_lolf: SectionToggle = SectionToggle(
+            text="Focus Detection",
+            toggle_value=self._storages.client_storage.get(
+                key=config.CS_LOGOUT_ON_LOST_FOCUS,
+                default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT,
+            ),
+            on_click=self._toggle_logout_lost_focus,
+        )
+        # Logout on on shake detection
+        self._toggle_losd: SectionToggle = SectionToggle(
+            text="Shake Detection",
+            toggle_value=self._storages.client_storage.get(
+                key=config.CS_SHAKE_DETECTION_ENABLED,
+                default=config.SHAKE_DETECTION_ENABLED_DEFAULT,
+            ),
+            on_click=self._toggle_logout_shake_detection,
+        )
+        # Gravity threshold slider for shake detection
+        self._slider_gravity_threshold: DescriptiveSlider = DescriptiveSlider(
+            page=self._page,
+            description="Shake Gravity Threshold",
+            slider_value=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
+            * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+            slider_min=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MIN
+            * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+            slider_max=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX
+            * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+            on_change_end=self._change_shake_detection_gravity_threshold,
+            slider_label="Gravity Threshold: {value}",
+            slider_divisions=int(
+                abs(
+                    config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX
+                    - config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MIN
+                )
+                * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER
+            ),
+            slider_default_value=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
+            * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+        )
+        # Logout on top bar label click
+        self._toggle_tblc: SectionToggle = SectionToggle(
+            text="Logout TopBar Click",
+            toggle_value=self._storages.client_storage.get(
+                key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
+                default=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
+            ),
+            on_click=self._toggle_logout_on_top_bar_label_click,
+        )
 
+        " === LOAD SECTIONS === "
         # Create sections
         self._appearance_section: Section = Section(
             title="Appearance",
@@ -75,7 +149,8 @@ class SettingsPage:
                 SectionButton(
                     text="Change Color",
                     icon=ft.Icons.COLOR_LENS_OUTLINED,
-                    func=lambda: self._page.open(self._theme_color_picker.build()),
+                    func=self._page.open,
+                    func_args=(self._theme_color_picker.build(),),
                 ).build(),
                 ft.Row(
                     controls=[self._font_family_chooser],
@@ -84,51 +159,45 @@ class SettingsPage:
                 self._font_size_slider.build(),
             ],
         )
-
         self._security_section: Section = Section(
             title="Security",
             content=[
-                # Logout on lost focus
-                SectionToggle(
-                    text="Logout on Lost Focus",
-                    toggle_value=self._storages.client_storage.get(
-                        key=config.CS_LOGOUT_ON_LOST_FOCUS,
-                        default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT,
-                    ),
-                    on_click=self._toggle_logout_lost_focus,
-                ).build(),
-                # Logout on on shake detection
-                SectionToggle(
-                    text="Logout on Shake Detection",
-                    toggle_value=self._storages.client_storage.get(
-                        key=config.CS_SHAKE_DETECTION_ENABLED,
-                        default=config.SHAKE_DETECTION_ENABLED_DEFAULT,
-                    ),
-                    on_click=self._toggle_logout_shake_detection,
-                ).build(),
-                # Gravity threshold slider for shake detection
-                DescriptiveSlider(
-                    page=self._page,
-                    description="Shake Threshold Gravity",
-                    slider_value=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
-                    * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
-                    slider_min=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MIN
-                    * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
-                    slider_max=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX
-                    * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
-                    on_change_end=self._change_shake_detection_gravity_threshold,
-                    slider_label="Gravity Threshold: {value}",
-                    slider_divisions=int(
-                        abs(
-                            config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX
-                            - config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MIN
-                        )
-                        * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER
-                    ),
-                    slider_default_value=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
-                    * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
-                ).build(),
+                self._toggle_lolf.build(),
+                self._toggle_losd.build(),
+                self._toggle_tblc.build(),
+                self._slider_gravity_threshold.build(),
             ],
+        )
+        self._help_section: Section = Section(
+            title="Help",
+            content=[
+                InfoButtonAlert(
+                    page=self._page,
+                    label=label,
+                    content=data["content"],
+                    icon=data["icon"],
+                ).build()
+                for label, data in infos.items()
+            ],
+        )  # TODO: Add infos (about, why shaking, what is lost focus, ...)
+
+        " === SUPPORT & ABOUT === "
+        self._support_button: SectionButton = SectionButton(
+            text="Support Me",
+            icon=ft.CupertinoIcons.HEART,
+            func=self._page.launch_url,
+            func_args=("https://ajservers.site/faqs",),
+        )
+        self._about_buttons: ft.Column = ft.Column(
+            controls=[
+                InfoButtonAlert(
+                    page=self._page,
+                    label=label,
+                    content=data["content"],
+                    icon=data["icon"],
+                ).build()
+                for label, data in about.items()
+            ]
         )
 
         # TODO: Add 'Support' section (--> donation, about)
@@ -167,6 +236,14 @@ class SettingsPage:
             value=value,
         )
 
+    def _toggle_logout_on_top_bar_label_click(self, e: ft.ControlEvent) -> None:
+        value: bool = True if e.data == "true" else False
+
+        self._storages.client_storage.set(
+            key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
+            value=value,
+        )
+
     def _change_shake_detection_gravity_threshold(self, e: ft.ControlEvent) -> None:
         if e.data is None:
             raise ValueError("No gravity threshold provided!")
@@ -176,8 +253,6 @@ class SettingsPage:
             float(e.data) / config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER
         )
 
-        print(f"{new_threshold=}")
-
         # Update client storage
         self._storages.client_storage.set(
             key=config.CS_SHAKE_DETECTION_THRESHOLD_GRAVITY,
@@ -186,6 +261,21 @@ class SettingsPage:
 
         # Update shake detector
         self._shake_detector.update_threshold_gravity(value=new_threshold)
+
+    def _update_sliders(self) -> None:
+        self._font_size_slider.slider_value = self._storages.client_storage.get(
+            key=config.CS_FONT_SIZE,
+            default=config.APPEARANCE_FONT_SIZE_DEFAULT,
+        )
+        self._slider_gravity_threshold.slider_value = self._storages.client_storage.get(
+            key=config.CS_SHAKE_DETECTION_THRESHOLD_GRAVITY
+            * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+            default=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
+            * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+        )
+
+    def initialize(self) -> None:
+        self._update_sliders()
 
     def build(self) -> ft.Container:
         return MasterContainer(
@@ -203,6 +293,9 @@ class SettingsPage:
                                 controls=[
                                     self._appearance_section.build(),
                                     self._security_section.build(),
+                                    self._help_section.build(),
+                                    self._support_button.build(),
+                                    self._about_buttons,
                                 ],
                                 expand=True,
                                 spacing=20,

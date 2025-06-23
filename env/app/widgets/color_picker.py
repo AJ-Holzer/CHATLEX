@@ -6,7 +6,6 @@ from env.config import config
 from env.func.colors import generate_color_wheel_hex
 
 
-# FIXME: The UI elements are arranged really ugly!
 class ColorPicker:
     def __init__(
         self,
@@ -19,7 +18,7 @@ class ColorPicker:
         self._title: str = title
 
         # Create color buttons
-        self._colors: list[str] = self._safe_generate_colors(
+        self._colors: list[str] = self._generate_colors(
             config.COLOR_PICKER_AMOUNT_COLORS
         )
         self._color_buttons: list[ft.Container] = [
@@ -39,7 +38,6 @@ class ColorPicker:
 
         # Create color picker alert
         self._color_picker_alert: ft.AlertDialog = ft.AlertDialog(
-            modal=True,
             title=ft.Text(value=self._title),
             scrollable=True,
             content=ft.Container(
@@ -59,7 +57,7 @@ class ColorPicker:
             ],
         )
 
-    def _safe_generate_colors(self, n: int) -> list[str]:
+    def _generate_colors(self, n: int) -> list[str]:
         try:
             colors: list[str] = generate_color_wheel_hex(n)
             return [c for c in colors if c.startswith("#") and len(c) in (7, 9)]

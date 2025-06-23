@@ -63,9 +63,9 @@ class SectionButton:
     def build(self) -> ft.Container:
         return ft.Container(
             content=self._text_button,
-            padding=20,
             alignment=ft.alignment.center,
             expand=True,
+            padding=ft.Padding(left=20, top=0, right=20, bottom=0),
         )
 
 
@@ -103,5 +103,5 @@ class SectionToggle:
                 ],
                 expand=True,
             ),
-            padding=ft.Padding(left=20, top=0, right=20, bottom=20),
+            padding=ft.Padding(left=20, top=0, right=20, bottom=0),
         )

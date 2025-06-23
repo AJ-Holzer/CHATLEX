@@ -45,12 +45,7 @@ class TopBar:
             controls=[
                 ft.Container(
                     content=self._label,
-                    on_click=lambda _: logout_on_lost_focus(
-                        e=None,
-                        router=self._router,
-                        storages=self._storages,
-                        force=True,
-                    ),
+                    on_click=lambda _: self._on_label_click(),
                 ),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -59,6 +54,20 @@ class TopBar:
         self._settings_button_row: ft.Row = ft.Row(
             controls=[self._settings_button],
             alignment=ft.MainAxisAlignment.END,
+        )
+
+    def _on_label_click(self) -> None:
+        if not self._storages.client_storage.get(
+            key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
+            default=config.TOP_BAR_LOGOUT_ON_LABEL_CLICK_DEFAULT,
+        ):
+            return
+
+        logout_on_lost_focus(
+            e=None,
+            router=self._router,
+            storages=self._storages,
+            force=True,
         )
 
     def build(self) -> ft.Container:
@@ -116,17 +125,26 @@ class SubPageTopBar:
             controls=[
                 ft.Container(
                     content=self._label,
-                    on_click=lambda _: logout_on_lost_focus(
-                        e=None,
-                        router=self._router,
-                        storages=self._storages,
-                        force=True,
-                    ),
+                    on_click=lambda _: self._on_label_click(),
                     expand=True,
                     padding=ft.padding.only(right=30),
                 ),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
+        )
+
+    def _on_label_click(self) -> None:
+        if not self._storages.client_storage.get(
+            key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
+            default=config.TOP_BAR_LOGOUT_ON_LABEL_CLICK_DEFAULT,
+        ):
+            return
+
+        logout_on_lost_focus(
+            e=None,
+            router=self._router,
+            storages=self._storages,
+            force=True,
         )
 
     def build(self) -> ft.Container:

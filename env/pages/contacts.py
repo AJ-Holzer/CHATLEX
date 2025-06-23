@@ -107,8 +107,21 @@ class ContactsPage:
 
     def _open_contact_alert(self) -> None:
         # Create entries
+        # TODO: Make description entry scrollable!
         username_entry: ft.TextField = ft.TextField(label="Username", autofocus=True)
-        description_entry: ft.TextField = ft.TextField(label="User Description")
+        description_entry: ft.TextField = ft.TextField(
+            label="User Description",
+            multiline=True,
+            max_lines=None,
+            height=120,
+        )
+        description_container: ft.Container = ft.Container(
+            content=ft.Column(
+                controls=[description_entry],
+                scroll=ft.ScrollMode.AUTO,
+            ),
+            height=120,
+        )
         onion_address_entry: ft.TextField = ft.TextField(
             label="Onion Address",
             suffix_text=".onion",
@@ -118,7 +131,7 @@ class ContactsPage:
         alert: ft.AlertDialog = ft.AlertDialog(
             title=ft.Text("Add Contact"),
             content=ft.Column(
-                controls=[username_entry, description_entry, onion_address_entry],
+                controls=[username_entry, description_container, onion_address_entry],
                 tight=True,
             ),
             actions=[

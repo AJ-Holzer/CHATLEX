@@ -1,0 +1,14 @@
+{
+  "Focus Detection": {
+    "content": "Automatically logs you out when the app loses focus, helping protect your data when switching apps or multitasking.",
+    "icon": "LOGOUT"
+  },
+  "Shake Detection": {
+    "content": "Automatically logs you out if the phone is shaken—useful for preventing access if someone grabs your device unexpectedly.\n\nYou can adjust the gravity threshold to control the sensor's sensitivity.",
+    "icon": "LOGOUT"
+  },
+  "TopBar Logout Action": {
+    "content": "For added security, tapping the title at the top of the screen will immediately log you out.\n\nThis feature provides a quick way to secure the app if you’re in a hurry or someone unexpectedly approaches your device.",
+    "icon": "SMART_BUTTON_ROUNDED"
+  }
+}
