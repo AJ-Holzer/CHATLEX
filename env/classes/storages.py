@@ -21,6 +21,22 @@ class StorageManager:
         """
         self._storage: SessionStorage | ClientStorage = storage
 
+        # Create storage cache for faster access
+        self._storage_cache: dict[str, Any] = {}
+
+        # Load saved storage into cache for faster access
+        self._load_all()
+
+    def _load_all(self) -> None:
+        """Loads all key-value pairs from storage into the cache."""
+        if isinstance(self._storage, ClientStorage):
+            for key in self._storage.get_keys(key_prefix=""):
+                self._storage_cache[key] = self._storage.get(key)
+
+        else:
+            for key in self._storage.get_keys():
+                self._storage_cache[key] = self._storage.get(key=key)
+
     def get(self, key: str, default: Any = None) -> Any:
         """Retrieves a value from the internal storage using the given key.
 
@@ -33,9 +49,15 @@ class StorageManager:
         Raises:
             KeyError: If the key is not found in the internal storage (though this is handled internally and returns None).
         """
+        # Try to return value from storage cache
+        if key in self._storage_cache:
+            return self._storage_cache[key]
+
+        # Try to return value from storage
         if not self._storage.contains_key(key=key):
             return default
 
+        # Return default
         return self._storage.get(key=key)
 
     def set(self, key: str, value: Any) -> None:
@@ -51,7 +73,9 @@ class StorageManager:
         Raises:
             Exception: If the underlying storage mechanism encounters an error.
         """
+        # Set storage and storage cache
         self._storage.set(key=key, value=value)
+        self._storage_cache[key] = value
 
     def clear(self) -> None:
         self._storage.clear()

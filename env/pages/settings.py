@@ -140,7 +140,7 @@ class SettingsPage:
             text="TopBar Logout Action",
             toggle_value=self._storages.client_storage.get(
                 key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
-                default=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
+                default=config.TOP_BAR_LOGOUT_ON_LABEL_CLICK_DEFAULT,
             ),
             on_click=self._toggle_logout_on_top_bar_label_click,
         )
@@ -269,13 +269,14 @@ class SettingsPage:
         self._shake_detector.update_threshold_gravity(value=new_threshold)
 
     def _update_sliders(self) -> None:
+        # Font size slider
         self._font_size_slider.slider_value = self._storages.client_storage.get(
             key=config.CS_FONT_SIZE,
             default=config.APPEARANCE_FONT_SIZE_DEFAULT,
         )
+        # Gravity threshold slider
         self._slider_gravity_threshold.slider_value = self._storages.client_storage.get(
-            key=config.CS_SHAKE_DETECTION_THRESHOLD_GRAVITY
-            * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+            key=config.CS_SHAKE_DETECTION_THRESHOLD_GRAVITY,
             default=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
             * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
         )

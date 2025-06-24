@@ -3,6 +3,7 @@ from typing import Optional
 import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.container import MasterContainer
+from env.classes.focus_detection import FocusDetector
 from env.classes.hashing import ArgonHasher
 from env.classes.paths import paths
 from env.classes.phone_sensors import ShakeDetector
@@ -19,12 +20,14 @@ class LoginPage:
         page: ft.Page,
         storages: Storages,
         router: AppRouter,
+        focus_detector: FocusDetector,
         shake_detector: ShakeDetector,
     ) -> None:
         # Initialize page
         self._page: ft.Page = page
         self._storages: Storages = storages
         self._router: AppRouter = router
+        self._focus_detector: FocusDetector = focus_detector
         self._shake_detector: ShakeDetector = shake_detector
 
         # User stuff
@@ -245,6 +248,7 @@ class LoginPage:
                         page=self._page,
                         storages=self._storages,
                         router=self._router,
+                        focus_detector=self._focus_detector,
                         shake_detector=self._shake_detector,
                     ).build(),
                 ],
@@ -321,9 +325,11 @@ class LoginPage:
         self._router.go(config.ROUTE_CONTACTS)
 
     def initialize(self) -> None:
-        # Disable shake detector when showing login page to avoid logging out
+        # Disable shake detector and focus detector when
+        # showing login page to avoid logging out
         # when not logged in
         self._shake_detector.disable()
+        self._focus_detector.disable()
 
     def build(self) -> ft.Container:
         return MasterContainer(

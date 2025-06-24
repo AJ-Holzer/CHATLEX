@@ -21,7 +21,18 @@ class LinkAlert:
                 ),
                 ft.TextButton(
                     text="Copy URL",
-                    on_click=lambda _: self._page.set_clipboard(value=self._url),
+                    on_click=lambda _: (
+                        self._page.set_clipboard(value=self._url),
+                        self._page.close(self._alert),
+                        self._page.open(
+                            ft.SnackBar(
+                                content=ft.Text(
+                                    value="Link copied!",
+                                    text_align=ft.TextAlign.CENTER,
+                                )
+                            )
+                        ),
+                    ),
                 ),
             ],
         )

@@ -6,6 +6,7 @@ from env.config import config
 from env.func.logout import logout
 
 
+# TODO: Add enabled state to 'ShakeDetector' class (just like in 'FocusDetector') and only set the event when calling __init__() (just like in 'FocusDetector')
 class ShakeDetector:
     def __init__(self, page: ft.Page, router: AppRouter, storages: Storages) -> None:
         self._page: ft.Page = page

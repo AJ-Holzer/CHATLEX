@@ -6,6 +6,22 @@ from env.config import config
 from env.func.logout import logout_on_lost_focus
 
 
+# Define function for logging out when clicking the label of the top bar
+def top_bar_logout_action(storages: Storages, router: AppRouter) -> None:
+    if not storages.client_storage.get(
+        key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
+        default=config.TOP_BAR_LOGOUT_ON_LABEL_CLICK_DEFAULT,
+    ):
+        return
+
+    logout_on_lost_focus(
+        e=None,
+        router=router,
+        storages=storages,
+        force=True,
+    )
+
+
 class TopBar:
     def __init__(self, page: ft.Page, router: AppRouter, storages: Storages) -> None:
         self._page: ft.Page = page
@@ -45,7 +61,10 @@ class TopBar:
             controls=[
                 ft.Container(
                     content=self._label,
-                    on_click=lambda _: self._on_label_click(),
+                    on_click=lambda _: top_bar_logout_action(
+                        storages=self._storages,
+                        router=self._router,
+                    ),
                 ),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -54,20 +73,6 @@ class TopBar:
         self._settings_button_row: ft.Row = ft.Row(
             controls=[self._settings_button],
             alignment=ft.MainAxisAlignment.END,
-        )
-
-    def _on_label_click(self) -> None:
-        if not self._storages.client_storage.get(
-            key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
-            default=config.TOP_BAR_LOGOUT_ON_LABEL_CLICK_DEFAULT,
-        ):
-            return
-
-        logout_on_lost_focus(
-            e=None,
-            router=self._router,
-            storages=self._storages,
-            force=True,
         )
 
     def build(self) -> ft.Container:
@@ -125,26 +130,15 @@ class SubPageTopBar:
             controls=[
                 ft.Container(
                     content=self._label,
-                    on_click=lambda _: self._on_label_click(),
+                    on_click=lambda _: top_bar_logout_action(
+                        storages=self._storages,
+                        router=self._router,
+                    ),
                     expand=True,
                     padding=ft.padding.only(right=30),
                 ),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
-        )
-
-    def _on_label_click(self) -> None:
-        if not self._storages.client_storage.get(
-            key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
-            default=config.TOP_BAR_LOGOUT_ON_LABEL_CLICK_DEFAULT,
-        ):
-            return
-
-        logout_on_lost_focus(
-            e=None,
-            router=self._router,
-            storages=self._storages,
-            force=True,
         )
 
     def build(self) -> ft.Container:

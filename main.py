@@ -2,12 +2,12 @@ import os
 
 import flet as ft  # type:ignore[import-untyped]
 
+from env.classes.focus_detection import FocusDetector
 from env.classes.paths import paths
 from env.classes.phone_sensors import ShakeDetector
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
 from env.config import config
-from env.func.logout import logout_on_lost_focus
 from env.pages.calibration import CalibrationsPage
 from env.pages.contacts import ContactsPage
 from env.pages.login import LoginPage
@@ -28,6 +28,9 @@ def main(page: ft.Page) -> None:
     page.window.width = config.APP_WIDTH
     page.window.height = config.APP_HEIGHT
 
+    # # TODO: Remove this line
+    # page.client_storage.clear()
+
     # TODO: Add the ability to add more fonts (online)
     # Add global fonts
     page.fonts = config.FONT_FAMILIES_LOCAL
@@ -40,6 +43,11 @@ def main(page: ft.Page) -> None:
 
     # Initialize shake detector for logging out on shaking
     shake_detector: ShakeDetector = ShakeDetector(
+        page=page,
+        router=router,
+        storages=storages,
+    )
+    focus_detector: FocusDetector = FocusDetector(
         page=page,
         router=router,
         storages=storages,
@@ -59,6 +67,7 @@ def main(page: ft.Page) -> None:
         page=page,
         storages=storages,
         router=router,
+        focus_detector=focus_detector,
         shake_detector=shake_detector,
     )
     router.add_route(
@@ -150,9 +159,6 @@ def main(page: ft.Page) -> None:
 
     # Add events
     page.on_platform_brightness_change = lambda _: themes.set_theme()
-    page.on_app_lifecycle_state_change = lambda e: logout_on_lost_focus(
-        e=e, router=router, storages=storages
-    )
 
 
 if __name__ == "__main__":
