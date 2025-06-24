@@ -93,7 +93,7 @@ class Config:
     )
 
     # Default appearance settings
-    APPEARANCE_COLOR_SEED_DEFAULT: ft.ColorValue = ft.Colors.PURPLE
+    APPEARANCE_COLOR_SEED_DEFAULT: ft.ColorValue = "#800080"  # Purple
     APPEARANCE_FONT_FAMILY_DEFAULT: str = "varela-round"
     APPEARANCE_FONT_SIZE_DEFAULT: int = 20
     # Color picker settings

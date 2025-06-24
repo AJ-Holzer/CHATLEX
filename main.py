@@ -26,9 +26,6 @@ def main(page: ft.Page) -> None:
     page.window.width = config.APP_WIDTH
     page.window.height = config.APP_HEIGHT
 
-    # # TODO: Remove this line
-    page.client_storage.clear()
-
     # TODO: Add the ability to add more fonts (online)
     # Add global fonts
     page.fonts = config.FONT_FAMILIES_LOCAL

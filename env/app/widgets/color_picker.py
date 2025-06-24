@@ -1,7 +1,6 @@
 from typing import Any, Callable, Optional
 
 import flet as ft  # type: ignore[import-untyped]
-import webcolors  # type:ignore[import-untyped]
 
 from env.config import config
 from env.func.colors import generate_color_wheel_hex
@@ -128,9 +127,7 @@ class ColorPicker:
         )
 
     def _reset_default(self) -> None:
-        self._on_color_chosen(
-            webcolors.name_to_hex(config.APPEARANCE_COLOR_SEED_DEFAULT)
-        )
+        self._on_color_chosen(config.APPEARANCE_COLOR_SEED_DEFAULT)
 
     def build(self) -> ft.AlertDialog:
         return self._color_picker_alert

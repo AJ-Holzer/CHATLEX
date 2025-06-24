@@ -3,4 +3,3 @@ cryptography
 argon2-cffi
 pynacl
 certifi
-webcolors
