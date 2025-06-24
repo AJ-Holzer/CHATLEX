@@ -3,4 +3,4 @@ cryptography
 argon2-cffi
 pynacl
 certifi
-# pyaes
+webcolors

@@ -42,7 +42,8 @@ class SettingsPage:
         # Theme color picker
         self._theme_color_picker: ColorPicker = ColorPicker(
             page=self._page,
-            on_color_click=self._themes.change_seed_color,
+            default_color=self._themes.color_seed,
+            on_color_click=lambda col: self._change_theme_color(new_color=col),
         )
         # Create font family chooser
         if self._page.fonts:
@@ -284,6 +285,9 @@ class SettingsPage:
             default=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
             * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
         )
+
+    def _change_theme_color(self, new_color: str) -> None:
+        self._themes.color_seed = new_color
 
     def initialize(self) -> None:
         self._update_sliders()

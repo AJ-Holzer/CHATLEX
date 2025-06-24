@@ -20,13 +20,14 @@ def main(page: ft.Page) -> None:
     # Create app path if it doesn't already exist yet
     os.makedirs(name=paths.app_storage_path, exist_ok=True)
 
-    print(paths.app_storage_path)
-
     # Initialize window
     page.title = config.APP_TITLE
     page.window.resizable = config.APP_RESIZABLE
     page.window.width = config.APP_WIDTH
     page.window.height = config.APP_HEIGHT
+
+    # # TODO: Remove this line
+    page.client_storage.clear()
 
     # TODO: Add the ability to add more fonts (online)
     # Add global fonts

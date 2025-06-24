@@ -10,7 +10,7 @@ class LinkAlert:
             title=ft.Text(value="Open URL", text_align=ft.TextAlign.CENTER),
             content=ft.Text(
                 value=f"Are you sure you want to open this URL in your browser?\n\n{self._url}",
-                text_align=ft.TextAlign.CENTER,
+                text_align=ft.TextAlign.START,
             ),
             actions=[
                 ft.TextButton(

@@ -87,15 +87,6 @@ class Themes:
 
         self._page.update()  # type:ignore
 
-    def change_seed_color(self, new_color: ft.ColorValue) -> None:
-        self._color_seed = new_color
-
-        # Update themes
-        for theme in self._all_themes:
-            theme.color_scheme_seed = self._color_seed
-
-        self._update(key=config.CS_COLOR_SEED, value=self._color_seed)
-
     def change_font_family(self, new_font_family: str) -> None:
         if not self._page.fonts:
             raise ValueError("No fonts available!")
@@ -132,3 +123,17 @@ class Themes:
     @property
     def font_size(self) -> int:
         return self._font_size
+
+    @property
+    def color_seed(self) -> str:
+        return self._color_seed
+
+    @color_seed.setter
+    def color_seed(self, value: str) -> None:
+        self._color_seed = value
+
+        # Update themes
+        for theme in self._all_themes:
+            theme.color_scheme_seed = self._color_seed
+
+        self._update(key=config.CS_COLOR_SEED, value=self._color_seed)

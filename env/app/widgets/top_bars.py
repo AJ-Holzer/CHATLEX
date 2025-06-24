@@ -105,7 +105,7 @@ class SubPageTopBar:
         self._label: ft.Text = ft.Text(
             value=self._title,
             weight=ft.FontWeight.BOLD,
-            text_align=ft.TextAlign.CENTER,
+            text_align=ft.TextAlign.START,
             # expand=True,
             theme_style=ft.TextThemeStyle.TITLE_LARGE,
             color=ft.Colors.PRIMARY,
