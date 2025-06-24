@@ -7,7 +7,7 @@ from env.app.widgets.contact import ContactWidget
 from env.app.widgets.container import MasterContainer
 from env.app.widgets.top_bars import TopBar
 from env.classes.database import SQLiteDatabase
-from env.classes.encryption import AES
+from env.classes.encryption import AES_CBC
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
 from env.config import config
@@ -39,7 +39,7 @@ class ContactsPage:
         )
 
         # Define types for encryptor and database
-        self._aes_encryptor: AES
+        self._aes_encryptor: AES_CBC
 
     def _on_add_contact_submit(
         self,
@@ -167,8 +167,8 @@ class ContactsPage:
         self._contacts_list.controls.append(contact_widget.build())
 
     def _initialize_aes_encryptor(self) -> None:
-        # Initialize AES encryptor
-        self._aes_encryptor = AES(
+        # Initialize AES_CBC encryptor
+        self._aes_encryptor = AES_CBC(
             derived_key=str_to_byte(
                 data=self._storages.session_storage.get(key=config.SS_USER_SESSION_KEY)
             ),

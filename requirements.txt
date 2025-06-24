@@ -2,5 +2,5 @@ flet
 cryptography
 argon2-cffi
 pynacl
-pyaes
 certifi
+# pyaes

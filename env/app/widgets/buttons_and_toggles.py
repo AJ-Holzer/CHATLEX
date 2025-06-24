@@ -1,25 +1,37 @@
-from typing import Any, Callable, Optional
+from typing import Optional
 
 import flet as ft  # type:ignore[import-untyped]
 
+from env.app.widgets.links import LinkAlert
 
-class SectionButton:
+
+class SimpleButton:
     def __init__(
         self,
+        page: ft.Page,
         text: str,
-        icon: Optional[ft.IconValue] = None,
-        func: Optional[Callable[..., Any]] = None,
-        func_args: Optional[tuple[Any, ...]] = None,
+        icon: Optional[ft.IconValue],
+        on_click: ft.OptionalControlEventCallable = None,
+        url: Optional[str] = None,
     ) -> None:
+        self._page: ft.Page = page
         self._text: str = text
         self._icon: Optional[ft.IconValue] = icon
-        self._func: Optional[Callable[..., Any]] = func
-        self._func_args: Optional[tuple[Any, ...]] = func_args
+        self._on_click_action: ft.OptionalControlEventCallable = on_click
+        self._url: Optional[str] = url
+
+        # Raise exception if url and on_click_action are provided
+        if self._url is not None and self._on_click_action is not None:
+            raise ValueError("Expected url or on_click_action but both were given!")
+        # Raise exception if no url and no on_click_action provided
+        if self._url is None and self._on_click_action is None:
+            raise ValueError("Expected url or on_click_action but none were given!")
 
         # Modern, stylized button
         self._text_button: ft.ElevatedButton = ft.ElevatedButton(
             content=ft.Row(
                 controls=[
+                    # Icon
                     ft.Column(
                         controls=[
                             (
@@ -29,6 +41,7 @@ class SectionButton:
                             ),
                         ],
                     ),
+                    # Text
                     ft.Column(
                         controls=[
                             ft.Text(
@@ -54,11 +67,17 @@ class SectionButton:
         )
 
     def _on_click(self, e: ft.ControlEvent) -> None:
-        if self._func:
-            if self._func_args:
-                self._func(*self._func_args)
-            else:
-                self._func()
+        # Run action if provided
+        if self._on_click_action:
+            self._on_click_action(e)
+            return
+
+        # Check if link exists
+        if not self._url:
+            raise ValueError("No URL provided!")
+
+        # Create and open link open alert
+        LinkAlert(page=self._page, url=self._url).open()
 
     def build(self) -> ft.Container:
         return ft.Container(
@@ -67,6 +86,56 @@ class SectionButton:
             expand=True,
             padding=ft.Padding(left=20, top=0, right=20, bottom=0),
         )
+
+
+class ActionButton:
+    def __init__(
+        self,
+        page: ft.Page,
+        text: str,
+        icon: Optional[ft.IconValue] = None,
+        on_click: ft.OptionalControlEventCallable = None,
+    ) -> None:
+        self._page: ft.Page = page
+        self._text: str = text
+        self._icon: Optional[ft.IconValue] = icon
+        self._on_click: ft.OptionalControlEventCallable = on_click
+
+        # Modern, stylized button
+        self._button: SimpleButton = SimpleButton(
+            page=self._page,
+            text=self._text,
+            icon=self._icon,
+            on_click=self._on_click,
+        )
+
+    def build(self) -> ft.Container:
+        return self._button.build()
+
+
+class URLButton:
+    def __init__(
+        self,
+        page: ft.Page,
+        text: str,
+        url: str,
+        icon: Optional[ft.IconValue] = None,
+    ) -> None:
+        self._page: ft.Page = page
+        self._text: str = text
+        self._icon: Optional[ft.IconValue] = icon
+        self._url: str = url
+
+        # Modern, stylized button
+        self._button: SimpleButton = SimpleButton(
+            page=self._page,
+            text=self._text,
+            icon=self._icon,
+            url=self._url,
+        )
+
+    def build(self) -> ft.Container:
+        return self._button.build()
 
 
 class SectionToggle:

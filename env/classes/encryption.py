@@ -1,20 +1,20 @@
-import platform
-
-import pyaes  # type:ignore[import-untyped]
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.ciphers import (
+    Cipher,
+    CipherContext,
+    algorithms,
+    modes,
+)
+from cryptography.hazmat.primitives.padding import PaddingContext
 
 from env.classes.hashing import HKDFHasher
 from env.config import config
 from env.func.generations import generate_iv, generate_salt
 from env.typing.hashing import HKDFInfoKey
 
-IS_ANDROID: bool = (
-    "android" in platform.system().lower()
-    or "linux" in platform.platform().lower()
-    and "arm" in platform.machine()
-)
 
-
-class AES:
+class AES_CBC:
     def __init__(self, derived_key: bytes, salt: bytes) -> None:
         self._salt: bytes = salt
         self._derived_key: bytes = derived_key
@@ -28,36 +28,20 @@ class AES:
             salt=salt,
         )
 
-        if IS_ANDROID:
-            pad_len: int = 16 - (len(plaintext.encode(config.ENCODING)) % 16)
-            padded: bytes = plaintext.encode(config.ENCODING) + bytes(
-                [pad_len] * pad_len
-            )
+        # Defer cryptography imports so type checkers don't fail on Android
 
-            aes = pyaes.AESModeOfOperationCBC(encryption_key, iv=iv)
-            ciphertext: bytes = aes.encrypt(padded)  # type: ignore
-        else:
-            # Defer cryptography imports so type checkers don't fail on Android
-            from cryptography.hazmat.backends import default_backend
-            from cryptography.hazmat.primitives import padding
-            from cryptography.hazmat.primitives.ciphers import (
-                Cipher,
-                algorithms,
-                modes,
-            )
+        padder = padding.PKCS7(128).padder()
+        padded_data = (
+            padder.update(plaintext.encode(config.ENCODING)) + padder.finalize()
+        )
 
-            padder = padding.PKCS7(128).padder()
-            padded_data = (
-                padder.update(plaintext.encode(config.ENCODING)) + padder.finalize()
-            )
-
-            cipher = Cipher(
-                algorithm=algorithms.AES(encryption_key),
-                mode=modes.CBC(iv),
-                backend=default_backend(),
-            )
-            encryptor = cipher.encryptor()
-            ciphertext = encryptor.update(padded_data) + encryptor.finalize()
+        cipher = Cipher(
+            algorithm=algorithms.AES(encryption_key),
+            mode=modes.CBC(iv),
+            backend=default_backend(),
+        )
+        encryptor = cipher.encryptor()
+        ciphertext = encryptor.update(padded_data) + encryptor.finalize()
 
         return salt + iv + ciphertext
 
@@ -71,32 +55,14 @@ class AES:
             salt=salt,
         )
 
-        if IS_ANDROID:
-            aes: pyaes.AESModeOfOperationCBC = pyaes.AESModeOfOperationCBC(
-                decryption_key, iv=iv
-            )
-            decrypted: bytes = aes.decrypt(ciphertext)  # type: ignore
-            pad_len: int = decrypted[-1]
-            return decrypted[:-pad_len].decode(config.ENCODING)
-        else:
-            from cryptography.hazmat.backends import default_backend
-            from cryptography.hazmat.primitives import padding
-            from cryptography.hazmat.primitives.ciphers import (
-                Cipher,
-                CipherContext,
-                algorithms,
-                modes,
-            )
-            from cryptography.hazmat.primitives.padding import PaddingContext
+        cipher: Cipher[modes.CBC] = Cipher(
+            algorithm=algorithms.AES(decryption_key),
+            mode=modes.CBC(iv),
+            backend=default_backend(),
+        )
+        decryptor: CipherContext = cipher.decryptor()
+        padded_data: bytes = decryptor.update(ciphertext) + decryptor.finalize()
 
-            cipher: Cipher[modes.CBC] = Cipher(
-                algorithm=algorithms.AES(decryption_key),
-                mode=modes.CBC(iv),
-                backend=default_backend(),
-            )
-            decryptor: CipherContext = cipher.decryptor()
-            padded_data: bytes = decryptor.update(ciphertext) + decryptor.finalize()
-
-            unpadder: PaddingContext = padding.PKCS7(128).unpadder()
-            plaintext: bytes = unpadder.update(padded_data) + unpadder.finalize()
-            return plaintext.decode(config.ENCODING)
+        unpadder: PaddingContext = padding.PKCS7(128).unpadder()
+        plaintext: bytes = unpadder.update(padded_data) + unpadder.finalize()
+        return plaintext.decode(config.ENCODING)

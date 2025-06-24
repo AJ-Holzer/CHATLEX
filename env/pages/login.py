@@ -74,6 +74,7 @@ class LoginPage:
             on_change=self._validate,
             autofocus=True,
             autocorrect=False,
+            can_reveal_password=True,
         )
         if not self._user_already_exists:
             self._entry_password_confirmation: ft.TextField = ft.TextField(
@@ -81,6 +82,7 @@ class LoginPage:
                 password=True,
                 on_change=self._validate,
                 autocorrect=False,
+                can_reveal_password=True,
             )
 
         # Buttons

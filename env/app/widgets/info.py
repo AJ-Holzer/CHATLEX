@@ -2,7 +2,7 @@ from typing import Optional
 
 import flet as ft  # type:ignore[import-untyped]
 
-from env.app.widgets.buttons_and_toggles import SectionButton
+from env.app.widgets.buttons_and_toggles import ActionButton
 
 
 class InfoButtonAlert:
@@ -22,15 +22,23 @@ class InfoButtonAlert:
         self._info_alert: ft.AlertDialog = ft.AlertDialog(
             title=self._label,
             scrollable=True,
-            content=ft.Markdown(value=self._content),
+            content=ft.Container(
+                content=ft.Column(
+                    controls=[
+                        ft.Markdown(value=self._content),
+                    ],
+                    scroll=ft.ScrollMode.AUTO,
+                ),
+                height=400,
+            ),
         )
 
         # Create button to open alert
-        self._info_button: SectionButton = SectionButton(
+        self._info_button: ActionButton = ActionButton(
+            page=self._page,
             text=self._label,
             icon=self._icon,
-            func=self._page.open,
-            func_args=(self._info_alert,),
+            on_click=lambda _: self._page.open(self._info_alert),
         )
 
     def build(self) -> ft.Container:

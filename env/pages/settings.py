@@ -4,9 +4,14 @@ from typing import Literal
 
 import flet as ft  # type:ignore[import-untyped]
 
-from env.app.widgets.buttons_and_toggles import SectionButton, SectionToggle
+from env.app.widgets.buttons_and_toggles import (
+    ActionButton,
+    SectionToggle,
+    URLButton,
+)
 from env.app.widgets.color_picker import ColorPicker
 from env.app.widgets.container import MasterContainer
+from env.app.widgets.dropdown import SectionDropDown
 from env.app.widgets.info import InfoButtonAlert
 from env.app.widgets.sections import Section
 from env.app.widgets.sliders import DescriptiveSlider
@@ -52,13 +57,12 @@ class SettingsPage:
                     text=self._themes.font_family,
                 )
             ]
-        self._font_family_chooser: ft.Dropdown = ft.Dropdown(
+        self._font_family_chooser: SectionDropDown = SectionDropDown(
+            label="Font Family",
             value=self._themes.font_family,
             options=font_options,
-            label="Font Family",
             on_change=self._change_font_family,
         )
-        # Crate font size slider
         self._font_size_slider: DescriptiveSlider = DescriptiveSlider(
             page=self._page,
             description="Font Size",
@@ -72,7 +76,7 @@ class SettingsPage:
         )
 
         " === CONTROLS SECURITY SECTION === "
-        # TODO: Add safety checks if files exist and a class for easier access for file content
+        # TODO: Add safety checks if files exist and a class for easier access for file content with caching
         for file_path in [
             config.FILE_INFOS,
             config.FILE_ABOUT,
@@ -101,7 +105,7 @@ class SettingsPage:
             on_click=self._toggle_logout_lost_focus,
         )
         # Logout on on shake detection
-        self._toggle_losd: SectionToggle = SectionToggle(
+        self._toggle_shake_detection: SectionToggle = SectionToggle(
             text="Shake Detection",
             toggle_value=self._storages.client_storage.get(
                 key=config.CS_SHAKE_DETECTION_ENABLED,
@@ -133,7 +137,7 @@ class SettingsPage:
         )
         # Logout on top bar label click
         self._toggle_tblc: SectionToggle = SectionToggle(
-            text="Logout TopBar Click",
+            text="TopBar Logout Action",
             toggle_value=self._storages.client_storage.get(
                 key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
                 default=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
@@ -146,14 +150,16 @@ class SettingsPage:
         self._appearance_section: Section = Section(
             title="Appearance",
             content=[
-                SectionButton(
+                ActionButton(
+                    page=self._page,
                     text="Change Color",
                     icon=ft.Icons.COLOR_LENS_OUTLINED,
-                    func=self._page.open,
-                    func_args=(self._theme_color_picker.build(),),
+                    on_click=lambda _: self._page.open(
+                        self._theme_color_picker.build()
+                    ),
                 ).build(),
                 ft.Row(
-                    controls=[self._font_family_chooser],
+                    controls=[self._font_family_chooser.build()],
                     alignment=ft.MainAxisAlignment.CENTER,
                 ),
                 self._font_size_slider.build(),
@@ -163,8 +169,8 @@ class SettingsPage:
             title="Security",
             content=[
                 self._toggle_lolf.build(),
-                self._toggle_losd.build(),
                 self._toggle_tblc.build(),
+                self._toggle_shake_detection.build(),
                 self._slider_gravity_threshold.build(),
             ],
         )
@@ -182,11 +188,11 @@ class SettingsPage:
         )  # TODO: Add infos (about, why shaking, what is lost focus, ...)
 
         " === SUPPORT & ABOUT === "
-        self._support_button: SectionButton = SectionButton(
+        self._support_button: URLButton = URLButton(
+            page=self._page,
             text="Support Me",
+            url="https://ajservers.site/faqs",
             icon=ft.CupertinoIcons.HEART,
-            func=self._page.launch_url,
-            func_args=("https://ajservers.site/faqs",),
         )
         self._about_buttons: ft.Column = ft.Column(
             controls=[
