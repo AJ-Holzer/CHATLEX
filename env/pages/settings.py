@@ -16,8 +16,8 @@ from env.app.widgets.info import InfoButtonAlert
 from env.app.widgets.sections import Section
 from env.app.widgets.sliders import DescriptiveSlider
 from env.app.widgets.top_bars import SubPageTopBar
-from env.classes.phone_sensors import ShakeDetector
 from env.classes.router import AppRouter
+from env.classes.shake_detector import ShakeDetector
 from env.classes.storages import Storages
 from env.config import config
 from env.themes.themes import Themes
@@ -237,18 +237,22 @@ class SettingsPage:
     def _toggle_logout_shake_detection(self, e: ft.ControlEvent) -> None:
         value: bool = True if e.data == "true" else False
 
+        # Update storage and set enabled state
         self._storages.client_storage.set(
             key=config.CS_SHAKE_DETECTION_ENABLED,
             value=value,
         )
+        self._shake_detector.enabled = value
 
     def _toggle_logout_on_top_bar_label_click(self, e: ft.ControlEvent) -> None:
         value: bool = True if e.data == "true" else False
 
+        # Update storage and set enabled state
         self._storages.client_storage.set(
             key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
             value=value,
         )
+        # TODO: Set enabled state of top bar
 
     def _change_shake_detection_gravity_threshold(self, e: ft.ControlEvent) -> None:
         if e.data is None:
@@ -266,7 +270,7 @@ class SettingsPage:
         )
 
         # Update shake detector
-        self._shake_detector.update_threshold_gravity(value=new_threshold)
+        self._shake_detector.gravity_threshold = new_threshold
 
     def _update_sliders(self) -> None:
         # Font size slider

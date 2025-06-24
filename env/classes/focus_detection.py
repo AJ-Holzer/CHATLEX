@@ -30,8 +30,10 @@ class FocusDetector:
             force=True,
         )
 
-    def enable(self) -> None:
-        self._enabled = True
+    @property
+    def enabled(self) -> bool:
+        return self._enabled
 
-    def disable(self) -> None:
-        self._enabled = False
+    @enabled.setter
+    def enabled(self, value: bool) -> None:
+        self._enabled = value

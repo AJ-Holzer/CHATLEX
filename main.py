@@ -4,8 +4,8 @@ import flet as ft  # type:ignore[import-untyped]
 
 from env.classes.focus_detection import FocusDetector
 from env.classes.paths import paths
-from env.classes.phone_sensors import ShakeDetector
 from env.classes.router import AppRouter
+from env.classes.shake_detector import ShakeDetector
 from env.classes.storages import Storages
 from env.config import config
 from env.pages.calibration import CalibrationsPage

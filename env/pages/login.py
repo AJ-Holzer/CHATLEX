@@ -6,8 +6,8 @@ from env.app.widgets.container import MasterContainer
 from env.classes.focus_detection import FocusDetector
 from env.classes.hashing import ArgonHasher
 from env.classes.paths import paths
-from env.classes.phone_sensors import ShakeDetector
 from env.classes.router import AppRouter
+from env.classes.shake_detector import ShakeDetector
 from env.classes.storages import Storages
 from env.config import config
 from env.func.converter import byte_to_str, str_to_byte
@@ -320,7 +320,7 @@ class LoginPage:
             self._entry_password_confirmation.update()
 
         # Enable shake detection if setting set to 'True'
-        self._shake_detector.enable()
+        self._shake_detector.enabled = True
 
         self._router.go(config.ROUTE_CONTACTS)
 
@@ -328,8 +328,8 @@ class LoginPage:
         # Disable shake detector and focus detector when
         # showing login page to avoid logging out
         # when not logged in
-        self._shake_detector.disable()
-        self._focus_detector.disable()
+        self._shake_detector.enabled = False
+        self._focus_detector.enabled = False
 
     def build(self) -> ft.Container:
         return MasterContainer(
