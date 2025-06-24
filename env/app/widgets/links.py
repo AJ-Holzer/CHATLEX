@@ -7,9 +7,10 @@ class LinkAlert:
         self._url: str = url
 
         self._alert: ft.AlertDialog = ft.AlertDialog(
-            title="Open URL",
+            title=ft.Text(value="Open URL", text_align=ft.TextAlign.CENTER),
             content=ft.Text(
-                value=f"Are you sure you want to open this URL in your browser?\n\n{self._url}"
+                value=f"Are you sure you want to open this URL in your browser?\n\n{self._url}",
+                text_align=ft.TextAlign.CENTER,
             ),
             actions=[
                 ft.TextButton(
@@ -17,7 +18,10 @@ class LinkAlert:
                     style=ft.ButtonStyle(
                         color=ft.Colors.RED,
                     ),
-                    on_click=lambda _: self._page.launch_url(url=self._url),
+                    on_click=lambda _: (
+                        self._page.launch_url(url=self._url),
+                        self._page.close(self._alert),
+                    ),
                 ),
                 ft.TextButton(
                     text="Copy URL",

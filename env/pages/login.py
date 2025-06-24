@@ -271,7 +271,7 @@ class LoginPage:
         ):
             wrong_pwd_alert: ft.AlertDialog = ft.AlertDialog(
                 modal=True,
-                title=ft.Text(value="Wrong Password!"),
+                title=ft.Text(value="Wrong Password!", text_align=ft.TextAlign.CENTER),
                 content=ft.Text(
                     value="You entered a wrong password. Please try again!",
                 ),

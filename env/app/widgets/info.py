@@ -20,7 +20,7 @@ class InfoButtonAlert:
 
         # Create info alert
         self._info_alert: ft.AlertDialog = ft.AlertDialog(
-            title=self._label,
+            title=ft.Text(value=self._label, text_align=ft.TextAlign.CENTER),
             scrollable=True,
             content=ft.Container(
                 content=ft.Column(
@@ -29,7 +29,6 @@ class InfoButtonAlert:
                     ],
                     scroll=ft.ScrollMode.AUTO,
                 ),
-                height=400,
             ),
         )
 
