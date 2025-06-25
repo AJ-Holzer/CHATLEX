@@ -48,20 +48,16 @@ Feel free to open an issue or start a discussion in the GitHub Repository.
 | Data Transmission       | The data will be sent over the Tor network to anonymize the traffic                                                    |             |
 | Group Chats             | Group chats for chatting with multiple people - just like WhatsApp or Signal                                           |             |
 | File Sharing            | Sharing files up to 500 MB                                                                                             |             |
-| Image Sharing           | Sharing high quality images                                                                                            |             |
-| Video Sharing           | Sharing high quality videos                                                                                            |             |
 
 ## 📈 Roadmap
 
 - ✅ Storage logic (encryption, database)
 - 🚧 Pages and appearance management
-- Sending (P2P)
 - Adding Contacts
+- Sending (P2P)
 - Group Chats
 - Multi Device Sync
-- File Sharing
-- Image Sharing
-- Video Sharing
+- File Sharing (image, video, audio, ...)
 
 ## 🛠 Current Tech Stack Highlights
 
@@ -78,6 +74,7 @@ The fonts used in this project are sourced from [Google Fonts](https://fonts.goo
 
 - Baloo Bhaijaan
 - Varela Round
+- Dosis (semibold)
 
 ## 💬 Community & Support
 
