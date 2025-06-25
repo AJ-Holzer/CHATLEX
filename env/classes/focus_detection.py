@@ -27,7 +27,6 @@ class FocusDetector:
             e=e,
             router=self._router,
             storages=self._storages,
-            force=True,
         )
 
     @property

@@ -20,6 +20,9 @@ class ColorPicker:
         self._on_click_func: Optional[Callable[[ft.ColorValue], Any]] = on_color_click
         self._title: str = title
 
+        # Save last color for resetting
+        self._last_color: str = str(self._default_color)
+
         # Create color buttons
         self._colors: list[str] = self._generate_colors(
             config.COLOR_PICKER_AMOUNT_COLORS
@@ -50,6 +53,7 @@ class ColorPicker:
         self._color_picker_alert: ft.AlertDialog = ft.AlertDialog(
             title=ft.Text(value=self._title, text_align=ft.TextAlign.CENTER),
             scrollable=True,
+            on_dismiss=self._on_dismiss,
             content=ft.Column(
                 controls=[
                     ft.Container(
@@ -74,16 +78,24 @@ class ColorPicker:
                 ],
             ),
             actions=[
+                # Reset button
                 ft.TextButton(
                     text="Reset",
                     on_click=lambda _: self._reset_default(),
                 ),
+                # Close button
                 ft.TextButton(
                     text="Close",
-                    on_click=lambda _: self._page.close(self._color_picker_alert),
+                    on_click=self._on_dismiss,
                 ),
             ],
         )
+
+    def _on_dismiss(self, e: ft.ControlEvent) -> None:
+        # Reset color input field if invalid value
+        self._color_input_field.value = self._last_color.removeprefix("#")
+        self._color_input_field.error_text = None
+        self._color_input_field.update()
 
     def _generate_colors(self, n: int) -> list[str]:
         try:
@@ -100,12 +112,12 @@ class ColorPicker:
 
         # Return if color not valid
         if not is_valid_color_code(color=col):
-            self._color_input_field.border_color = ft.Colors.RED
+            self._color_input_field.error_text = "Color invalid!"
             self._color_input_field.update()
             return
 
         # Reset input field color and update input field value
-        self._color_input_field.border_color = None
+        self._color_input_field.error_text = None
         self._color_input_field.value = col.removeprefix("#")
         self._color_input_field.update()
 
