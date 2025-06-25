@@ -14,16 +14,6 @@ class LinkAlert:
             ),
             actions=[
                 ft.TextButton(
-                    text="Open",
-                    style=ft.ButtonStyle(
-                        color=ft.Colors.RED,
-                    ),
-                    on_click=lambda _: (
-                        self._page.launch_url(url=self._url),
-                        self._page.close(self._alert),
-                    ),
-                ),
-                ft.TextButton(
                     text="Copy URL",
                     on_click=lambda _: (
                         self._page.set_clipboard(value=self._url),
@@ -36,6 +26,16 @@ class LinkAlert:
                                 )
                             )
                         ),
+                    ),
+                ),
+                ft.TextButton(
+                    text="Open",
+                    style=ft.ButtonStyle(
+                        color=ft.Colors.RED,
+                    ),
+                    on_click=lambda _: (
+                        self._page.launch_url(url=self._url),
+                        self._page.close(self._alert),
                     ),
                 ),
             ],
