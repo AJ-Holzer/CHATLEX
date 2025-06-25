@@ -319,8 +319,9 @@ class LoginPage:
         if not self._user_already_exists:
             self._entry_password_confirmation.update()
 
-        # Enable shake detection if setting set to 'True'
+        # Enable shake detection
         self._shake_detector.enabled = True
+        self._focus_detector.enabled = True
 
         self._router.go(config.ROUTE_CONTACTS)
 

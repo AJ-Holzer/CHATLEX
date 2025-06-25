@@ -27,6 +27,8 @@ class StorageManager:
         # Load saved storage into cache for faster access
         self._load_all()
 
+        print(f"Storage (type='{type(self._storage)}'): cache={self._storage_cache}")
+
     def _load_all(self) -> None:
         """Loads all key-value pairs from storage into the cache."""
         if isinstance(self._storage, ClientStorage):

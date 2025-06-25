@@ -118,7 +118,10 @@ class SettingsPage:
         self._slider_gravity_threshold: DescriptiveSlider = DescriptiveSlider(
             page=self._page,
             description="Shake Gravity Threshold",
-            slider_value=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
+            slider_value=self._storages.client_storage.get(
+                key=config.CS_SHAKE_DETECTION_THRESHOLD_GRAVITY,
+                default=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT,
+            )
             * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
             slider_min=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MIN
             * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
@@ -222,8 +225,8 @@ class SettingsPage:
     def _change_font_size(self, e: ft.ControlEvent) -> None:
         if e.data is None:
             raise ValueError("No font size provided!")
-        if float(e.data) < 0.0:
-            raise ValueError("Font size is not allowed to be negative!")
+        if not config.FONT_SIZE_MIN <= float(e.data) <= config.FONT_SIZE_MAX:
+            raise ValueError(f"Font size not valid! Got font_size='{e.data}'")
 
         self._themes.change_font_size(new_font_size=int(float(e.data)))
 
@@ -280,10 +283,12 @@ class SettingsPage:
             default=config.APPEARANCE_FONT_SIZE_DEFAULT,
         )
         # Gravity threshold slider
-        self._slider_gravity_threshold.slider_value = self._storages.client_storage.get(
-            key=config.CS_SHAKE_DETECTION_THRESHOLD_GRAVITY,
-            default=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
-            * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+        self._slider_gravity_threshold.slider_value = (
+            self._storages.client_storage.get(
+                key=config.CS_SHAKE_DETECTION_THRESHOLD_GRAVITY,
+                default=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT,
+            )
+            * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER
         )
 
     def _change_theme_color(self, new_color: str) -> None:

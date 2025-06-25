@@ -94,7 +94,7 @@ class ColorPicker:
 
     def _on_color_chosen(self, col: str) -> None:
         # Add '#' to color if not already
-        modified_color: str = f"#{col}" if not col.startswith("#") else col
+        modified_color: str = (f"#{col}" if not col.startswith("#") else col).upper()
 
         print(f"{modified_color=}")
 
