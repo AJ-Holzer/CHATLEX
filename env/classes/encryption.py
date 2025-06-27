@@ -66,3 +66,6 @@ class AES_CBC:
         unpadder: PaddingContext = padding.PKCS7(128).unpadder()
         plaintext: bytes = unpadder.update(padded_data) + unpadder.finalize()
         return plaintext.decode(config.ENCODING)
+
+
+# TODO: Add and use AES-256-GCM in database instead
