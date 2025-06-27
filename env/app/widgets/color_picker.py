@@ -97,6 +97,8 @@ class ColorPicker:
         self._color_input_field.error_text = None
         self._color_input_field.update()
 
+        self._page.close(self._color_picker_alert)
+
     def _generate_colors(self, n: int) -> list[str]:
         try:
             colors: list[str] = generate_color_wheel_hex(n)

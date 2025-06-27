@@ -3,6 +3,7 @@ from typing import Optional
 import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.buttons_and_toggles import ActionButton
+from env.func.text_parser import parse_custom_markdown
 
 
 class InfoButtonAlert:
@@ -25,7 +26,7 @@ class InfoButtonAlert:
             content=ft.Container(
                 content=ft.Column(
                     controls=[
-                        ft.Markdown(value=self._content),
+                        parse_custom_markdown(input_str=self._content),
                     ],
                     scroll=ft.ScrollMode.AUTO,
                 ),

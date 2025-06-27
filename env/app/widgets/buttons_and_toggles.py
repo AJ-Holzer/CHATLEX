@@ -11,12 +11,14 @@ class SimpleButton:
         page: ft.Page,
         text: str,
         icon: Optional[ft.IconValue],
+        is_destructive: bool,
         on_click: ft.OptionalControlEventCallable = None,
         url: Optional[str] = None,
     ) -> None:
         self._page: ft.Page = page
         self._text: str = text
         self._icon: Optional[ft.IconValue] = icon
+        self._is_destructive: bool = is_destructive
         self._on_click_action: ft.OptionalControlEventCallable = on_click
         self._url: Optional[str] = url
 
@@ -58,6 +60,7 @@ class SimpleButton:
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
             on_click=self._on_click,
+            color=None if not self._is_destructive else ft.Colors.RED,
             style=ft.ButtonStyle(
                 padding=ft.Padding(left=16, top=12, right=16, bottom=12),
                 shape=ft.RoundedRectangleBorder(radius=12),
@@ -95,17 +98,20 @@ class ActionButton:
         text: str,
         icon: Optional[ft.IconValue] = None,
         on_click: ft.OptionalControlEventCallable = None,
+        is_destructive: bool = False,
     ) -> None:
         self._page: ft.Page = page
         self._text: str = text
         self._icon: Optional[ft.IconValue] = icon
         self._on_click: ft.OptionalControlEventCallable = on_click
+        self._is_destructive: bool = is_destructive
 
         # Modern, stylized button
         self._button: SimpleButton = SimpleButton(
             page=self._page,
             text=self._text,
             icon=self._icon,
+            is_destructive=self._is_destructive,
             on_click=self._on_click,
         )
 
@@ -131,6 +137,7 @@ class URLButton:
             page=self._page,
             text=self._text,
             icon=self._icon,
+            is_destructive=False,
             url=self._url,
         )
 
