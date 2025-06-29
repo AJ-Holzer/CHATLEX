@@ -10,6 +10,7 @@ from env.classes.database import SQLiteDatabase
 from env.classes.encryption import AES_CBC
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
+from env.classes.translations import Translator
 from env.config import config
 from env.func.converter import str_to_byte
 from env.func.validations import is_valid_onion_address
@@ -17,10 +18,19 @@ from env.typing.dicts import ContactData
 
 
 class ContactsPage:
-    def __init__(self, page: ft.Page, storages: Storages, router: AppRouter) -> None:
+    def __init__(
+        self,
+        page: ft.Page,
+        storages: Storages,
+        router: AppRouter,
+        translator: Translator,
+    ) -> None:
         self._page: ft.Page = page
         self._storages: Storages = storages
         self._router: AppRouter = router
+        self._translator: Translator = translator
+
+        # Initialize top bar
         self._top_bar: TopBar = TopBar(
             page=self._page,
             router=self._router,
@@ -28,18 +38,43 @@ class ContactsPage:
         )
 
         # Contacts list
-        # Use ReorderableListView to allow manual arrangement of contacts
         self._contacts_list: ft.ListView = ft.ListView(controls=[], expand=True)
 
         # Buttons
-        self._add_user_button: ft.FloatingActionButton = ft.FloatingActionButton(
+        self._add_contact_button: ft.FloatingActionButton = ft.FloatingActionButton(
             icon=ft.Icons.PERSON_ADD_ALT_1_ROUNDED,
-            tooltip="Add Contact",
             on_click=lambda _: self._open_contact_alert(),
+        )
+
+        # Snack bar
+        self._add_contact_error_label: ft.Text = ft.Text(
+            value=f"There was an error while adding the contact!"
+        )
+        self._add_contact_error_snackbar: ft.SnackBar = ft.SnackBar(
+            content=self._add_contact_error_label,
+            duration=10_000,  # Show for 10 seconds
+            dismiss_direction=ft.DismissDirection.HORIZONTAL,
         )
 
         # Define types for encryptor and database
         self._aes_encryptor: AES_CBC
+
+        # Add controls to translator
+        self._translator.add_controls(
+            route=config.ROUTE_CONTACTS,
+            control_adding_data=[
+                # Add contacts button
+                {
+                    "control_name": "add-contact-button",
+                    "control": self._add_contact_button,
+                },
+                # Add contact error label
+                {
+                    "control_name": "add-contact-error-label",
+                    "control": self._add_contact_error_label,
+                },
+            ],
+        )
 
     def _on_add_contact_submit(
         self,
@@ -83,17 +118,8 @@ class ContactsPage:
         # Insert contact into database
         try:
             db.insert_contact(contact_data=contact_data)
-        except Exception as e:
-            # Show the error
-            self._page.open(
-                ft.SnackBar(
-                    content=ft.Text(
-                        value=f"There was an error while adding the contact! Error: {e}"
-                    ),
-                    duration=10_000,  # Show for 10 seconds
-                    dismiss_direction=ft.DismissDirection.HORIZONTAL,
-                )
-            )
+        except:
+            self._page.open(self._add_contact_error_snackbar)
             return
 
         # Close alert
@@ -113,14 +139,12 @@ class ContactsPage:
             label="User Description",
             multiline=True,
             max_lines=None,
-            height=120,
         )
         description_container: ft.Container = ft.Container(
             content=ft.Column(
                 controls=[description_entry],
                 scroll=ft.ScrollMode.AUTO,
             ),
-            height=120,
         )
         onion_address_entry: ft.TextField = ft.TextField(
             label="Onion Address",
@@ -137,7 +161,7 @@ class ContactsPage:
             actions=[
                 ft.TextButton(
                     "Cancel",
-                    on_click=lambda e: self._page.close(alert),
+                    on_click=lambda _: self._page.close(alert),
                 ),
                 ft.TextButton(
                     "Add",
@@ -152,6 +176,28 @@ class ContactsPage:
         )
         self._page.open(alert)
         self._page.update()  # type:ignore
+
+        # Add controls to translator
+        self._translator.add_controls(
+            route=config.ROUTE_CONTACTS,
+            control_adding_data=[
+                # Username entry
+                {
+                    "control_name": "username-entry",
+                    "control": username_entry,
+                },
+                # Description entry
+                {
+                    "control_name": "description-entry",
+                    "control": description_entry,
+                },
+                # Onion address entry
+                {
+                    "control_name": "onion-address-entry",
+                    "control": onion_address_entry,
+                },
+            ],
+        )
 
     def _add_contact(self, contact_data: ContactData) -> None:
         # Create new contact widget
@@ -225,7 +271,7 @@ class ContactsPage:
                     ),
                     ft.Container(
                         content=ft.Column(
-                            controls=[self._add_user_button],
+                            controls=[self._add_contact_button],
                             spacing=10,
                             alignment=ft.MainAxisAlignment.END,
                         ),

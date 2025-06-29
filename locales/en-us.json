@@ -1,0 +1,84 @@
+{
+    "/calibrations/info-text": {
+        "value": {
+            "init": "Waiting...",
+            "calibrate-password-hashing-time-cost": "Calibrating hashing time cost..."
+        },
+        "label": {
+            "init": null
+        },
+        "text": {
+            "init": null,
+            "calibrating-password-hashing-time-cost": "Calibrating hashing time cost..."
+        },
+        "helper_text": {
+            "init": null
+        },
+        "error_text": {
+            "init": null
+        },
+        "tooltip": {
+            "init": null
+        }
+    },
+    "/calibrations/calibration-notice": {
+        "value": {
+            "init": "Lean back while we calibrate your experience."
+        },
+        "label": {
+            "init": null
+        },
+        "text": {
+            "init": null
+        },
+        "helper_text": {
+            "init": null
+        },
+        "error_text": {
+            "init": null
+        },
+        "tooltip": {
+            "init": null
+        }
+    },
+    "/contacts/add-contact-button": {
+        "value": {
+            "init": null
+        },
+        "label": {
+            "init": null
+        },
+        "text": {
+            "init": null
+        },
+        "helper_text": {
+            "init": null
+        },
+        "error_text": {
+            "init": null
+        },
+        "tooltip": {
+            "init": "Add Contact"
+        }
+    },
+    "/contacts/add-contact-error-label": {
+        "value": {
+            "init": "An error occurred!"
+        },
+        "label": {
+            "init": null
+        },
+        "text": {
+            "init": null
+        },
+        "helper_text": {
+            "init": null
+        },
+        "error_text": {
+            "init": null
+        },
+        "tooltip": {
+            "init": null
+        }
+    }
+}

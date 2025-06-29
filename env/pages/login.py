@@ -144,7 +144,9 @@ class LoginPage:
         if self._entry_password.value != self._entry_password_confirmation.value:
             pwd_not_equal_alert: ft.AlertDialog = ft.AlertDialog(
                 modal=False,
-                title=ft.Text(value="Incorrect Password!"),
+                title=ft.Text(
+                    value="Incorrect Password!", text_align=ft.TextAlign.CENTER
+                ),
                 content=ft.Text(
                     value="The passwords you entered are not equal! Please enter them again."
                 ),
@@ -182,7 +184,9 @@ class LoginPage:
 
         info_alert: ft.AlertDialog = ft.AlertDialog(
             modal=True,
-            title=ft.Text(value="Important Information!"),
+            title=ft.Text(
+                value="Important Information!", text_align=ft.TextAlign.CENTER
+            ),
             content=ft.Text(
                 value="Are you sure you remember the password? You can not decrypt the data if you forget it!"
             ),

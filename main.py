@@ -7,6 +7,7 @@ from env.classes.paths import paths
 from env.classes.router import AppRouter
 from env.classes.shake_detector import ShakeDetector
 from env.classes.storages import Storages
+from env.classes.translations import Translator
 from env.config import config
 from env.pages.calibration import CalibrationsPage
 from env.pages.contacts import ContactsPage
@@ -36,7 +37,10 @@ def main(page: ft.Page) -> None:
     # Initialize storage
     storages: Storages = Storages(page=page)
 
-    # Initialize shake detector for logging out on shaking
+    # Initialize translator
+    translator: Translator = Translator(page=page, storages=storages)
+
+    # Initialize detectors for logging out
     shake_detector: ShakeDetector = ShakeDetector(
         page=page,
         router=router,
@@ -82,6 +86,7 @@ def main(page: ft.Page) -> None:
         page=page,
         storages=storages,
         router=router,
+        translator=translator,
     )
     router.add_route(
         route=config.ROUTE_CONTACTS,
@@ -138,6 +143,7 @@ def main(page: ft.Page) -> None:
         page=page,
         router=router,
         storages=storages,
+        translator=translator,
     )
     router.add_route(
         route=config.ROUTE_CALIBRATIONS,

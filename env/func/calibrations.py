@@ -34,8 +34,6 @@ def calibrate_argon2_time_cost(
              max_time_cost if the target duration is not reached.
     """
     for time_cost in range(1, max_time_cost + 1):
-        print(f"[Calibration] Testing time cost {time_cost}...")
-
         # Initialize password hasher
         ph = PasswordHasher(
             time_cost=time_cost,
@@ -55,7 +53,4 @@ def calibrate_argon2_time_cost(
             return time_cost
 
     # Return max time cost if hashing did not exceed time limit
-    print(
-        f"[Calibration] Max time_cost={max_time_cost} reached; duration < {target_duration}s"
-    )
     return max_time_cost

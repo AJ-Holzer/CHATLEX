@@ -2,6 +2,8 @@ from typing import Literal
 
 import flet as ft  # type:ignore[import-untyped]
 
+from env.typing.languages import Language
+
 
 class Config:
     # Window settings
@@ -33,6 +35,7 @@ class Config:
     CS_FONT_SIZE: str = "font-size"
     CS_SHAKE_DETECTION_THRESHOLD_GRAVITY: str = "shake-detection-threshold-gravity"
     CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK: str = "logout-on-top-bar-label-click"
+    CS_LANGUAGE: str = "language"
     SS_USER_SESSION_KEY: str = "session-key"
 
     # Settings for Argon2
@@ -96,6 +99,7 @@ class Config:
     APPEARANCE_COLOR_SEED_DEFAULT: ft.ColorValue = "#800080"  # Purple
     APPEARANCE_FONT_FAMILY_DEFAULT: str = "varela-round"
     APPEARANCE_FONT_SIZE_DEFAULT: int = 20
+
     # Color picker settings
     COLOR_PICKER_AMOUNT_COLORS: int = (
         16  # The amount of color available in the color picker
@@ -104,10 +108,11 @@ class Config:
     COLOR_PICKER_BUTTON_SPACING: int = 10
 
     # Fonts
+    # TODO: Only define folder and dynamically load fonts
     FONT_FAMILIES_LOCAL: dict[str, str] = {
         "varela-round": "fonts/varela_round.ttf",
         "baloo-bhaijaan-semibold": "fonts/baloo_bhaijaan_semibold.ttf",
-        "baloo-bhaijaan":"fonts/baloo_bhaijaan_regular.ttf",
+        "baloo-bhaijaan": "fonts/baloo_bhaijaan_regular.ttf",
         "dosis-semibold": "fonts/dosis_semibold.ttf",
     }
 
@@ -118,6 +123,14 @@ class Config:
     # File settings
     FILE_INFOS: str = "data/infos.json"
     FILE_ABOUT: str = "data/about.json"
+
+    # Folder settings
+    FOLDER_LANGUAGES: str = "locales"
+
+    # Language settings
+    LANGUAGE_DEFAULT: Language = Language.EN_US
+    LANGUAGE_NOT_PROVIDED: str = "LANG_NOT_PROVIDED"
+    LANGUAGE_NO_STATES_PROVIDED: str = "LANG_STATES_NOT_PROVIDED"
 
 
 config = Config()
