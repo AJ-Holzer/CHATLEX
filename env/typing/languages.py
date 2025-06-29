@@ -49,7 +49,7 @@ class ControlStates(TypedDict):
 
 
 CONTROL_STATE_KEYS: TypeAlias = Literal[
-    "label", "text", "helper_text", "error_text", "tooltip"
+    "value", "label", "text", "helper_text", "error_text", "tooltip"
 ]
 
 

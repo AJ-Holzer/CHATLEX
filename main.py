@@ -12,7 +12,7 @@ from env.config import config
 from env.pages.calibration import CalibrationsPage
 from env.pages.contacts import ContactsPage
 from env.pages.login import LoginPage
-from env.pages.profiles import UserProfilePage
+from env.pages.user_profile import UserProfilePage
 from env.pages.settings import SettingsPage
 from env.themes.themes import Themes
 
@@ -26,6 +26,9 @@ def main(page: ft.Page) -> None:
     page.window.resizable = config.APP_RESIZABLE
     page.window.width = config.APP_WIDTH
     page.window.height = config.APP_HEIGHT
+
+    # TODO: Remove this line!
+    page.client_storage.clear()
 
     # TODO: Add the ability to add more fonts (online)
     # Add global fonts
@@ -68,6 +71,7 @@ def main(page: ft.Page) -> None:
         router=router,
         focus_detector=focus_detector,
         shake_detector=shake_detector,
+        translator=translator,
     )
     router.add_route(
         route=config.ROUTE_LOGIN,
@@ -107,6 +111,7 @@ def main(page: ft.Page) -> None:
         storages=storages,
         themes=themes,
         shake_detector=shake_detector,
+        translator=translator,
     )
     router.add_route(
         route=config.ROUTE_SETTINGS,
@@ -125,6 +130,7 @@ def main(page: ft.Page) -> None:
         page=page,
         router=router,
         storages=storages,
+        translator=translator,
     )
     router.add_route(
         route="/profile",

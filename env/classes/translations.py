@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Optional, cast
+from typing import Optional, cast, Any
 
 import flet as ft  # type:ignore[import-untyped]
 
@@ -63,7 +63,10 @@ class Translator:
         return normalize_route(path=f"{route}/{control_name}")
 
     def _set_control_args(
-        self, control_route: str, states: Optional[ControlStates]
+        self,
+        control_route: str,
+        states: Optional[ControlStates],
+        **replacements: Any,
     ) -> None:
         # Get language data for control
         language_data: Optional[LanguageData] = self._current_language_data.get(
@@ -134,43 +137,22 @@ class Translator:
 
         # Set args
         try:
-            if isinstance(control, ft.Text):
-                control.value = control_language_data["value"]
-                control.tooltip = control_language_data["tooltip"]
-            elif isinstance(control, ft.TextField):
-                control.label = control_language_data["label"]
-                control.value = control_language_data["text"]
-                control.helper_text = control_language_data["helper_text"]
-                control.error_text = control_language_data["error_text"]
-                control.tooltip = control_language_data["tooltip"]
-            elif isinstance(control, ft.TextButton):
-                control.text = control_language_data["text"]
-                control.tooltip = control_language_data["tooltip"]
-            elif isinstance(control, ft.IconButton):
-                control.tooltip = control_language_data["tooltip"]
-            elif isinstance(control, ft.ElevatedButton):
-                control.text = control_language_data["text"]
-                control.tooltip = control_language_data["tooltip"]
-            elif isinstance(control, ft.FilledButton):
-                control.text = control_language_data["text"]
-                control.tooltip = control_language_data["tooltip"]
-            elif isinstance(control, ft.OutlinedButton):
-                control.text = control_language_data["text"]
-                control.tooltip = control_language_data["tooltip"]
-            elif isinstance(control, ft.FilledTonalButton):
-                control.text = control_language_data["text"]
-                control.tooltip = control_language_data["tooltip"]
-            elif isinstance(control, ft.FloatingActionButton):
-                control.text = control_language_data["text"]
-                control.tooltip = control_language_data["tooltip"]
-            elif isinstance(control, ft.Checkbox):
-                control.label = control_language_data["label"]
-            elif isinstance(control, ft.Slider):
-                control.label = control_language_data["label"]
-            elif isinstance(control, ft.CupertinoSwitch):
-                control.label = control_language_data["label"]
-            else:  # ft.Switch
-                control.label = control_language_data["label"]
+            for attr, value in control_language_data.items():
+                # Check if control has the attr
+                if not hasattr(control, "attr"):
+                    continue
+
+                # Check if value is 'None'
+                if value is None:
+                    continue
+
+                # Set the attr to 'None' if (value == '<DO_REPLACE>')
+                if value == "<DO_REPLACE>":
+                    setattr(control, attr, None)
+                    continue
+
+                # Set attribute
+                setattr(control, attr, str(value).format(**replacements))
         except Exception as e:
             print(
                 f"There was an error while setting the attribute for control with route '{control_route}'! Error: {e}"
@@ -217,6 +199,7 @@ class Translator:
         route: str,
         control_name: str,
         control: ft.Control,
+        **replacements: Any,
     ) -> ft.Control:
         # Check if control is valid
         if not isinstance(control, TRANSLATION_CONTROLS):
@@ -231,6 +214,7 @@ class Translator:
         self._set_control_args(
             control_route=self._normalize_route(route=route, control_name=control_name),
             states=None,
+            **replacements,
         )
 
         return control

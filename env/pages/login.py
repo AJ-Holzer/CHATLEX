@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, cast
 
 import flet as ft  # type:ignore[import-untyped]
 
@@ -12,6 +12,7 @@ from env.classes.storages import Storages
 from env.config import config
 from env.func.converter import byte_to_str, str_to_byte
 from env.func.generations import generate_iv, generate_salt
+from env.classes.translations import Translator
 
 
 class LoginPage:
@@ -22,6 +23,7 @@ class LoginPage:
         router: AppRouter,
         focus_detector: FocusDetector,
         shake_detector: ShakeDetector,
+        translator: Translator,
     ) -> None:
         # Initialize page
         self._page: ft.Page = page
@@ -29,13 +31,14 @@ class LoginPage:
         self._router: AppRouter = router
         self._focus_detector: FocusDetector = focus_detector
         self._shake_detector: ShakeDetector = shake_detector
+        self._translator: Translator = translator
 
         # User stuff
         self._user_already_exists: bool = bool(
             self._storages.client_storage.get(key=config.CS_USER_PASSWORD_HASH)
         ) and bool(self._storages.client_storage.get(key=config.CS_USER_PASSWORD_IV))
 
-        # Password stuff
+        # Get password
         self._password_hash: Optional[str] = storages.client_storage.get(
             key=config.CS_USER_PASSWORD_HASH
         )
@@ -71,28 +74,43 @@ class LoginPage:
             )
 
         # Entries
-        self._entry_password: ft.TextField = ft.TextField(
-            label="Password",
-            password=True,
-            on_change=self._validate,
-            autofocus=True,
-            autocorrect=False,
-            can_reveal_password=True,
-        )
-        if not self._user_already_exists:
-            self._entry_password_confirmation: ft.TextField = ft.TextField(
-                label="Confirm Password",
+        self._entry_password: ft.Control = self._translator.wrap_control(
+            route=config.ROUTE_LOGIN,
+            control_name="password-entry",
+            control=ft.TextField(
                 password=True,
                 on_change=self._validate,
+                autofocus=True,
                 autocorrect=False,
                 can_reveal_password=True,
+            ),
+        )
+        if not self._user_already_exists:
+            self._entry_password_confirmation: ft.Control = (
+                self._translator.wrap_control(
+                    route=config.ROUTE_LOGIN,
+                    control_name="password-confirmation-entry",
+                    control=ft.TextField(
+                        password=True,
+                        on_change=self._validate,
+                        autocorrect=False,
+                        can_reveal_password=True,
+                    ),
+                )
             )
 
         # Buttons
-        self._button_submit: ft.ElevatedButton = ft.ElevatedButton(
-            text="Login" if self._user_already_exists else "Create Account",
-            on_click=self._login if self._user_already_exists else self._create_account,
-            disabled=True,
+        self._button_submit: ft.Control = self._translator.wrap_control(
+            route=config.ROUTE_LOGIN,
+            control_name="button-login"
+            if self._user_already_exists
+            else "button-create-account",
+            control=ft.ElevatedButton(
+                on_click=self._login
+                if self._user_already_exists
+                else self._create_account,
+                disabled=True,
+            ),
         )
 
         # Progress bar
@@ -117,9 +135,9 @@ class LoginPage:
             False
             if all(
                 [
-                    self._entry_password.value,
+                    cast(ft.TextField, self._entry_password).value,
                     *(
-                        [self._entry_password_confirmation.value]
+                        [cast(ft.TextField, self._entry_password_confirmation).value]
                         if not self._user_already_exists
                         else []
                     ),
@@ -141,7 +159,10 @@ class LoginPage:
         self._button_clickable(clickable=False)
         self._progress_visible(visible=True)
 
-        if self._entry_password.value != self._entry_password_confirmation.value:
+        if (
+            cast(ft.TextField, self._entry_password).value
+            != cast(ft.TextField, self._entry_password_confirmation).value
+        ):
             pwd_not_equal_alert: ft.AlertDialog = ft.AlertDialog(
                 modal=False,
                 title=ft.Text(
@@ -254,6 +275,7 @@ class LoginPage:
                         router=self._router,
                         focus_detector=self._focus_detector,
                         shake_detector=self._shake_detector,
+                        translator=self._translator,
                     ).build(),
                 ],
                 "execute_function": None,
@@ -271,7 +293,8 @@ class LoginPage:
         self._progress_visible(visible=True)
 
         if not self._password_hash or not argon_hasher.verify_password(
-            hash=self._password_hash, password=str(self._entry_password.value)
+            hash=self._password_hash,
+            password=str(cast(ft.TextField, self._entry_password).value),
         ):
             wrong_pwd_alert: ft.AlertDialog = ft.AlertDialog(
                 modal=True,
@@ -305,7 +328,7 @@ class LoginPage:
             key=config.SS_USER_SESSION_KEY,
             value=byte_to_str(
                 data=argon_hasher.derive_key(
-                    password=str(self._entry_password.value),
+                    password=str(cast(ft.TextField, self._entry_password).value),
                     salt=self._salt,
                 )
             ),
@@ -316,9 +339,9 @@ class LoginPage:
         self._button_clickable(clickable=True)
 
         # Clear entries
-        self._entry_password.value = ""
+        cast(ft.TextField, self._entry_password).value = ""
         if not self._user_already_exists:
-            self._entry_password_confirmation.value = ""
+            cast(ft.TextField, self._entry_password_confirmation).value = ""
         self._entry_password.update()
         if not self._user_already_exists:
             self._entry_password_confirmation.update()

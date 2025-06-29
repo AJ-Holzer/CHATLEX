@@ -1,12 +1,12 @@
 import re
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable
 
 import flet as ft  # type: ignore[import-untyped]
 
 
 # TODO: Rewrite parser! (--> this thing is messed up as fuck)  --> Blame ChatGPT ;)
 def parse_custom_markdown(input_str: str) -> ft.Container:
-    supported_styles: Dict[str, Callable[[str], Dict[str, Any]]] = {
+    supported_styles: dict[str, Callable[[str], dict[str, Any]]] = {
         "COLOR": lambda val: {"color": val},
         "WEIGHT": lambda val: {
             "weight": getattr(ft.FontWeight, val.upper(), ft.FontWeight.NORMAL)
@@ -15,8 +15,8 @@ def parse_custom_markdown(input_str: str) -> ft.Container:
         "BG": lambda val: {"bgcolor": val},
     }
 
-    active_styles: List[Tuple[str, Dict[str, Any]]] = []
-    text_spans: List[ft.TextSpan] = []
+    active_styles: list[tuple[str, dict[str, Any]]] = []
+    text_spans: list[ft.TextSpan] = []
     buffer: str = ""
     tag_pattern = re.compile(r"\{(/?[A-Z]+)(?::([^}]+))?\}")
     pos = 0
@@ -33,7 +33,7 @@ def parse_custom_markdown(input_str: str) -> ft.Container:
 
         # Flush buffer into spans with correct styling
         if buffer:
-            combined_style: Dict[str, Any] = {}
+            combined_style: dict[str, Any] = {}
             for _, style_dict in active_styles:
                 combined_style.update(style_dict)
             parts = buffer.split("\n")

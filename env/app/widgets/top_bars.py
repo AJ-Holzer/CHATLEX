@@ -2,6 +2,7 @@ import flet as ft  # type:ignore[import-untyped]
 
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
+from env.classes.translations import Translator
 from env.config import config
 from env.func.logout import logout_on_lost_focus
 
@@ -23,33 +24,49 @@ def top_bar_logout_action(storages: Storages, router: AppRouter) -> None:
 
 
 class TopBar:
-    def __init__(self, page: ft.Page, router: AppRouter, storages: Storages) -> None:
+    def __init__(
+        self,
+        page: ft.Page,
+        router: AppRouter,
+        storages: Storages,
+        translator: Translator,
+    ) -> None:
         self._page: ft.Page = page
         self._router: AppRouter = router
         self._storages: Storages = storages
+        self._translator: Translator = translator
 
         # Initialize labels
-        self._label: ft.Text = ft.Text(
-            value=config.APP_TITLE,
-            weight=ft.FontWeight.BOLD,
-            theme_style=ft.TextThemeStyle.TITLE_LARGE,
-            color=ft.Colors.PRIMARY,
+        self._label: ft.Control = self._translator.wrap_control(
+            route="/top-bar",
+            control_name="label",
+            control=ft.Text(
+                weight=ft.FontWeight.BOLD,
+                theme_style=ft.TextThemeStyle.TITLE_LARGE,
+                color=ft.Colors.PRIMARY,
+            ),
         )
 
         # Initialize buttons
-        self._home_button: ft.IconButton = ft.IconButton(
-            icon=ft.Icons.PERSON_OUTLINE,
-            tooltip="Profile",
-            height=config.TOP_BAR_HEIGHT,
-            icon_size=config.TOP_BAR_HEIGHT - 15,
-            on_click=lambda _: self._router.go(route=config.ROUTE_PROFILE),
+        self._home_button: ft.Control = self._translator.wrap_control(
+            route="/top-bar",
+            control_name="home-button",
+            control=ft.IconButton(
+                icon=ft.Icons.PERSON_OUTLINE,
+                height=config.TOP_BAR_HEIGHT,
+                icon_size=config.TOP_BAR_HEIGHT - 15,
+                on_click=lambda _: self._router.go(route=config.ROUTE_PROFILE),
+            ),
         )
-        self._settings_button: ft.IconButton = ft.IconButton(
-            icon=ft.Icons.SETTINGS_OUTLINED,
-            tooltip="Settings",
-            height=config.TOP_BAR_HEIGHT,
-            icon_size=config.TOP_BAR_HEIGHT - 15,
-            on_click=lambda _: self._router.go(route=config.ROUTE_SETTINGS),
+        self._settings_button: ft.Control = self._translator.wrap_control(
+            route="/top-bar",
+            control_name="settings-button",
+            control=ft.IconButton(
+                icon=ft.Icons.SETTINGS_OUTLINED,
+                height=config.TOP_BAR_HEIGHT,
+                icon_size=config.TOP_BAR_HEIGHT - 15,
+                on_click=lambda _: self._router.go(route=config.ROUTE_SETTINGS),
+            ),
         )
 
         # Initialize containers
@@ -94,30 +111,42 @@ class TopBar:
 
 class SubPageTopBar:
     def __init__(
-        self, page: ft.Page, router: AppRouter, storages: Storages, title: str
+        self,
+        page: ft.Page,
+        router: AppRouter,
+        storages: Storages,
+        translator: Translator,
+        title: str,
     ) -> None:
         self._page: ft.Page = page
         self._router: AppRouter = router
         self._storages: Storages = storages
+        self._translator: Translator = translator
         self._title: str = title
 
         # Initialize labels
-        self._label: ft.Text = ft.Text(
-            value=self._title,
-            weight=ft.FontWeight.BOLD,
-            text_align=ft.TextAlign.START,
-            # expand=True,
-            theme_style=ft.TextThemeStyle.TITLE_LARGE,
-            color=ft.Colors.PRIMARY,
+        self._label: ft.Control = self._translator.wrap_control(
+            route=f"/{self._title.lower().replace(' ', '-').replace('_', '-')}/sub-page-top-bar",
+            control_name="label",
+            control=ft.Text(
+                weight=ft.FontWeight.BOLD,
+                text_align=ft.TextAlign.START,
+                theme_style=ft.TextThemeStyle.TITLE_LARGE,
+                color=ft.Colors.PRIMARY,
+            ),
         )
 
         # Initialize buttons
-        self._back_button: ft.IconButton = ft.IconButton(
-            icon=ft.Icons.ARROW_BACK_IOS_ROUNDED,
-            tooltip="Back",
-            height=config.TOP_BAR_HEIGHT,
-            icon_size=config.TOP_BAR_HEIGHT - 15,
-            on_click=lambda _: self._router.pop(),
+        self._back_button: ft.Control = self._translator.wrap_control(
+            route=f"/{self._title.lower().replace(' ', '-').replace('_', '-')}/sub-page-top-bar",
+            control_name="back-button",
+            control=ft.IconButton(
+                icon=ft.Icons.ARROW_BACK_IOS_ROUNDED,
+                tooltip="Back",
+                height=config.TOP_BAR_HEIGHT,
+                icon_size=config.TOP_BAR_HEIGHT - 15,
+                on_click=lambda _: self._router.pop(),
+            ),
         )
 
         # Initialize containers

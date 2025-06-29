@@ -3,6 +3,8 @@ def normalize_route(path: str) -> str:
     parts: list[str] = [part for part in path.split("/") if part]
 
     # Join with single slash and prepend one slash
-    normalized: str = "/" + "/".join(parts)
+    normalized: str = (
+        ("/" + "/".join(parts)).replace(" ", "-").replace("_", "-").lower()
+    )
 
     return normalized
