@@ -1,23 +1,18 @@
 import json
 import os
-from typing import Optional, cast, Any
+from typing import Any, Optional, cast
 
 import flet as ft  # type:ignore[import-untyped]
 
 from env.classes.storages import Storages
 from env.config import config
 from env.func.route_normalization import normalize_route
-from env.typing.languages import (
-    CONTROL_STATE_KEYS,
-    TRANSLATION_CONTROLS,
-    ControlAddingData,
-    ControlLanguageData,
-    ControlStates,
-    Language,
-    LanguageData,
-)
+from env.typing.languages import (CONTROL_STATE_KEYS, TRANSLATION_CONTROLS,
+                                  ControlAddingData, ControlLanguageData,
+                                  ControlStates, Language, LanguageData)
 
 
+# TODO: Use I18n instead!
 class Translator:
     def __init__(
         self,
