@@ -2,24 +2,30 @@
 
 # 🔐 CHATLEX – Secure. Anonymous. Decentralized.
 
-A next-generation messenger designed with uncompromising focus on privacy, security, and anonymity.
+A next-generation messenger designed with uncompromising focus on privacy,
+security, and anonymity.
 
 > 🚧 Active Development – Regular updates underway. Check the
 > [Roadmap](#-roadmap)
 > for what’s coming next.
 >
 > 🤝 Open Source & Community Driven
-> Contributions are welcome! If you have ideas, issues, or improvements, feel free to open an issue or submit a pull request.
+> Contributions are welcome! If you have ideas, issues, or improvements,
+> feel free to open an issue or submit a pull request.
+<!-- trunk-ignore(markdownlint/MD028) -->
 
 > ## ⚠️ Legal Disclaimer
 >
-> **CHATLEX** is created for lawful, educational, and research purposes only. Misuse is strictly discouraged.
-> By using this software, you accept full responsibility for ensuring your compliance with local
+> **CHATLEX** is created for lawful, educational, and research purposes only.
+> Misuse is strictly discouraged.
+> By using this software, you accept full responsibility for ensuring
+> your compliance with local
 > laws and regulations regarding encryption and communication.
 >
 > - We do NOT support or assist with illegal activities.
 > - Use of this software is entirely at your own risk.
-> - The developers and contributors assume no liability for any misuse or consequences arising from use.
+> - The developers and contributors assume no liability for any
+> misuse or consequences arising from use.
 
 ## 🔒 Our Security & Privacy Principles
 

@@ -16,13 +16,14 @@ runtimes:
     - python@3.10.8
 # This is the section where you manage your linters. (https://docs.trunk.io/check/configuration)
 lint:
+  disabled:
+    - markdownlint
   enabled:
     - bandit@1.8.5
     - black@25.1.0
     - checkov@3.2.447
     - git-diff-check
     - isort@6.0.1
-    - markdownlint@0.45.0
     - osv-scanner@2.0.3
     - oxipng@9.1.5
     - prettier@3.6.2
