@@ -4,7 +4,6 @@ from env.app.widgets.container import MasterContainer
 from env.app.widgets.top_bars import SubPageTopBar
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
-from env.classes.translations import Translator
 
 
 class UserProfilePage:
@@ -13,12 +12,10 @@ class UserProfilePage:
         page: ft.Page,
         router: AppRouter,
         storages: Storages,
-        translator: Translator,
     ) -> None:
         self._page: ft.Page = page
         self._router: AppRouter = router
         self._storages: Storages = storages
-        self._translator: Translator = translator
 
         # TODO: Add statistics and about section!
 
@@ -33,7 +30,6 @@ class UserProfilePage:
                                 router=self._router,
                                 storages=self._storages,
                                 title="Your Profile",
-                                translator=self._translator,
                             ).build(),
                             ft.Text("TEST"),
                         ],

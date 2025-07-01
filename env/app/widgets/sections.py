@@ -1,40 +1,24 @@
 import flet as ft  # type:ignore[import-untyped]
 
-from env.classes.translations import Translator
-
 
 class Section:
-    def __init__(
-        self,
-        translator: Translator,
-        title: str,
-        content: list[ft.Control],
-    ) -> None:
-        self._translator: Translator = translator
+    def __init__(self, title: str, content: list[ft.Control]) -> None:
+        # Create section
         self._title: ft.Container = ft.Container(
-            content=translator.wrap_control(
-                route=f"/section/{title}",
-                control_name="title",
-                control=ft.Text(
-                    value=title,
-                    expand=True,
-                    text_align=ft.TextAlign.CENTER,
-                    theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,
-                ),
+            content=ft.Text(
+                value=title,
+                expand=True,
+                text_align=ft.TextAlign.CENTER,
+                theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,
             ),
             expand=True,
             padding=ft.Padding(left=20, top=20, right=20, bottom=0),
         )
-        self._content: list[ft.Control] = content
-
-        # Create divider
         self._divider: ft.Container = ft.Container(
             ft.Divider(color=ft.Colors.PRIMARY),
             padding=ft.Padding(left=30, top=0, right=30, bottom=0),
         )
-
-        # Create content
-        self._section_content: ft.Container = ft.Container(
+        self._content: ft.Container = ft.Container(
             content=ft.Row(
                 controls=[
                     ft.Column(
@@ -64,7 +48,7 @@ class Section:
                         controls=[
                             self._title,
                             self._divider,
-                            self._section_content,
+                            self._content,
                         ],
                         expand=True,
                         alignment=ft.MainAxisAlignment.CENTER,

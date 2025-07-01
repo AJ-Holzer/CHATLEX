@@ -3,7 +3,6 @@ from typing import Optional
 import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.buttons_and_toggles import ActionButton
-from env.classes.translations import Translator
 from env.func.text_parser import parse_custom_markdown
 
 
@@ -11,13 +10,11 @@ class InfoButtonAlert:
     def __init__(
         self,
         page: ft.Page,
-        translator: Translator,
         label: str,
         content: str,
         icon: Optional[ft.IconValue] = None,
     ) -> None:
         self._page: ft.Page = page
-        self._translator: Translator = translator
         self._label: str = label
         self._content: str = content
         self._icon: Optional[ft.IconValue] = icon
@@ -39,7 +36,6 @@ class InfoButtonAlert:
         # Create button to open alert
         self._info_button: ActionButton = ActionButton(
             page=self._page,
-            translator=self._translator,
             text=self._label,
             icon=self._icon,
             on_click=lambda _: self._page.open(self._info_alert),

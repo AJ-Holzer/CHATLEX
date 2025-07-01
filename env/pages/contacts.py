@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional, cast
+from typing import Optional
 
 import flet as ft  # type:ignore[import-untyped]
 
@@ -10,7 +10,6 @@ from env.classes.database import SQLiteDatabase
 from env.classes.encryption import AES_CBC
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
-from env.classes.translations import Translator
 from env.config import config
 from env.func.converter import str_to_byte
 from env.func.validations import is_valid_onion_address
@@ -18,49 +17,25 @@ from env.typing.dicts import ContactData
 
 
 class ContactsPage:
-    def __init__(
-        self,
-        page: ft.Page,
-        storages: Storages,
-        router: AppRouter,
-        translator: Translator,
-    ) -> None:
+    def __init__(self, page: ft.Page, storages: Storages, router: AppRouter) -> None:
         self._page: ft.Page = page
         self._storages: Storages = storages
         self._router: AppRouter = router
-        self._translator: Translator = translator
-
-        # Initialize top bar
         self._top_bar: TopBar = TopBar(
             page=self._page,
             router=self._router,
             storages=self._storages,
-            translator=self._translator,
         )
 
         # Contacts list
+        # Use ReorderableListView to allow manual arrangement of contacts
         self._contacts_list: ft.ListView = ft.ListView(controls=[], expand=True)
 
         # Buttons
-        self._add_contact_button: ft.Control = self._translator.wrap_control(
-            route=config.ROUTE_CONTACTS,
-            control_name="add-contact-button",
-            control=ft.FloatingActionButton(
-                icon=ft.Icons.PERSON_ADD_ALT_1_ROUNDED,
-                on_click=lambda _: self._open_contact_alert(),
-            ),
-        )
-
-        # Snack bar
-        self._add_contact_error_label: ft.Control = self._translator.wrap_control(
-            route=config.ROUTE_CONTACTS,
-            control_name="add-contact-error-label",
-            control=ft.Text(text_align=ft.TextAlign.CENTER),
-        )
-        self._add_contact_error_snackbar: ft.SnackBar = ft.SnackBar(
-            content=self._add_contact_error_label,
-            duration=10_000,  # Show for 10 seconds
-            dismiss_direction=ft.DismissDirection.HORIZONTAL,
+        self._add_user_button: ft.FloatingActionButton = ft.FloatingActionButton(
+            icon=ft.Icons.PERSON_ADD_ALT_1_ROUNDED,
+            tooltip="Add Contact",
+            on_click=lambda _: self._open_contact_alert(),
         )
 
         # Define types for encryptor and database
@@ -108,8 +83,17 @@ class ContactsPage:
         # Insert contact into database
         try:
             db.insert_contact(contact_data=contact_data)
-        except:
-            self._page.open(self._add_contact_error_snackbar)
+        except Exception as e:
+            # Show the error
+            self._page.open(
+                ft.SnackBar(
+                    content=ft.Text(
+                        value=f"There was an error while adding the contact! Error: {e}"
+                    ),
+                    duration=10_000,  # Show for 10 seconds
+                    dismiss_direction=ft.DismissDirection.HORIZONTAL,
+                )
+            )
             return
 
         # Close alert
@@ -124,66 +108,44 @@ class ContactsPage:
     def _open_contact_alert(self) -> None:
         # Create entries
         # TODO: Make description entry scrollable!
-        username_entry: ft.Control = self._translator.wrap_control(
-            route=config.ROUTE_CONTACTS,
-            control_name="username-entry",
-            control=ft.TextField(autofocus=True),
-        )
-        description_entry: ft.Control = self._translator.wrap_control(
-            route=config.ROUTE_CONTACTS,
-            control_name="description-entry",
-            control=ft.TextField(
-                multiline=True,
-                max_lines=None,
-            ),
+        username_entry: ft.TextField = ft.TextField(label="Username", autofocus=True)
+        description_entry: ft.TextField = ft.TextField(
+            label="User Description",
+            multiline=True,
+            max_lines=None,
+            height=120,
         )
         description_container: ft.Container = ft.Container(
             content=ft.Column(
                 controls=[description_entry],
                 scroll=ft.ScrollMode.AUTO,
             ),
+            height=120,
         )
-        onion_address_entry: ft.Control = self._translator.wrap_control(
-            route=config.ROUTE_CONTACTS,
-            control_name="onion-address-entry",
-            control=ft.TextField(
-                suffix_text=".onion",
-            ),
+        onion_address_entry: ft.TextField = ft.TextField(
+            label="Onion Address",
+            suffix_text=".onion",
         )
 
         # Open the alert
         alert: ft.AlertDialog = ft.AlertDialog(
-            title=self._translator.wrap_control(
-                route=config.ROUTE_CONTACTS,
-                control_name="add-contact-label",
-                control=ft.Text(),
-            ),
+            title=ft.Text("Add Contact"),
             content=ft.Column(
                 controls=[username_entry, description_container, onion_address_entry],
                 tight=True,
             ),
             actions=[
-                # Cancel button
-                self._translator.wrap_control(
-                    route=config.ROUTE_CONTACTS,
-                    control_name="add-contact-alert-cancel-button",
-                    control=ft.TextButton(
-                        on_click=lambda _: self._page.close(alert),
-                    ),
+                ft.TextButton(
+                    "Cancel",
+                    on_click=lambda e: self._page.close(alert),
                 ),
-                # Add button
-                self._translator.wrap_control(
-                    route=config.ROUTE_CONTACTS,
-                    control_name="add-contact-alert-add-button",
-                    control=ft.TextButton(
-                        on_click=lambda _: self._on_add_contact_submit(
-                            username=str(cast(ft.TextField, username_entry).value),
-                            description=cast(ft.TextField, description_entry).value,
-                            onion_address=str(
-                                cast(ft.TextField, onion_address_entry).value
-                            ),
-                            alert=alert,
-                        ),
+                ft.TextButton(
+                    "Add",
+                    on_click=lambda _: self._on_add_contact_submit(
+                        username=str(username_entry.value),
+                        description=description_entry.value,
+                        onion_address=str(onion_address_entry.value),
+                        alert=alert,
                     ),
                 ),
             ],
@@ -263,7 +225,7 @@ class ContactsPage:
                     ),
                     ft.Container(
                         content=ft.Column(
-                            controls=[self._add_contact_button],
+                            controls=[self._add_user_button],
                             spacing=10,
                             alignment=ft.MainAxisAlignment.END,
                         ),

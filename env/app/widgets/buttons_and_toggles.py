@@ -3,14 +3,12 @@ from typing import Optional
 import flet as ft  # type:ignore[import-untyped]
 
 from env.app.widgets.links import LinkAlert
-from env.classes.translations import Translator
 
 
 class SimpleButton:
     def __init__(
         self,
         page: ft.Page,
-        translator: Translator,
         text: str,
         icon: Optional[ft.IconValue],
         is_destructive: bool,
@@ -18,7 +16,6 @@ class SimpleButton:
         url: Optional[str] = None,
     ) -> None:
         self._page: ft.Page = page
-        self._translator: Translator = translator
         self._text: str = text
         self._icon: Optional[ft.IconValue] = icon
         self._is_destructive: bool = is_destructive
@@ -49,13 +46,10 @@ class SimpleButton:
                     # Text
                     ft.Column(
                         controls=[
-                            self._translator.wrap_control(
-                                route=f"/simple-button/{self._text}",
-                                control_name="text",
-                                control=ft.Text(
-                                    theme_style=ft.TextThemeStyle.BODY_LARGE,
-                                    max_lines=None,
-                                ),
+                            ft.Text(
+                                self._text,
+                                theme_style=ft.TextThemeStyle.BODY_LARGE,
+                                max_lines=None,
                             ),
                         ],
                         expand=True,
@@ -86,12 +80,7 @@ class SimpleButton:
             raise ValueError("No URL provided!")
 
         # Create and open link open alert
-        LinkAlert(
-            page=self._page,
-            translator=self._translator,
-            link_id=self._text,
-            url=self._url,
-        ).open()
+        LinkAlert(page=self._page, url=self._url).open()
 
     def build(self) -> ft.Container:
         return ft.Container(
@@ -106,14 +95,12 @@ class ActionButton:
     def __init__(
         self,
         page: ft.Page,
-        translator: Translator,
         text: str,
         icon: Optional[ft.IconValue] = None,
         on_click: ft.OptionalControlEventCallable = None,
         is_destructive: bool = False,
     ) -> None:
         self._page: ft.Page = page
-        self._translator: Translator = translator
         self._text: str = text
         self._icon: Optional[ft.IconValue] = icon
         self._on_click: ft.OptionalControlEventCallable = on_click
@@ -122,7 +109,6 @@ class ActionButton:
         # Modern, stylized button
         self._button: SimpleButton = SimpleButton(
             page=self._page,
-            translator=self._translator,
             text=self._text,
             icon=self._icon,
             is_destructive=self._is_destructive,
@@ -137,13 +123,11 @@ class URLButton:
     def __init__(
         self,
         page: ft.Page,
-        translator: Translator,
         text: str,
         url: str,
         icon: Optional[ft.IconValue] = None,
     ) -> None:
         self._page: ft.Page = page
-        self._translator: Translator = translator
         self._text: str = text
         self._icon: Optional[ft.IconValue] = icon
         self._url: str = url
@@ -151,7 +135,6 @@ class URLButton:
         # Modern, stylized button
         self._button: SimpleButton = SimpleButton(
             page=self._page,
-            translator=self._translator,
             text=self._text,
             icon=self._icon,
             is_destructive=False,
@@ -167,12 +150,10 @@ class SectionToggle:
         self,
         text: str,
         toggle_value: bool,
-        translator: Translator,
         on_click: ft.OptionalControlEventCallable,
     ) -> None:
         self._text: str = text
         self._toggle_value: bool = toggle_value
-        self._translator: Translator = translator
         self._on_click: ft.OptionalControlEventCallable = on_click
 
         # Create toggle
@@ -182,11 +163,7 @@ class SectionToggle:
         )
 
         # Create label
-        self._label: ft.Control = self._translator.wrap_control(
-            route=f"/section-toggle/{self._text}",
-            control_name="label",
-            control=ft.Text(expand=True),
-        )
+        self._label: ft.Text = ft.Text(value=self._text, expand=True)
 
     def build(self) -> ft.Container:
         return ft.Container(

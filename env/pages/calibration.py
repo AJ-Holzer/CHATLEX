@@ -3,7 +3,6 @@ import flet as ft  # type: ignore[import-untyped]
 from env.app.widgets.container import MasterContainer
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
-from env.classes.translations import Translator
 from env.config import config
 from env.func.calibrations import calibrate_argon2_time_cost
 
@@ -14,21 +13,16 @@ class CalibrationsPage:
         page: ft.Page,
         router: AppRouter,
         storages: Storages,
-        translator: Translator,
     ) -> None:
         self._page: ft.Page = page
         self._router: AppRouter = router
         self._storages: Storages = storages
-        self._translator: Translator = translator
 
         # Setup calibration UI elements
-        self._info_text: ft.Control = self._translator.wrap_control(
-            route=config.ROUTE_CALIBRATIONS,
-            control_name="info-text",
-            control=ft.Text(
-                theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,
-                text_align=ft.TextAlign.CENTER,
-            ),
+        self._info_text: ft.Text = ft.Text(
+            value="Waiting...",
+            theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,
+            text_align=ft.TextAlign.CENTER,
         )
         self._loading_indicator: ft.ProgressRing = ft.ProgressRing(
             width=80,
@@ -36,15 +30,16 @@ class CalibrationsPage:
             stroke_width=6,
             color=ft.Colors.PRIMARY,
         )
-        self._calibration_notice: ft.Control = self._translator.wrap_control(
-            route=config.ROUTE_CALIBRATIONS,
-            control_name="calibration-notice",
-            control=ft.Text(
-                theme_style=ft.TextThemeStyle.BODY_LARGE,
-                text_align=ft.TextAlign.CENTER,
-                opacity=0.7,
-            ),
+        self._calibration_notice: ft.Text = ft.Text(
+            value="Lean back while we calibrate your experience.",
+            theme_style=ft.TextThemeStyle.BODY_LARGE,
+            text_align=ft.TextAlign.CENTER,
+            opacity=0.7,
         )
+
+    def _update_info(self, info: str) -> None:
+        self._info_text.value = info
+        self._info_text.update()
 
     def calibrate(self) -> None:
         # Skip calibration if already done
@@ -59,18 +54,7 @@ class CalibrationsPage:
             return
 
         # Perform Argon2 calibration
-        self._translator.update_control_state(
-            route=config.ROUTE_CALIBRATIONS,
-            control_name="info-text",
-            states={
-                "value": "calibrate-password-hashing-time-cost",
-                "label": None,
-                "text": None,
-                "helper_text": None,
-                "error_text": None,
-                "tooltip": None,
-            },
-        )
+        self._update_info("Calibrating password hashing time cost...")
         argon2_time_cost: int = calibrate_argon2_time_cost()
 
         # Save calibration result

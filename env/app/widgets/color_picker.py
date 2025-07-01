@@ -1,25 +1,24 @@
-from typing import Any, Callable, Optional, cast
+from typing import Any, Callable, Optional
 
 import flet as ft  # type: ignore[import-untyped]
 
 from env.config import config
 from env.func.colors import generate_color_wheel_hex
 from env.func.validations import is_valid_color_code
-from env.classes.translations import Translator
 
 
 class ColorPicker:
     def __init__(
         self,
         page: ft.Page,
-        translator: Translator,
         default_color: Optional[str] = None,
         on_color_click: Optional[Callable[[ft.ColorValue], Any]] = None,
+        title: str = "Choose a color",
     ) -> None:
         self._page: ft.Page = page
-        self._translator: Translator = translator
         self._default_color: Optional[str] = default_color
         self._on_click_func: Optional[Callable[[ft.ColorValue], Any]] = on_color_click
+        self._title: str = title
 
         # Save last color for resetting
         self._last_color: str = str(self._default_color)
@@ -44,23 +43,15 @@ class ColorPicker:
         )
 
         # Create custom color input field
-        self._color_input_field: ft.Control = self._translator.wrap_control(
-            route="/color-picker",
-            control_name="color-input-field",
-            control=ft.TextField(
-                value=str(self._default_color).removeprefix("#"),
-                prefix=ft.Text(value="#"),
-                expand=True,
-            ),
+        self._color_input_field: ft.TextField = ft.TextField(
+            value=str(self._default_color).removeprefix("#"),
+            prefix=ft.Text(value="#"),
+            expand=True,
         )
 
         # Create color picker alert
         self._color_picker_alert: ft.AlertDialog = ft.AlertDialog(
-            title=self._translator.wrap_control(
-                route="/color-picker",
-                control_name="title",
-                control=ft.Text(text_align=ft.TextAlign.CENTER),
-            ),
+            title=ft.Text(value=self._title, text_align=ft.TextAlign.CENTER),
             scrollable=True,
             on_dismiss=self._on_dismiss,
             content=ft.Column(
@@ -73,20 +64,11 @@ class ColorPicker:
                         ft.Row(
                             controls=[
                                 self._color_input_field,
-                                # Confirm button
-                                self._translator.wrap_control(
-                                    route="/color-picker",
-                                    control_name="apply-custom-color-button",
-                                    control=ft.IconButton(
-                                        icon=ft.Icons.CHECK_ROUNDED,
-                                        on_click=lambda _: self._on_color_chosen(
-                                            str(
-                                                cast(
-                                                    ft.TextField,
-                                                    self._color_input_field,
-                                                ).value
-                                            )
-                                        ),
+                                ft.IconButton(
+                                    icon=ft.Icons.CHECK_ROUNDED,
+                                    tooltip="Confirm",
+                                    on_click=lambda _: self._on_color_chosen(
+                                        str(self._color_input_field.value)
                                     ),
                                 ),
                             ]
@@ -97,32 +79,22 @@ class ColorPicker:
             ),
             actions=[
                 # Reset button
-                self._translator.wrap_control(
-                    route="/color-picker",
-                    control_name="reset-button",
-                    control=ft.TextButton(
-                        text="Reset",
-                        on_click=lambda _: self._reset_default(),
-                    ),
+                ft.TextButton(
+                    text="Reset",
+                    on_click=lambda _: self._reset_default(),
                 ),
                 # Close button
-                self._translator.wrap_control(
-                    route="/color-picker",
-                    control_name="cancel-button",
-                    control=ft.TextButton(
-                        text="Close",
-                        on_click=self._on_dismiss,
-                    ),
+                ft.TextButton(
+                    text="Close",
+                    on_click=self._on_dismiss,
                 ),
             ],
         )
 
     def _on_dismiss(self, e: ft.ControlEvent) -> None:
         # Reset color input field if invalid value
-        cast(
-            ft.TextField, self._color_input_field
-        ).value = self._last_color.removeprefix("#")
-        cast(ft.TextField, self._color_input_field).error_text = None
+        self._color_input_field.value = self._last_color.removeprefix("#")
+        self._color_input_field.error_text = None
         self._color_input_field.update()
 
         self._page.close(self._color_picker_alert)
@@ -140,37 +112,15 @@ class ColorPicker:
 
         print(f"{modified_color=}")
 
-        # Change error text state and return if color not valid
+        # Return if color not valid
         if not is_valid_color_code(color=col):
-            self._translator.update_control_state(
-                route="/color-picker",
-                control_name="color-input-field",
-                states={
-                    "value": None,
-                    "label": None,
-                    "text": None,
-                    "helper_text": None,
-                    "error_text": "color-invalid",
-                    "tooltip": None,
-                },
-            )
+            self._color_input_field.error_text = "Color invalid!"
+            self._color_input_field.update()
             return
 
         # Reset input field color and update input field value
-        # TODO: Use translator state instead
-        self._translator.update_control_state(
-            route="/color-picker",
-            control_name="color-input-field",
-            states={
-                "value": None,
-                "label": None,
-                "text": None,
-                "helper_text": None,
-                "error_text": "color-invalid",
-                "tooltip": None,
-            },
-        )
-        cast(ft.TextField, self._color_input_field).value = col.removeprefix("#")
+        self._color_input_field.error_text = None
+        self._color_input_field.value = col.removeprefix("#")
         self._color_input_field.update()
 
         # Run function

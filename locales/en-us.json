@@ -380,6 +380,26 @@
             "init": null
         }
     },
+    "/simple-button/support-me/text": {
+        "value": {
+            "init": "Support Me"
+        },
+        "label": {
+            "init": null
+        },
+        "text": {
+            "init": null
+        },
+        "helper_text": {
+            "init": null
+        },
+        "error_text": {
+            "init": null
+        },
+        "tooltip": {
+            "init": null
+        }
+    },
     "/section/appearance/title": {
         "value": {
             "init": "Appearance"

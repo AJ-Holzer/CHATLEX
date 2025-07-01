@@ -1,6 +1,11 @@
+import json
+import os
+from typing import Literal
+
 import flet as ft  # type:ignore[import-untyped]
 
-from env.app.widgets.buttons_and_toggles import ActionButton, SectionToggle, URLButton
+from env.app.widgets.buttons_and_toggles import (ActionButton, SectionToggle,
+                                                 URLButton)
 from env.app.widgets.color_picker import ColorPicker
 from env.app.widgets.container import MasterContainer
 from env.app.widgets.dropdown import SectionDropDown
@@ -11,7 +16,6 @@ from env.app.widgets.top_bars import SubPageTopBar
 from env.classes.router import AppRouter
 from env.classes.shake_detector import ShakeDetector
 from env.classes.storages import Storages
-from env.classes.translations import Translator
 from env.config import config
 from env.themes.themes import Themes
 
@@ -24,20 +28,17 @@ class SettingsPage:
         storages: Storages,
         themes: Themes,
         shake_detector: ShakeDetector,
-        translator: Translator,
     ) -> None:
         self._page: ft.Page = page
         self._router: AppRouter = router
         self._storages: Storages = storages
         self._themes: Themes = themes
         self._shake_detector: ShakeDetector = shake_detector
-        self._translator: Translator = translator
 
         " === CONTROLS APPEARANCE SECTION === "
         # Theme color picker
         self._theme_color_picker: ColorPicker = ColorPicker(
             page=self._page,
-            translator=self._translator,
             default_color=self._themes.color_seed,
             on_color_click=lambda col: self._change_theme_color(new_color=col),
         )
@@ -61,17 +62,36 @@ class SettingsPage:
         )
         self._font_size_slider: DescriptiveSlider = DescriptiveSlider(
             page=self._page,
-            translator=self._translator,
             description="Font Size",
             slider_value=self._themes.font_size,
             slider_min=config.FONT_SIZE_MIN,
             slider_max=config.FONT_SIZE_MAX,
             on_change_end=self._change_font_size,
+            slider_label="Font Size: {value}",
             slider_divisions=abs(config.FONT_SIZE_MAX - config.FONT_SIZE_MIN),
             slider_default_value=config.APPEARANCE_FONT_SIZE_DEFAULT,
         )
 
         " === CONTROLS SECURITY SECTION === "
+        # TODO: Add safety checks if files exist and a class for easier access for file content with caching
+        for file_path in [
+            config.FILE_INFOS,
+            config.FILE_ABOUT,
+        ]:
+            if not os.path.exists(path=file_path):
+                raise FileNotFoundError(f"File {file_path} not found!")
+        # Load infos and their descriptions
+        with open(
+            file=config.FILE_INFOS,
+            mode="r",
+            encoding="UTF-8",
+        ) as i, open(
+            file=config.FILE_ABOUT,
+            mode="r",
+            encoding="UTF-8",
+        ) as a:
+            infos: dict[str, dict[Literal["content", "icon"], str]] = json.load(i)
+            about: dict[str, dict[Literal["content", "icon"], str]] = json.load(a)
         # Logout on lost focus
         self._toggle_lolf: SectionToggle = SectionToggle(
             text="Focus Detection",
@@ -79,7 +99,6 @@ class SettingsPage:
                 key=config.CS_LOGOUT_ON_LOST_FOCUS,
                 default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT,
             ),
-            translator=self._translator,
             on_click=self._toggle_logout_lost_focus,
         )
         # Logout on on shake detection
@@ -89,13 +108,11 @@ class SettingsPage:
                 key=config.CS_SHAKE_DETECTION_ENABLED,
                 default=config.SHAKE_DETECTION_ENABLED_DEFAULT,
             ),
-            translator=self._translator,
             on_click=self._toggle_logout_shake_detection,
         )
         # Gravity threshold slider for shake detection
         self._slider_gravity_threshold: DescriptiveSlider = DescriptiveSlider(
             page=self._page,
-            translator=self._translator,
             description="Shake Gravity Threshold",
             slider_value=self._storages.client_storage.get(
                 key=config.CS_SHAKE_DETECTION_THRESHOLD_GRAVITY,
@@ -107,6 +124,7 @@ class SettingsPage:
             slider_max=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX
             * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
             on_change_end=self._change_shake_detection_gravity_threshold,
+            slider_label="Gravity Threshold: {value}",
             slider_divisions=int(
                 abs(
                     config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX
@@ -119,24 +137,21 @@ class SettingsPage:
         )
         # Logout on top bar label click
         self._toggle_tblc: SectionToggle = SectionToggle(
-            text="Top Bar Logout Action",
+            text="TopBar Logout Action",
             toggle_value=self._storages.client_storage.get(
                 key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
                 default=config.TOP_BAR_LOGOUT_ON_LABEL_CLICK_DEFAULT,
             ),
-            translator=self._translator,
             on_click=self._toggle_logout_on_top_bar_label_click,
         )
 
         " === LOAD SECTIONS === "
         # Create sections
         self._appearance_section: Section = Section(
-            translator=self._translator,
             title="Appearance",
             content=[
                 ActionButton(
                     page=self._page,
-                    translator=self._translator,
                     text="Change Color",
                     icon=ft.Icons.COLOR_LENS_OUTLINED,
                     on_click=lambda _: self._page.open(
@@ -151,7 +166,6 @@ class SettingsPage:
             ],
         )
         self._security_section: Section = Section(
-            translator=self._translator,
             title="Security",
             content=[
                 self._toggle_lolf.build(),
@@ -161,7 +175,6 @@ class SettingsPage:
             ],
         )
         self._help_section: Section = Section(
-            translator=self._translator,
             title="Help",
             content=[
                 InfoButtonAlert(
@@ -170,6 +183,7 @@ class SettingsPage:
                     content=data["content"],
                     icon=data["icon"],
                 ).build()
+                for label, data in infos.items()
             ],
         )  # TODO: Add infos (about, why shaking, what is lost focus, ...)
 
@@ -290,7 +304,6 @@ class SettingsPage:
                                 router=self._router,
                                 storages=self._storages,
                                 title="Settings",
-                                translator=self._translator,
                             ).build(),
                             ft.ListView(
                                 controls=[
