@@ -23,7 +23,8 @@ de:
     tooltip: "Kontakt hinzufügen"
 
   on_add_contact_submit:
-    error: "Beim hinzufügen des Kontakts ist ein Fehler aufgetreten! Fehler: %{e}"
+    error: "Beim hinzufügen des Kontakts ist ein Fehler aufgetreten! \
+      Fehler: %{e}"
 
   add_contact_alert:
     title: "Kontakt hinzufügen"

@@ -9,7 +9,8 @@ en:
 
   pwd_not_equal_alert:
     title: "Incorrect Password!"
-    content: "The passwords you entered are not equal!\nPlease enter them again."
+    content: "The passwords you entered are not equal!\n \
+      Please enter them again."
     ok_button: "OK"
 
   wrong_password_alert:
@@ -27,10 +28,12 @@ de:
 
   pwd_not_equal_alert:
     title: "Falsches Passwort!"
-    content: "Die eingegebenen Passwörter stimmen nicht überein!\nBitte erneut eingeben."
+    content: "Die eingegebenen Passwörter stimmen nicht überein!\n\
+      Bitte erneut eingeben."
     ok_button: "OK"
 
   wrong_password_alert:
     title: "Falsches Passwort"
-    content: "Du hast ein falsches Passwort eingegeben.\nBitte versuche es erneut!"
+    content: "Du hast ein falsches Passwort eingegeben.\n\
+      Bitte versuche es erneut!"
     ok_button: "OK"

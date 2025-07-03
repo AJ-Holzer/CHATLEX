@@ -81,8 +81,8 @@ The fonts used in this project are sourced from [Google Fonts](https://fonts.goo
 
 - Baloo Bhaijaan
 - Baloo Bhaijaan semibold _(default)_
-- Varela Round
 - Dosis semibold
+- Varela Round
 
 ## 💬 Community & Support
 
