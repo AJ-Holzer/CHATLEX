@@ -11,7 +11,8 @@ security, and anonymity.
 >
 > 🤝 Open Source & Community Driven
 > Contributions are welcome! If you have ideas, issues, or improvements,
-> feel free to open an issue or submit a pull request.
+> feel free to open an issue, submit a pull request or join my
+> [Dev-Club](https://discord.gg/kDwsjn9U8F) to contribute!
 <!-- trunk-ignore(markdownlint/MD028) -->
 
 > ## ⚠️ Legal Disclaimer
@@ -68,7 +69,7 @@ Feel free to open an issue or start a discussion in the GitHub Repository.
 ## 🛠 Current Tech Stack Highlights
 
 - **Language:** Python
-- **Encryption:** AES-256-CBC,
+- **Encryption:** AES-256-CBC
 - **Hashing:** Argon2, HKDF
 - **Storage:** Encrypted SQLite3
 
@@ -79,8 +80,9 @@ The fonts used in this project are sourced from [Google Fonts](https://fonts.goo
 **Currently supported:**
 
 - Baloo Bhaijaan
+- Baloo Bhaijaan semibold _(default)_
 - Varela Round
-- Dosis (semibold)
+- Dosis semibold
 
 ## 💬 Community & Support
 
