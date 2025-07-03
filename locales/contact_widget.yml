@@ -23,7 +23,8 @@ en:
 
   remove_alert:
     title: "Delete Contact"
-    content: "Are you sure you want to delete '%{username}' and all of its messages?\nThis action can NOT be undone!"
+    content: "Are you sure you want to delete '%{username}' and all of its \
+      messages?\nThis action can NOT be undone!"
     cancel_button: "Cancel"
     delete_button: "Delete"
 
@@ -51,6 +52,8 @@ de:
 
   remove_alert:
     title: "Kontakt löschen"
-    content: "Bist du sicher, dass du '%{username}' und alle zugehörigen Nachrichten löschen möchtest?\nDiese Aktion kann NICHT rückgängig gemacht werden!"
+    content: "Bist du sicher, dass du '%{username}' und alle zugehörigen \
+      Nachrichten löschen möchtest?\nDiese Aktion kann NICHT rückgängig \
+      gemacht werden!"
     cancel_button: "Abbrechen"
     delete_button: "Löschen"
