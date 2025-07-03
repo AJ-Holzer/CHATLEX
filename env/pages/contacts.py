@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-import flet as ft  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
 
 from env.app.widgets.contact import ContactWidget
 from env.app.widgets.container import MasterContainer
@@ -10,6 +10,7 @@ from env.classes.database import SQLiteDatabase
 from env.classes.encryption import AES_CBC
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
+from env.classes.translate import Translator
 from env.config import config
 from env.func.converter import str_to_byte
 from env.func.validations import is_valid_onion_address
@@ -17,8 +18,15 @@ from env.typing.dicts import ContactData
 
 
 class ContactsPage:
-    def __init__(self, page: ft.Page, storages: Storages, router: AppRouter) -> None:
+    def __init__(
+        self,
+        page: ft.Page,
+        translator: Translator,
+        storages: Storages,
+        router: AppRouter,
+    ) -> None:
         self._page: ft.Page = page
+        self._translator: Translator = translator
         self._storages: Storages = storages
         self._router: AppRouter = router
         self._top_bar: TopBar = TopBar(
@@ -103,7 +111,7 @@ class ContactsPage:
         self._add_contact(contact_data=contact_data)
 
         # Update page to apply changes
-        self._page.update()  # type:ignore
+        self._page.update()  # type: ignore
 
     def _open_contact_alert(self) -> None:
         # Create entries
@@ -151,7 +159,7 @@ class ContactsPage:
             ],
         )
         self._page.open(alert)
-        self._page.update()  # type:ignore
+        self._page.update()  # type: ignore
 
     def _add_contact(self, contact_data: ContactData) -> None:
         # Create new contact widget

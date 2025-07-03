@@ -1,0 +1,12 @@
+---
+en:
+  info_text:
+    waiting: "Waiting..."
+    calibrate_hashing_time_cost: "Calibrating hashing time cost..."
+  calibration_notice: "Lean back while we calibrate your experience."
+
+de:
+  info_text:
+    waiting: "Warte..."
+    calibrate_hashing_time_cost: "Kalibriere Hashing-Zeitkosten..."
+  calibration_notice: "Lehnen Sie sich zurück während wir Ihr Erlebnis kalibrieren."

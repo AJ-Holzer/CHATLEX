@@ -1,8 +1,6 @@
 from typing import Literal
 
-import flet as ft  # type:ignore[import-untyped]
-
-from env.typing.languages import Language
+import flet as ft  # type: ignore[import-untyped]
 
 
 class Config:
@@ -128,9 +126,9 @@ class Config:
     FOLDER_LANGUAGES: str = "locales"
 
     # Language settings
-    LANGUAGE_DEFAULT: Language = Language.EN_US
     LANGUAGE_NOT_PROVIDED: str = "LANG_NOT_PROVIDED"
     LANGUAGE_NO_STATES_PROVIDED: str = "LANG_STATES_NOT_PROVIDED"
+    LANGUAGE_DEFAULT: str = "en"
 
 
 config = Config()

@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-import flet as ft  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
 
 from env.config import config
 from env.err.exceptions import ProgrammingError
@@ -89,7 +89,7 @@ class AppRouter:
         self._page.add(*content["page_content"] if content["page_content"] else [])
 
         # Update the page
-        self._page.update()  # type:ignore[union-attr]
+        self._page.update()  # type: ignore[union-attr]
 
         # Run the function if it exists
         if func := content["execute_function"]:

@@ -1,4 +1,4 @@
-import flet as ft  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
 
 from env.classes.contact import Contact
 from env.classes.database import SQLiteDatabase

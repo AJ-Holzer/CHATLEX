@@ -1,6 +1,6 @@
 from typing import Optional
 
-import flet as ft  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
 
 from env.app.widgets.links import LinkAlert
 

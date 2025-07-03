@@ -7,7 +7,7 @@ class Paths:
         # Define paths
         self._app_storage_path: str = str(os.getenv("FLET_APP_STORAGE_DATA"))
         self._base_path: str = (
-            sys._MEIPASS  # type:ignore
+            sys._MEIPASS  # type: ignore
             if hasattr(sys, "_MEIPASS")
             else os.path.abspath("./")
         )

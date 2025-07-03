@@ -3,3 +3,4 @@ cryptography
 argon2-cffi
 pynacl
 certifi
+python-i18n

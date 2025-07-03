@@ -2,7 +2,7 @@ import json
 import os
 from typing import Literal
 
-import flet as ft  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
 
 from env.app.widgets.buttons_and_toggles import (ActionButton, SectionToggle,
                                                  URLButton)
@@ -16,6 +16,7 @@ from env.app.widgets.top_bars import SubPageTopBar
 from env.classes.router import AppRouter
 from env.classes.shake_detector import ShakeDetector
 from env.classes.storages import Storages
+from env.classes.translate import Translator
 from env.config import config
 from env.themes.themes import Themes
 
@@ -24,12 +25,14 @@ class SettingsPage:
     def __init__(
         self,
         page: ft.Page,
+        translator: Translator,
         router: AppRouter,
         storages: Storages,
         themes: Themes,
         shake_detector: ShakeDetector,
     ) -> None:
         self._page: ft.Page = page
+        self._translator: Translator = translator
         self._router: AppRouter = router
         self._storages: Storages = storages
         self._themes: Themes = themes

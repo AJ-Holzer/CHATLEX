@@ -1,6 +1,6 @@
 from typing import Optional
 
-import flet as ft  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
 
 from env.app.widgets.container import MasterContainer
 from env.classes.focus_detection import FocusDetector
@@ -9,6 +9,7 @@ from env.classes.paths import paths
 from env.classes.router import AppRouter
 from env.classes.shake_detector import ShakeDetector
 from env.classes.storages import Storages
+from env.classes.translate import Translator
 from env.config import config
 from env.func.converter import byte_to_str, str_to_byte
 from env.func.generations import generate_iv, generate_salt
@@ -18,6 +19,7 @@ class LoginPage:
     def __init__(
         self,
         page: ft.Page,
+        translator: Translator,
         storages: Storages,
         router: AppRouter,
         focus_detector: FocusDetector,
@@ -25,6 +27,7 @@ class LoginPage:
     ) -> None:
         # Initialize page
         self._page: ft.Page = page
+        self._translator: Translator = translator
         self._storages: Storages = storages
         self._router: AppRouter = router
         self._focus_detector: FocusDetector = focus_detector
@@ -128,7 +131,7 @@ class LoginPage:
             else True
         )
 
-        self._button_submit.update()  # type:ignore
+        self._button_submit.update()  # type: ignore
 
     def _get_argon2_hasher(self) -> ArgonHasher:
         return ArgonHasher(storages=self._storages)
@@ -205,7 +208,7 @@ class LoginPage:
 
         # Wait for the dialog to be closed
         while not info_alert_closed:
-            self._page.update()  # type:ignore
+            self._page.update()  # type: ignore
         print("Closed")
 
         # Check if user cancelled the action
@@ -250,6 +253,7 @@ class LoginPage:
                 "page_content": [
                     LoginPage(
                         page=self._page,
+                        translator=self._translator,
                         storages=self._storages,
                         router=self._router,
                         focus_detector=self._focus_detector,

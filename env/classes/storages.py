@@ -1,8 +1,10 @@
 from typing import Any
 
-import flet as ft  # type:ignore[import-untyped]
-from flet.core.client_storage import ClientStorage  # type:ignore[import-untyped]
-from flet.core.session_storage import SessionStorage  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
+from flet.core.client_storage import \
+    ClientStorage  # type: ignore[import-untyped]
+from flet.core.session_storage import \
+    SessionStorage  # type: ignore[import-untyped]
 
 
 class StorageManager:

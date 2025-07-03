@@ -1,4 +1,4 @@
-import flet as ft  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
 
 from env.classes.router import AppRouter
 from env.classes.storages import Storages

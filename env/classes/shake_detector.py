@@ -1,4 +1,4 @@
-import flet as ft  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
 
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
@@ -23,7 +23,7 @@ class ShakeDetector:
 
         # Add event to page overlay
         self._page.overlay.append(self._shake_detector)
-        self._page.update()  # type:ignore
+        self._page.update()  # type: ignore
 
     def _logout(self, e: ft.ControlEvent) -> None:
         # Skip if disabled
@@ -47,7 +47,7 @@ class ShakeDetector:
     def gravity_threshold(self, value: float) -> None:
         self._shake_detector.shake_threshold_gravity = value
 
-        self._page.update()  # type:ignore
+        self._page.update()  # type: ignore
 
     @property
     def enabled(self) -> bool:

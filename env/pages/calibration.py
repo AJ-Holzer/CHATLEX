@@ -3,6 +3,7 @@ import flet as ft  # type: ignore[import-untyped]
 from env.app.widgets.container import MasterContainer
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
+from env.classes.translate import Translator
 from env.config import config
 from env.func.calibrations import calibrate_argon2_time_cost
 
@@ -11,10 +12,12 @@ class CalibrationsPage:
     def __init__(
         self,
         page: ft.Page,
+        translator: Translator,
         router: AppRouter,
         storages: Storages,
     ) -> None:
         self._page: ft.Page = page
+        self._translator: Translator = translator
         self._router: AppRouter = router
         self._storages: Storages = storages
 

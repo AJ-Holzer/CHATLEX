@@ -1,6 +1,6 @@
 from typing import Optional
 
-import flet as ft  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
 
 from env.app.widgets.buttons_and_toggles import ActionButton
 from env.func.text_parser import parse_custom_markdown

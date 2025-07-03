@@ -4,6 +4,7 @@
 /storage/
 /build/
 /tests/
+/.trash/
 __pycache__/
 /pyproject.toml
 /count_lines.py

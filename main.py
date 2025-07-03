@@ -1,12 +1,13 @@
 import os
 
-import flet as ft  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
 
 from env.classes.focus_detection import FocusDetector
 from env.classes.paths import paths
 from env.classes.router import AppRouter
 from env.classes.shake_detector import ShakeDetector
 from env.classes.storages import Storages
+from env.classes.translate import Translator
 from env.config import config
 from env.pages.calibration import CalibrationsPage
 from env.pages.contacts import ContactsPage
@@ -36,6 +37,9 @@ def main(page: ft.Page) -> None:
     # Initialize storage
     storages: Storages = Storages(page=page)
 
+    # Initialize translator
+    translator: Translator = Translator(storages=storages)
+
     # Initialize shake detector for logging out on shaking
     shake_detector: ShakeDetector = ShakeDetector(
         page=page,
@@ -55,11 +59,12 @@ def main(page: ft.Page) -> None:
     themes.set_theme()
 
     # Update page to apply visuals
-    page.update()  # type:ignore
+    page.update()  # type: ignore
 
     # Login page
     login_page: LoginPage = LoginPage(
         page=page,
+        translator=translator,
         storages=storages,
         router=router,
         focus_detector=focus_detector,
@@ -80,6 +85,7 @@ def main(page: ft.Page) -> None:
     # Contacts Page
     contacts_page: ContactsPage = ContactsPage(
         page=page,
+        translator=translator,
         storages=storages,
         router=router,
     )
@@ -98,6 +104,7 @@ def main(page: ft.Page) -> None:
     # Settings page
     settings_page: SettingsPage = SettingsPage(
         page=page,
+        translator=translator,
         router=router,
         storages=storages,
         themes=themes,
@@ -118,6 +125,7 @@ def main(page: ft.Page) -> None:
     # User profile page
     user_profile_page: UserProfilePage = UserProfilePage(
         page=page,
+        translator=translator,
         router=router,
         storages=storages,
     )
@@ -136,6 +144,7 @@ def main(page: ft.Page) -> None:
     # Calibration page
     calibration_page: CalibrationsPage = CalibrationsPage(
         page=page,
+        translator=translator,
         router=router,
         storages=storages,
     )
@@ -157,4 +166,4 @@ def main(page: ft.Page) -> None:
 
 
 if __name__ == "__main__":
-    ft.app(target=main)  # type:ignore
+    ft.app(target=main)  # type: ignore

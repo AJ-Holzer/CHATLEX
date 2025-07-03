@@ -1,6 +1,6 @@
 from typing import Any, Callable, Optional, TypedDict
 
-import flet as ft  # type:ignore[import-untyped]
+import flet as ft  # type: ignore[import-untyped]
 
 
 class PageContent(TypedDict):

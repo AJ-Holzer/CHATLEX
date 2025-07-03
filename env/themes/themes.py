@@ -85,7 +85,7 @@ class Themes:
         else:
             self._page.theme = self.LIGHT
 
-        self._page.update()  # type:ignore
+        self._page.update()  # type: ignore
 
     def change_font_family(self, new_font_family: str) -> None:
         if not self._page.fonts:
