@@ -4,7 +4,8 @@ from typing import Literal
 
 import flet as ft  # type: ignore[import-untyped]
 
-from env.app.widgets.buttons_and_toggles import ActionButton, SectionToggle, URLButton
+from env.app.widgets.buttons_and_toggles import (ActionButton, SectionToggle,
+                                                 URLButton)
 from env.app.widgets.color_picker import ColorPicker
 from env.app.widgets.container import MasterContainer
 from env.app.widgets.dropdown import SectionDropDown
@@ -192,6 +193,7 @@ class SettingsPage:
                 self._slider_gravity_threshold.build(),
             ],
         )
+        # TODO: Don't use help section. Make the label of the toggles and sliders clickable instead!
         self._help_section: Section = Section(
             title=self._translator.t(key="settings_page.help_section"),
             content=[
