@@ -2,6 +2,7 @@ from typing import Any, Callable, Optional
 
 import flet as ft  # type: ignore[import-untyped]
 
+from env.classes.translate import Translator
 from env.config import config
 from env.func.colors import generate_color_wheel_hex
 from env.func.validations import is_valid_color_code
@@ -11,11 +12,13 @@ class ColorPicker:
     def __init__(
         self,
         page: ft.Page,
+        translator: Translator,
+        title: str,
         default_color: Optional[str] = None,
         on_color_click: Optional[Callable[[ft.ColorValue], Any]] = None,
-        title: str = "Choose a color",
     ) -> None:
         self._page: ft.Page = page
+        self._translator: Translator = translator
         self._default_color: Optional[str] = default_color
         self._on_click_func: Optional[Callable[[ft.ColorValue], Any]] = on_color_click
         self._title: str = title
@@ -66,7 +69,9 @@ class ColorPicker:
                                 self._color_input_field,
                                 ft.IconButton(
                                     icon=ft.Icons.CHECK_ROUNDED,
-                                    tooltip="Confirm",
+                                    tooltip=self._translator.t(
+                                        key="color_picker.confirm_button"
+                                    ),
                                     on_click=lambda _: self._on_color_chosen(
                                         str(self._color_input_field.value)
                                     ),
@@ -80,12 +85,12 @@ class ColorPicker:
             actions=[
                 # Reset button
                 ft.TextButton(
-                    text="Reset",
+                    text=self._translator.t(key="color_picker.reset_button"),
                     on_click=lambda _: self._reset_default(),
                 ),
                 # Close button
                 ft.TextButton(
-                    text="Close",
+                    text=self._translator.t(key="color_picker.close_button"),
                     on_click=self._on_dismiss,
                 ),
             ],
@@ -114,7 +119,9 @@ class ColorPicker:
 
         # Return if color not valid
         if not is_valid_color_code(color=col):
-            self._color_input_field.error_text = "Color invalid!"
+            self._color_input_field.error_text = self._translator.t(
+                key="color_picker.error_text_color_invalid"
+            )
             self._color_input_field.update()
             return
 

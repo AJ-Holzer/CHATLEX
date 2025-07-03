@@ -20,7 +20,7 @@ class UserProfilePage:
         self._router: AppRouter = router
         self._storages: Storages = storages
 
-        # TODO: Add statistics and about section!
+        # TODO: Add statistics section!
 
     def build(self) -> ft.Container:
         return MasterContainer(
@@ -30,11 +30,14 @@ class UserProfilePage:
                         controls=[
                             SubPageTopBar(
                                 page=self._page,
+                                translator=self._translator,
                                 router=self._router,
                                 storages=self._storages,
-                                title="Your Profile",
+                                title=self._translator.t(
+                                    key="user_profile_page.top_bar"
+                                ),
                             ).build(),
-                            ft.Text("TEST"),
+                            ft.Text("<TEST>"),
                         ],
                         expand=True,
                         alignment=ft.MainAxisAlignment.START,

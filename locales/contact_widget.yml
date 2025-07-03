@@ -1,0 +1,56 @@
+---
+en:
+  muted_icon: "Muted"
+  blocked_icon: "Blocked"
+  username_entry: "New Username"
+
+  # Action buttons
+  mute_button: "Mute"
+  unmute_button: "Unmute"
+  block_button: "Block"
+  unblock_button: "Unblock"
+  rename_button: "Rename"
+  delete_button: "Delete"
+  cancel_button: "Cancel"
+
+  # Widget title
+  title: "Actions for '%{username}'"
+
+  rename_action_alert:
+    title: "Rename '%{username}'"
+    cancel_button: "Cancel"
+    proceed_button: "Proceed"
+
+  remove_alert:
+    title: "Delete Contact"
+    content: "Are you sure you want to delete '%{username}' and all of its messages?\nThis action can NOT be undone!"
+    cancel_button: "Cancel"
+    delete_button: "Delete"
+
+de:
+  muted_icon: "Stummgeschaltet"
+  blocked_icon: "Blockiert"
+  username_entry: "Neuer Benutzername"
+
+  # Action buttons
+  mute_button: "Stummschalten"
+  unmute_button: "Stummschaltung aufheben"
+  block_button: "Blockieren"
+  unblock_button: "Blockierung aufheben"
+  rename_button: "Umbenennen"
+  delete_button: "Löschen"
+  cancel_button: "Abbrechen"
+
+  # Widget title
+  title: "Aktionen für '%{username}'"
+
+  rename_action_alert:
+    title: "'%{username}' umbenennen"
+    cancel_button: "Abbrechen"
+    proceed_button: "Fortfahren"
+
+  remove_alert:
+    title: "Kontakt löschen"
+    content: "Bist du sicher, dass du '%{username}' und alle zugehörigen Nachrichten löschen möchtest?\nDiese Aktion kann NICHT rückgängig gemacht werden!"
+    cancel_button: "Abbrechen"
+    delete_button: "Löschen"

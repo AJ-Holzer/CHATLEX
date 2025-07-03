@@ -1,0 +1,12 @@
+---
+en:
+  confirm_button: "Confirm"
+  reset_button: "Reset"
+  close_button: "Close"
+  error_text_color_invalid: "Color invalid!"
+
+de:
+  confirm_button: "Bestätigen"
+  reset_button: "Zurücksetzen"
+  close_button: "Schließen"
+  error_text_color_invalid: "Ungültige Farbe!"

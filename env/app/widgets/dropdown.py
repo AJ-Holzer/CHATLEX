@@ -5,10 +5,12 @@ class SectionDropDown:
     def __init__(
         self,
         value: str,
+        label: str,
         options: list[ft.dropdown.Option],
         on_change: ft.OptionalControlEventCallable,
     ) -> None:
         self._value: str = value
+        self._label: str = label
         self._options: list[ft.dropdown.Option] = options
         self._on_change: ft.OptionalControlEventCallable = on_change
 
@@ -16,7 +18,7 @@ class SectionDropDown:
         self._drop_down: ft.Dropdown = ft.Dropdown(
             value=self._value,
             options=self._options,
-            label="Font Family",
+            label=self._label,
             on_change=self._on_change,
             expand=True,
         )

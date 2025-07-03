@@ -31,8 +31,10 @@ class ContactsPage:
         self._router: AppRouter = router
         self._top_bar: TopBar = TopBar(
             page=self._page,
+            translator=self._translator,
             router=self._router,
             storages=self._storages,
+            title=config.APP_TITLE,
         )
 
         # Contacts list
@@ -42,7 +44,7 @@ class ContactsPage:
         # Buttons
         self._add_user_button: ft.FloatingActionButton = ft.FloatingActionButton(
             icon=ft.Icons.PERSON_ADD_ALT_1_ROUNDED,
-            tooltip="Add Contact",
+            tooltip=self._translator.t(key="contacts_page.add_user_button.tooltip"),
             on_click=lambda _: self._open_contact_alert(),
         )
 
@@ -96,7 +98,10 @@ class ContactsPage:
             self._page.open(
                 ft.SnackBar(
                     content=ft.Text(
-                        value=f"There was an error while adding the contact! Error: {e}"
+                        value=self._translator.t(
+                            key="contacts_page.on_add_contact_submit.error",
+                            e=e,
+                        )
                     ),
                     duration=10_000,  # Show for 10 seconds
                     dismiss_direction=ft.DismissDirection.HORIZONTAL,
@@ -116,9 +121,16 @@ class ContactsPage:
     def _open_contact_alert(self) -> None:
         # Create entries
         # TODO: Make description entry scrollable!
-        username_entry: ft.TextField = ft.TextField(label="Username", autofocus=True)
+        username_entry: ft.TextField = ft.TextField(
+            label=self._translator.t(
+                key="contacts_page.add_contact_alert.username_entry"
+            ),
+            autofocus=True,
+        )
         description_entry: ft.TextField = ft.TextField(
-            label="User Description",
+            label=self._translator.t(
+                key="contacts_page.add_contact_alert.description_entry"
+            ),
             multiline=True,
             max_lines=None,
             height=120,
@@ -131,24 +143,32 @@ class ContactsPage:
             height=120,
         )
         onion_address_entry: ft.TextField = ft.TextField(
-            label="Onion Address",
+            label=self._translator.t(
+                key="contacts_page.add_contact_alert.onion_address_entry"
+            ),
             suffix_text=".onion",
         )
 
         # Open the alert
         alert: ft.AlertDialog = ft.AlertDialog(
-            title=ft.Text("Add Contact"),
+            title=ft.Text(
+                value=self._translator.t(key="contacts_page.add_contact_alert.title")
+            ),
             content=ft.Column(
                 controls=[username_entry, description_container, onion_address_entry],
                 tight=True,
             ),
             actions=[
                 ft.TextButton(
-                    "Cancel",
+                    text=self._translator.t(
+                        key="contacts_page.add_contact_alert.cancel_button"
+                    ),
                     on_click=lambda e: self._page.close(alert),
                 ),
                 ft.TextButton(
-                    "Add",
+                    text=self._translator.t(
+                        key="contacts_page.add_contact_alert.add_button"
+                    ),
                     on_click=lambda _: self._on_add_contact_submit(
                         username=str(username_entry.value),
                         description=description_entry.value,
@@ -165,6 +185,7 @@ class ContactsPage:
         # Create new contact widget
         contact_widget: ContactWidget = ContactWidget(
             page=self._page,
+            translator=self._translator,
             contact_data=contact_data,
             router=self._router,
             contacts_list=self._contacts_list,

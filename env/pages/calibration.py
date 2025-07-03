@@ -23,7 +23,7 @@ class CalibrationsPage:
 
         # Setup calibration UI elements
         self._info_text: ft.Text = ft.Text(
-            value="Waiting...",
+            value=self._translator.t(key="calibration_page.info_text.waiting"),
             theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,
             text_align=ft.TextAlign.CENTER,
         )
@@ -34,14 +34,14 @@ class CalibrationsPage:
             color=ft.Colors.PRIMARY,
         )
         self._calibration_notice: ft.Text = ft.Text(
-            value="Lean back while we calibrate your experience.",
+            value=self._translator.t(key="calibration_page.calibration_notice"),
             theme_style=ft.TextThemeStyle.BODY_LARGE,
             text_align=ft.TextAlign.CENTER,
             opacity=0.7,
         )
 
-    def _update_info(self, info: str) -> None:
-        self._info_text.value = info
+    def _update_info(self, key: str) -> None:
+        self._info_text.value = self._translator.t(key=key)
         self._info_text.update()
 
     def calibrate(self) -> None:
@@ -57,7 +57,7 @@ class CalibrationsPage:
             return
 
         # Perform Argon2 calibration
-        self._update_info("Calibrating password hashing time cost...")
+        self._update_info(key="calibration_page.info_text.calibrate_hashing_time_cost")
         argon2_time_cost: int = calibrate_argon2_time_cost()
 
         # Save calibration result

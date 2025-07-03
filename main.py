@@ -12,8 +12,8 @@ from env.config import config
 from env.pages.calibration import CalibrationsPage
 from env.pages.contacts import ContactsPage
 from env.pages.login import LoginPage
+from env.pages.profiles import UserProfilePage
 from env.pages.settings import SettingsPage
-from env.pages.user_profile import UserProfilePage
 from env.themes.themes import Themes
 
 
@@ -73,7 +73,7 @@ def main(page: ft.Page) -> None:
     router.add_route(
         route=config.ROUTE_LOGIN,
         content={
-            "title": "Login",
+            "title": translator.t(key="login_page.title"),
             "page_content": [
                 login_page.build(),
             ],
@@ -92,7 +92,7 @@ def main(page: ft.Page) -> None:
     router.add_route(
         route=config.ROUTE_CONTACTS,
         content={
-            "title": "Contacts",
+            "title": translator.t(key="contacts_page.title"),
             "page_content": [
                 contacts_page.build(),
             ],
@@ -113,7 +113,7 @@ def main(page: ft.Page) -> None:
     router.add_route(
         route=config.ROUTE_SETTINGS,
         content={
-            "title": "Settings",
+            "title": translator.t(key="settings_page.title"),
             "page_content": [
                 settings_page.build(),
             ],
@@ -132,7 +132,7 @@ def main(page: ft.Page) -> None:
     router.add_route(
         route="/profile",
         content={
-            "title": "Profile",
+            "title": translator.t(key="user_profile_page.title"),
             "page_content": [
                 user_profile_page.build(),
             ],
@@ -151,7 +151,7 @@ def main(page: ft.Page) -> None:
     router.add_route(
         route=config.ROUTE_CALIBRATIONS,
         content={
-            "title": "Calibration",
+            "title": translator.t(key="calibration_page.title"),
             "page_content": [calibration_page.build()],
             "execute_function": calibration_page.calibrate,
             "function_args": None,

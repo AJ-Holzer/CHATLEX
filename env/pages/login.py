@@ -75,7 +75,7 @@ class LoginPage:
 
         # Entries
         self._entry_password: ft.TextField = ft.TextField(
-            label="Password",
+            label=self._translator.t(key="login_page.entry_password"),
             password=True,
             on_change=self._validate,
             autofocus=True,
@@ -84,7 +84,7 @@ class LoginPage:
         )
         if not self._user_already_exists:
             self._entry_password_confirmation: ft.TextField = ft.TextField(
-                label="Confirm Password",
+                label=self._translator.t(key="login_page.entry_password_confirmation"),
                 password=True,
                 on_change=self._validate,
                 autocorrect=False,
@@ -93,7 +93,11 @@ class LoginPage:
 
         # Buttons
         self._button_submit: ft.ElevatedButton = ft.ElevatedButton(
-            text="Login" if self._user_already_exists else "Create Account",
+            text=(
+                self._translator.t(key="login_page.button_login")
+                if self._user_already_exists
+                else self._translator.t(key="login_page.button_create_account")
+            ),
             on_click=self._login if self._user_already_exists else self._create_account,
             disabled=True,
         )
@@ -148,14 +152,22 @@ class LoginPage:
             pwd_not_equal_alert: ft.AlertDialog = ft.AlertDialog(
                 modal=False,
                 title=ft.Text(
-                    value="Incorrect Password!", text_align=ft.TextAlign.CENTER
+                    value=self._translator.t(
+                        key="login_page.pwd_not_equal_alert.title"
+                    ),
+                    text_align=ft.TextAlign.CENTER,
                 ),
                 content=ft.Text(
-                    value="The passwords you entered are not equal! Please enter them again."
+                    value=self._translator.t(
+                        key="login_page.pwd_not_equal_alert.content"
+                    )
                 ),
                 actions=[
+                    # Ok button
                     ft.TextButton(
-                        text="OK",
+                        text=self._translator.t(
+                            key="login_page.pwd_not_equal_alert.ok_button"
+                        ),
                         on_click=lambda e: self._page.close(pwd_not_equal_alert),
                     )
                 ],
@@ -166,8 +178,6 @@ class LoginPage:
             self._button_clickable(clickable=True)
             self._progress_visible(visible=False)
             return
-
-            # Show info alert and wait until it is closed before proceeding
 
         info_alert_closed: bool = False
         cancelled: bool = False
@@ -275,23 +285,34 @@ class LoginPage:
         self._progress_visible(visible=True)
 
         if not self._password_hash or not argon_hasher.verify_password(
-            hash=self._password_hash, password=str(self._entry_password.value)
+            hash=self._password_hash,
+            password=str(self._entry_password.value),
         ):
-            wrong_pwd_alert: ft.AlertDialog = ft.AlertDialog(
+            wrong_password_alert: ft.AlertDialog = ft.AlertDialog(
                 modal=True,
-                title=ft.Text(value="Wrong Password!", text_align=ft.TextAlign.CENTER),
+                title=ft.Text(
+                    value=self._translator.t(
+                        key="login_page.wrong_password_alert.title"
+                    ),
+                    text_align=ft.TextAlign.CENTER,
+                ),
                 content=ft.Text(
-                    value="You entered a wrong password. Please try again!",
+                    value=self._translator.t(
+                        key="login_page.wrong_password_alert.content"
+                    ),
                 ),
                 actions=[
+                    # Ok button
                     ft.TextButton(
-                        text="OK",
-                        on_click=lambda e: self._page.close(wrong_pwd_alert),
+                        text=self._translator.t(
+                            key="login_page.wrong_password_alert.ok_button"
+                        ),
+                        on_click=lambda e: self._page.close(wrong_password_alert),
                     )
                 ],
                 actions_alignment=ft.MainAxisAlignment.END,
             )
-            self._page.open(wrong_pwd_alert)
+            self._page.open(wrong_password_alert)
 
             # Enable the button again and hide progress bar
             self._button_clickable(clickable=True)
@@ -331,6 +352,7 @@ class LoginPage:
         self._shake_detector.enabled = True
         self._focus_detector.enabled = True
 
+        # Go to contacts page
         self._router.go(config.ROUTE_CONTACTS)
 
     def initialize(self) -> None:

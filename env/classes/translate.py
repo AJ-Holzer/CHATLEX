@@ -20,5 +20,5 @@ class Translator:
             ),
         )
 
-    def t(self, key: str, **kwargs: Any) -> None:
+    def t(self, key: str, **kwargs: Any) -> str:
         return i18n.t(key, **kwargs)  # type: ignore

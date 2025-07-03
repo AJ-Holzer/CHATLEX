@@ -4,8 +4,7 @@ from typing import Literal
 
 import flet as ft  # type: ignore[import-untyped]
 
-from env.app.widgets.buttons_and_toggles import (ActionButton, SectionToggle,
-                                                 URLButton)
+from env.app.widgets.buttons_and_toggles import ActionButton, SectionToggle, URLButton
 from env.app.widgets.color_picker import ColorPicker
 from env.app.widgets.container import MasterContainer
 from env.app.widgets.dropdown import SectionDropDown
@@ -42,6 +41,8 @@ class SettingsPage:
         # Theme color picker
         self._theme_color_picker: ColorPicker = ColorPicker(
             page=self._page,
+            translator=self._translator,
+            title=self._translator.t(key="settings_page.color_picker"),
             default_color=self._themes.color_seed,
             on_color_click=lambda col: self._change_theme_color(new_color=col),
         )
@@ -60,23 +61,28 @@ class SettingsPage:
             ]
         self._font_family_chooser: SectionDropDown = SectionDropDown(
             value=self._themes.font_family,
+            label=self._translator.t(key="settings_page.font_family_chooser"),
             options=font_options,
             on_change=self._change_font_family,
         )
         self._font_size_slider: DescriptiveSlider = DescriptiveSlider(
             page=self._page,
-            description="Font Size",
+            description=self._translator.t(
+                key="settings_page.font_size_slider.description"
+            ),
             slider_value=self._themes.font_size,
             slider_min=config.FONT_SIZE_MIN,
             slider_max=config.FONT_SIZE_MAX,
             on_change_end=self._change_font_size,
-            slider_label="Font Size: {value}",
+            slider_label=self._translator.t(
+                key="settings_page.font_size_slider.slider_label"
+            ),
             slider_divisions=abs(config.FONT_SIZE_MAX - config.FONT_SIZE_MIN),
             slider_default_value=config.APPEARANCE_FONT_SIZE_DEFAULT,
         )
 
         " === CONTROLS SECURITY SECTION === "
-        # TODO: Add safety checks if files exist and a class for easier access for file content with caching
+        # TODO: Use locales yml instead ("infos.yml", "about.yml")
         for file_path in [
             config.FILE_INFOS,
             config.FILE_ABOUT,
@@ -97,7 +103,7 @@ class SettingsPage:
             about: dict[str, dict[Literal["content", "icon"], str]] = json.load(a)
         # Logout on lost focus
         self._toggle_lolf: SectionToggle = SectionToggle(
-            text="Focus Detection",
+            text=self._translator.t(key="settings_page.toggle_lolf"),
             toggle_value=self._storages.client_storage.get(
                 key=config.CS_LOGOUT_ON_LOST_FOCUS,
                 default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT,
@@ -106,7 +112,7 @@ class SettingsPage:
         )
         # Logout on on shake detection
         self._toggle_shake_detection: SectionToggle = SectionToggle(
-            text="Shake Detection",
+            text=self._translator.t(key="settings_page.toggle_shake_detection"),
             toggle_value=self._storages.client_storage.get(
                 key=config.CS_SHAKE_DETECTION_ENABLED,
                 default=config.SHAKE_DETECTION_ENABLED_DEFAULT,
@@ -116,7 +122,9 @@ class SettingsPage:
         # Gravity threshold slider for shake detection
         self._slider_gravity_threshold: DescriptiveSlider = DescriptiveSlider(
             page=self._page,
-            description="Shake Gravity Threshold",
+            description=self._translator.t(
+                key="settings_page.shake_gravity_threshold_slider.description"
+            ),
             slider_value=self._storages.client_storage.get(
                 key=config.CS_SHAKE_DETECTION_THRESHOLD_GRAVITY,
                 default=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT,
@@ -127,7 +135,9 @@ class SettingsPage:
             slider_max=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX
             * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
             on_change_end=self._change_shake_detection_gravity_threshold,
-            slider_label="Gravity Threshold: {value}",
+            slider_label=self._translator.t(
+                key="settings_page.shake_gravity_threshold_slider.slider_label"
+            ),
             slider_divisions=int(
                 abs(
                     config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MAX
@@ -140,7 +150,7 @@ class SettingsPage:
         )
         # Logout on top bar label click
         self._toggle_tblc: SectionToggle = SectionToggle(
-            text="TopBar Logout Action",
+            text=self._translator.t(key="settings_page.toggle_tblc"),
             toggle_value=self._storages.client_storage.get(
                 key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
                 default=config.TOP_BAR_LOGOUT_ON_LABEL_CLICK_DEFAULT,
@@ -151,25 +161,30 @@ class SettingsPage:
         " === LOAD SECTIONS === "
         # Create sections
         self._appearance_section: Section = Section(
-            title="Appearance",
+            title=self._translator.t(key="settings_page.appearance_section"),
             content=[
+                # Change theme color button
                 ActionButton(
                     page=self._page,
-                    text="Change Color",
+                    text=self._translator.t(
+                        key="settings_page.change_theme_color_button"
+                    ),
                     icon=ft.Icons.COLOR_LENS_OUTLINED,
                     on_click=lambda _: self._page.open(
                         self._theme_color_picker.build()
                     ),
                 ).build(),
+                # Font family chooser
                 ft.Row(
                     controls=[self._font_family_chooser.build()],
                     alignment=ft.MainAxisAlignment.CENTER,
                 ),
+                # Font size
                 self._font_size_slider.build(),
             ],
         )
         self._security_section: Section = Section(
-            title="Security",
+            title=self._translator.t(key="settings_page.security_section"),
             content=[
                 self._toggle_lolf.build(),
                 self._toggle_tblc.build(),
@@ -178,8 +193,9 @@ class SettingsPage:
             ],
         )
         self._help_section: Section = Section(
-            title="Help",
+            title=self._translator.t(key="settings_page.help_section"),
             content=[
+                # TODO: Use locales yml files instead!
                 InfoButtonAlert(
                     page=self._page,
                     label=label,
@@ -193,12 +209,13 @@ class SettingsPage:
         " === SUPPORT & ABOUT === "
         self._support_button: URLButton = URLButton(
             page=self._page,
-            text="Support Me",
+            text=self._translator.t(key="settings_page.support_button"),
             url="https://ajservers.site/faqs",
             icon=ft.CupertinoIcons.HEART,
         )
         self._about_buttons: ft.Column = ft.Column(
             controls=[
+                # TODO: Use locales yml files instead!
                 InfoButtonAlert(
                     page=self._page,
                     label=label,
@@ -304,9 +321,10 @@ class SettingsPage:
                         controls=[
                             SubPageTopBar(
                                 page=self._page,
+                                translator=self._translator,
                                 router=self._router,
                                 storages=self._storages,
-                                title="Settings",
+                                title=self._translator.t(key="settings_page.top_bar"),
                             ).build(),
                             ft.ListView(
                                 controls=[

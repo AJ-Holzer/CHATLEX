@@ -1,0 +1,10 @@
+---
+en:
+  profile_button: "Profile"
+  settings_button: "Settings"
+  back_button: "Back"
+
+de:
+  profile_button: "Profil"
+  settings_button: "Einstellungen"
+  back_button: "Zurück"

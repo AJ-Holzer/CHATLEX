@@ -1,0 +1,52 @@
+---
+en:
+  title: "Settings"
+
+  font_family_chooser: "Font Family"
+
+  font_size_slider:
+    description: "Font Size"
+    slider_label: "Font Size: {value}"
+
+  shake_gravity_threshold_slider:
+    description: "Shake Gravity Threshold"
+    slider_label: "Gravity Threshold: {value}"
+
+  change_theme_color_button: "Change Color"
+  toggle_lolf: "Focus Detection"  # Log out on lost focus
+  toggle_tblc: "TopBar Logout Action"  # Logout on top bar label click
+  toggle_shake_detection: "Shake Detection"
+  support_button: "Support Me"
+  top_bar: "Settings"
+  color_picker: "Choose a Theme Color"
+
+  # Sections
+  appearance_section: "Appearance"
+  security_section: "Security"
+  help_section: "Help"
+
+de:
+  title: "Einstellungen"
+
+  font_family_chooser: "Schriftart"
+
+  font_size_slider:
+    description: "Schriftgröße"
+    slider_label: "Schriftgröße: {value}"
+
+  shake_gravity_threshold_slider:
+    description: "Schüttel-Schwellwert"
+    slider_label: "Schwerkraft-Schwellwert: {value}"
+
+  change_theme_color_button: "Farbe ändern"
+  toggle_lolf: "Fokus-Erkennung"  # Log out on lost focus
+  toggle_tblc: "TopBar-Abmeldeaktion"  # Logout on top bar label click
+  toggle_shake_detection: "Schüttelerkennung"
+  support_button: "Unterstütze mich"
+  top_bar: "Einstellungen"
+  color_picker: "Wähle eine Themenfarbe"
+
+  # Sections
+  appearance_section: "Erscheinungsbild"
+  security_section: "Sicherheit"
+  help_section: "Hilfe"

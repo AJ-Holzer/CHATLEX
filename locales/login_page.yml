@@ -1,0 +1,36 @@
+---
+en:
+  title: "Login"
+
+  entry_password: "Password"
+  entry_password_confirmation: "Confirm Password"
+  button_login: "Login"
+  button_create_account: "Create Account"
+
+  pwd_not_equal_alert:
+    title: "Incorrect Password!"
+    content: "The passwords you entered are not equal!\nPlease enter them again."
+    ok_button: "OK"
+
+  wrong_password_alert:
+    title: "Wrong Password"
+    content: "You entered a wrong password.\nPlease try again!"
+    ok_button: "OK"
+
+de:
+  title: "Login"
+
+  entry_password: "Passwort"
+  entry_password_confirmation: "Passwort bestätigen"
+  button_login: "Anmelden"
+  button_create_account: "Konto erstellen"
+
+  pwd_not_equal_alert:
+    title: "Falsches Passwort!"
+    content: "Die eingegebenen Passwörter stimmen nicht überein!\nBitte erneut eingeben."
+    ok_button: "OK"
+
+  wrong_password_alert:
+    title: "Falsches Passwort"
+    content: "Du hast ein falsches Passwort eingegeben.\nBitte versuche es erneut!"
+    ok_button: "OK"

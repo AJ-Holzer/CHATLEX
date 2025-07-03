@@ -2,6 +2,7 @@ import flet as ft  # type: ignore[import-untyped]
 
 from env.classes.router import AppRouter
 from env.classes.storages import Storages
+from env.classes.translate import Translator
 from env.config import config
 from env.func.logout import logout_on_lost_focus
 
@@ -23,14 +24,23 @@ def top_bar_logout_action(storages: Storages, router: AppRouter) -> None:
 
 
 class TopBar:
-    def __init__(self, page: ft.Page, router: AppRouter, storages: Storages) -> None:
+    def __init__(
+        self,
+        page: ft.Page,
+        translator: Translator,
+        router: AppRouter,
+        storages: Storages,
+        title: str,
+    ) -> None:
         self._page: ft.Page = page
+        self._translator: Translator = translator
         self._router: AppRouter = router
         self._storages: Storages = storages
+        self._title: str = title
 
         # Initialize labels
         self._label: ft.Text = ft.Text(
-            value=config.APP_TITLE,
+            value=title,
             weight=ft.FontWeight.BOLD,
             theme_style=ft.TextThemeStyle.TITLE_LARGE,
             color=ft.Colors.PRIMARY,
@@ -39,14 +49,14 @@ class TopBar:
         # Initialize buttons
         self._home_button: ft.IconButton = ft.IconButton(
             icon=ft.Icons.PERSON_OUTLINE,
-            tooltip="Profile",
+            tooltip=self._translator.t(key="top_bars.profile_button"),
             height=config.TOP_BAR_HEIGHT,
             icon_size=config.TOP_BAR_HEIGHT - 15,
             on_click=lambda _: self._router.go(route=config.ROUTE_PROFILE),
         )
         self._settings_button: ft.IconButton = ft.IconButton(
             icon=ft.Icons.SETTINGS_OUTLINED,
-            tooltip="Settings",
+            tooltip=self._translator.t(key="top_bars.settings_button"),
             height=config.TOP_BAR_HEIGHT,
             icon_size=config.TOP_BAR_HEIGHT - 15,
             on_click=lambda _: self._router.go(route=config.ROUTE_SETTINGS),
@@ -94,9 +104,15 @@ class TopBar:
 
 class SubPageTopBar:
     def __init__(
-        self, page: ft.Page, router: AppRouter, storages: Storages, title: str
+        self,
+        page: ft.Page,
+        translator: Translator,
+        router: AppRouter,
+        storages: Storages,
+        title: str,
     ) -> None:
         self._page: ft.Page = page
+        self._translator: Translator = translator
         self._router: AppRouter = router
         self._storages: Storages = storages
         self._title: str = title
@@ -114,7 +130,7 @@ class SubPageTopBar:
         # Initialize buttons
         self._back_button: ft.IconButton = ft.IconButton(
             icon=ft.Icons.ARROW_BACK_IOS_ROUNDED,
-            tooltip="Back",
+            tooltip=self._translator.t(key="top_bars.back_button"),
             height=config.TOP_BAR_HEIGHT,
             icon_size=config.TOP_BAR_HEIGHT - 15,
             on_click=lambda _: self._router.pop(),

@@ -4,6 +4,7 @@ from env.classes.contact import Contact
 from env.classes.database import SQLiteDatabase
 from env.classes.encryption import AES_CBC
 from env.classes.router import AppRouter
+from env.classes.translate import Translator
 from env.config import config
 from env.typing.actions import ContactAction
 from env.typing.dicts import ContactData
@@ -13,12 +14,14 @@ class ContactWidget:
     def __init__(
         self,
         page: ft.Page,
+        translator: Translator,
         contact_data: ContactData,
         router: AppRouter,
         contacts_list: ft.ListView,
         aes_encryptor: AES_CBC,
     ) -> None:
         self._page: ft.Page = page
+        self._translator: Translator = translator
         self._contact: Contact = Contact(contact_data=contact_data)
         self._router: AppRouter = router
         self._contacts_list: ft.ListView = contacts_list
@@ -28,12 +31,12 @@ class ContactWidget:
         self._muted_icon: ft.Icon = ft.Icon(
             name=ft.Icons.VOLUME_OFF,
             visible=self._contact.is_muted and not self._contact.is_blocked,
-            tooltip="Muted",
+            tooltip=self._translator.t(key="contact_widget.muted_icon"),
         )
         self._blocked_icon: ft.Icon = ft.Icon(
             name=ft.Icons.BLOCK,
             visible=self._contact.is_blocked,
-            tooltip="Blocked",
+            tooltip=self._translator.t(key="contact_widget.blocked_icon"),
         )
 
         # Initialize icon
@@ -111,17 +114,24 @@ class ContactWidget:
 
     def _remove_contact(self) -> None:
         alert: ft.AlertDialog = ft.AlertDialog(
-            title=ft.Text("Delete Contact"),
+            title=ft.Text(self._translator.t(key="contact_widget.remove_alert.title")),
             content=ft.Text(
-                value=(
-                    f"Are you sure you want to delete '{self._contact.username}' and all of its messages?\n"
-                    f"This action can NOT be undone!"
+                value=self._translator.t(
+                    key="contact_widget.remove_alert.content",
+                    username=self._contact.username,
                 )
             ),
             actions=[
-                ft.TextButton("Cancel", on_click=lambda e: self._page.close(alert)),
                 ft.TextButton(
-                    "Delete",
+                    text=self._translator.t(
+                        key="contact_widget.remove_alert.cancel_button"
+                    ),
+                    on_click=lambda e: self._page.close(alert),
+                ),
+                ft.TextButton(
+                    text=self._translator.t(
+                        key="contact_widget.remove_alert.delete_button"
+                    ),
                     on_click=lambda _: self._rm_contact(alert),
                 ),
             ],
@@ -183,21 +193,34 @@ class ContactWidget:
             match action:
                 case ContactAction.RENAME:
                     username_entry: ft.TextField = ft.TextField(
-                        label="New username",
+                        label=self._translator.t(
+                            key="contact_widget.username_entry",
+                        ),
                         value=self._contact.username,
                         autofocus=True,
                     )
 
                     username_alert: ft.AlertDialog = ft.AlertDialog(
-                        title=ft.Text(value=f"Rename '{self._contact.username}'"),
+                        title=ft.Text(
+                            value=self._translator.t(
+                                key="contact_widget.rename_action_alert.title",
+                                username=self._contact.username,
+                            )
+                        ),
                         content=username_entry,
                         actions=[
+                            # Cancel button
                             ft.TextButton(
-                                text="Cancel",
+                                text=self._translator.t(
+                                    key="contact_widget.rename_action_alert.cancel_button",
+                                ),
                                 on_click=lambda _: self._page.close(username_alert),
                             ),
+                            # Proceed button
                             ft.TextButton(
-                                text="Proceed",
+                                text=self._translator.t(
+                                    key="contact_widget.rename_action_alert.proceed_button",
+                                ),
                                 on_click=lambda _: on_rename(),
                             ),
                         ],
@@ -216,7 +239,15 @@ class ContactWidget:
 
                     update_sheet(
                         action_sheet=button_toggle_mute,
-                        text="Mute" if not self._contact.is_muted else "Unmute",
+                        text=(
+                            self._translator.t(
+                                key="contact_widget.mute_button",
+                            )
+                            if not self._contact.is_muted
+                            else self._translator.t(
+                                key="contact_widget.unmute_button",
+                            )
+                        ),
                     )
                     button_toggle_mute.update()
 
@@ -232,7 +263,15 @@ class ContactWidget:
 
                     update_sheet(
                         action_sheet=button_toggle_block,
-                        text="Block" if not self._contact.is_blocked else "Unblock",
+                        text=(
+                            self._translator.t(
+                                key="contact_widget.block_button",
+                            )
+                            if not self._contact.is_blocked
+                            else self._translator.t(
+                                key="contact_widget.unblock_button",
+                            )
+                        ),
                     )
                     button_toggle_mute.disabled = (
                         True if self._contact.is_blocked else False
@@ -248,12 +287,27 @@ class ContactWidget:
 
         # Create buttons
         button_rename: ft.CupertinoActionSheetAction = ft.CupertinoActionSheetAction(
-            content=ft.Text("Rename"),
+            content=ft.Text(
+                self._translator.t(
+                    key="contact_widget.rename_button",
+                    username=self._contact.username,
+                )
+            ),
             on_click=lambda _: handle_click(action=ContactAction.RENAME),
         )
         button_toggle_mute: ft.CupertinoActionSheetAction = (
             ft.CupertinoActionSheetAction(
-                content=ft.Text("Mute" if not self._contact.is_muted else "Unmute"),
+                content=ft.Text(
+                    self._translator.t(
+                        key="contact_widget.mute_button",
+                        username=self._contact.username,
+                    )
+                    if not self._contact.is_muted
+                    else self._translator.t(
+                        key="contact_widget.unmute_button",
+                        username=self._contact.username,
+                    )
+                ),
                 disabled=self._contact.is_blocked,
                 on_click=lambda _: handle_click(action=ContactAction.TOGGLE_MUTE),
                 opacity=0.5 if self._contact.is_blocked else 1.0,
@@ -261,12 +315,27 @@ class ContactWidget:
         )
         button_toggle_block: ft.CupertinoActionSheetAction = (
             ft.CupertinoActionSheetAction(
-                content=ft.Text("Block" if not self._contact.is_blocked else "Unblock"),
+                content=ft.Text(
+                    self._translator.t(
+                        key="contact_widget.block_button",
+                        username=self._contact.username,
+                    )
+                    if not self._contact.is_blocked
+                    else self._translator.t(
+                        key="contact_widget.unblock_button",
+                        username=self._contact.username,
+                    )
+                ),
                 on_click=lambda _: handle_click(action=ContactAction.TOGGLE_BLOCK),
             )
         )
         button_delete: ft.CupertinoActionSheetAction = ft.CupertinoActionSheetAction(
-            content=ft.Text("Delete"),
+            content=ft.Text(
+                self._translator.t(
+                    key="contact_widget.delete_button",
+                    username=self._contact.username,
+                )
+            ),
             is_destructive_action=True,
             on_click=lambda _: handle_click(action=ContactAction.DELETE),
         )
@@ -276,14 +345,21 @@ class ContactWidget:
             title=ft.Row(
                 controls=[
                     ft.Text(
-                        f"Actions for '{self._contact.username}'",
+                        value=self._translator.t(
+                            key="contact_widget.title",
+                            username=self._contact.username,
+                        ),
                         weight=ft.FontWeight.BOLD,
                     )
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
             ),
             cancel=ft.CupertinoActionSheetAction(
-                content=ft.Text("Cancel"),
+                content=ft.Text(
+                    value=self._translator.t(
+                        key="contact_widget.cancel_button",
+                    )
+                ),
                 on_click=lambda _: handle_click(action=ContactAction.CANCEL),
                 is_default_action=True,
             ),

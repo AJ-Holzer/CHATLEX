@@ -1,0 +1,34 @@
+---
+en:
+  title: "Contacts"
+
+  add_user_button:
+    tooltip: "Add Contact"
+
+  on_add_contact_submit:
+    error: "There was an error while adding the contact! Error: %{e}"
+
+  add_contact_alert:
+    title: "Add Contact"
+    username_entry: "Username"
+    description_entry: "Description"
+    onion_address_entry: "Onion Address"
+    cancel_button: "Cancel"
+    add_button: "Add"
+
+de:
+  title: "Kontakte"
+
+  add_user_button:
+    tooltip: "Kontakt hinzufügen"
+
+  on_add_contact_submit:
+    error: "Beim hinzufügen des Kontakts ist ein Fehler aufgetreten! Fehler: %{e}"
+
+  add_contact_alert:
+    title: "Kontakt hinzufügen"
+    username_entry: "Benutzername"
+    description_entry: "Beschreibung"
+    onion_address_entry: "Onion Adresse"
+    cancel_button: "Abbrechen"
+    add_button: "Hinzufügen"
