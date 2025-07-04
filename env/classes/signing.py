@@ -31,9 +31,9 @@ class OnionSigning:
 
     def _load_key(self, key: Literal["private_key", "public_key"]) -> None:
         file_path: str = (
-            config.ENCRYPTION_PRIVATE_KEY_FILE
+            config.FILE_ENCRYPTION_PRIVATE_KEY
             if key == "private_key"
-            else config.ENCRYPTION_PUBLIC_KEY_FILE
+            else config.FILE_ENCRYPTION_PUBLIC_KEY
         )
 
         # Check if the file exists
@@ -62,23 +62,23 @@ class OnionSigning:
         # Write to file
         with open(
             (
-                config.ENCRYPTION_PRIVATE_KEY_FILE
+                config.FILE_ENCRYPTION_PRIVATE_KEY
                 if key == "private_key"
-                else config.ENCRYPTION_PUBLIC_KEY_FILE
+                else config.FILE_ENCRYPTION_PUBLIC_KEY
             ),
             "w",
         ) as file:
             file.write(base64.b64encode(actual_key.encode()).decode(config.ENCODING))
 
     def _load_signed_data(self) -> Optional[SignedOnionData]:
-        if not Path(config.ENCRYPTION_SIGNED_ONION_DATA_FILE).exists():
+        if not Path(config.FILE_ENCRYPTION_SIGNED_ONION_DATA).exists():
             return None
 
-        with open(config.ENCRYPTION_SIGNED_ONION_DATA_FILE, "r") as file:
+        with open(config.FILE_ENCRYPTION_SIGNED_ONION_DATA, "r") as file:
             return json.load(file)
 
     def _save_signed_data(self) -> None:
-        with open(config.ENCRYPTION_SIGNED_ONION_DATA_FILE, "w") as file:
+        with open(config.FILE_ENCRYPTION_SIGNED_ONION_DATA, "w") as file:
             json.dump(self._signed_onion_data, file, indent=2)
 
     def _save_master_keys(self) -> None:

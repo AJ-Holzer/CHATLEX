@@ -87,7 +87,7 @@ class HKDFHasher:
 
     def _derive_key(self, info: HKDFInfoKey, salt: Optional[bytes] = None) -> bytes:
         # Generate a new salt if nothing provided
-        new_salt: bytes = salt or generate_salt(salt_length=config.SALT_LENGTH)
+        new_salt: bytes = salt or generate_salt(length=config.SALT_LENGTH)
 
         hkdf: HKDF = HKDF(
             algorithm=hashes.SHA256(),

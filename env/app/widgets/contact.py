@@ -2,7 +2,7 @@ import flet as ft  # type: ignore[import-untyped]
 
 from env.classes.contact import Contact
 from env.classes.database import SQLiteDatabase
-from env.classes.encryption import AES_CBC
+from env.classes.encryption import AES_256_CBC
 from env.classes.router import AppRouter
 from env.classes.translate import Translator
 from env.config import config
@@ -18,14 +18,14 @@ class ContactWidget:
         contact_data: ContactData,
         router: AppRouter,
         contacts_list: ft.ListView,
-        aes_encryptor: AES_CBC,
+        aes_encryptor: AES_256_CBC,
     ) -> None:
         self._page: ft.Page = page
         self._translator: Translator = translator
         self._contact: Contact = Contact(contact_data=contact_data)
         self._router: AppRouter = router
         self._contacts_list: ft.ListView = contacts_list
-        self._aes_encryptor: AES_CBC = aes_encryptor
+        self._aes_encryptor: AES_256_CBC = aes_encryptor
 
         # Initialize status icons
         self._muted_icon: ft.Icon = ft.Icon(

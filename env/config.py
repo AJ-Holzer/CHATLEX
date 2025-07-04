@@ -46,6 +46,10 @@ class Config:
     # Salt settings
     SALT_LENGTH: int = 32
 
+    # AES settings
+    AES_256_CBC_IV_LENGTH: int = 16
+    AES_256_GCM_IV_LENGTH: int = 12
+
     # Settings for HKDF
     HKDF_LENGTH: int = 32
     HKDF_INFO_MESSAGE: Literal[b"message-encryption-key"] = b"message-encryption-key"
@@ -61,11 +65,6 @@ class Config:
 
     # Encoding settings
     ENCODING: str = "UTF-8"
-
-    # Encryption settings
-    ENCRYPTION_PRIVATE_KEY_FILE: str = "master_key_priv.txt"
-    ENCRYPTION_PUBLIC_KEY_FILE: str = "master_key_publ.txt"
-    ENCRYPTION_SIGNED_ONION_DATA_FILE: str = "singed_onion_data.json"
 
     # Database settings
     DATABASE_FILE: str = "data.db"
@@ -118,9 +117,12 @@ class Config:
     FONT_SIZE_MIN: int = 10
     FONT_SIZE_MAX: int = 30
 
-    # File settings
+    # Files
     FILE_INFOS: str = "data/infos.json"
     FILE_ABOUT: str = "data/about.json"
+    FILE_ENCRYPTION_PRIVATE_KEY: str = "master_key_priv.txt"
+    FILE_ENCRYPTION_PUBLIC_KEY: str = "master_key_publ.txt"
+    FILE_ENCRYPTION_SIGNED_ONION_DATA: str = "singed_onion_data.json"
 
     # Folder settings
     FOLDER_LANGUAGES: str = "locales"

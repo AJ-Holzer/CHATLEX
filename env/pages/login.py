@@ -50,7 +50,7 @@ class LoginPage:
             default=None,
         )
         if stored_salt is None:
-            self._salt = generate_salt(salt_length=config.SALT_LENGTH)
+            self._salt = generate_salt(length=config.SALT_LENGTH)
         elif len(str_to_byte(stored_salt)) == config.SALT_LENGTH:
             self._salt = str_to_byte(stored_salt)
         else:
@@ -65,7 +65,7 @@ class LoginPage:
             default=None,
         )
         if stored_iv is None:
-            self._iv = generate_iv()
+            self._iv = generate_iv(length=16)
         elif len(str_to_byte(stored_iv)) == 16:
             self._iv = str_to_byte(stored_iv)
         else:

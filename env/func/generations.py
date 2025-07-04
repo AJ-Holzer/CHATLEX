@@ -1,9 +1,9 @@
 from secrets import token_bytes
 
 
-def generate_iv() -> bytes:
-    return token_bytes(16)
+def generate_iv(length: int) -> bytes:
+    return token_bytes(length)
 
 
-def generate_salt(salt_length: int) -> bytes:
-    return token_bytes(salt_length)
+def generate_salt(length: int) -> bytes:
+    return token_bytes(length)
