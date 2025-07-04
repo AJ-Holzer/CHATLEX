@@ -118,8 +118,6 @@ class Config:
     FONT_SIZE_MAX: int = 30
 
     # Files
-    FILE_INFOS: str = "data/infos.json"
-    FILE_ABOUT: str = "data/about.json"
     FILE_ENCRYPTION_PRIVATE_KEY: str = "master_key_priv.txt"
     FILE_ENCRYPTION_PUBLIC_KEY: str = "master_key_publ.txt"
     FILE_ENCRYPTION_SIGNED_ONION_DATA: str = "singed_onion_data.json"
