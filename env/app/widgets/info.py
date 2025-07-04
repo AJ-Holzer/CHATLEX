@@ -2,61 +2,32 @@ from typing import Optional
 
 import flet as ft  # type: ignore[import-untyped]
 
-from env.app.widgets.buttons_and_toggles import ActionButton
 from env.func.text_parser import parse_custom_markdown
 
 
-class InfoButtonAlert:
+class InfoAlert:
     def __init__(
         self,
-        page: ft.Page,
-        label: str,
-        content: str,
-        icon: Optional[ft.IconValue] = None,
+        title: Optional[str],
+        content: Optional[str],
     ) -> None:
-        self._page: ft.Page = page
-        self._label: str = label
-        self._content: str = content
-        self._icon: Optional[ft.IconValue] = icon
+        self._title: Optional[str] = title
+        self._content: Optional[str] = content
 
-        # Create info alert
-        self._info_alert: ft.AlertDialog = ft.AlertDialog(
-            title=ft.Text(value=self._label, text_align=ft.TextAlign.CENTER),
+    def build(self) -> ft.AlertDialog:
+        return ft.AlertDialog(
+            title=ft.Text(value=self._title, text_align=ft.TextAlign.CENTER),
             scrollable=True,
             content=ft.Container(
-                content=ft.Column(
-                    controls=[
-                        parse_custom_markdown(input_str=self._content),
-                    ],
-                    scroll=ft.ScrollMode.AUTO,
-                ),
-            ),
-        )
-
-        # Create button to open alert
-        self._info_button: ActionButton = ActionButton(
-            page=self._page,
-            text=self._label,
-            icon=self._icon,
-            on_click=lambda _: self._page.open(self._info_alert),
-        )
-
-    def build(self) -> ft.Container:
-        return ft.Container(
-            content=ft.Row(
-                controls=[
+                content=(
                     ft.Column(
                         controls=[
-                            self._info_button.build(),
+                            parse_custom_markdown(input_str=self._content),
                         ],
-                        alignment=ft.MainAxisAlignment.START,
-                        horizontal_alignment=ft.CrossAxisAlignment.START,
-                        expand=True,
-                    ),
-                ],
-                expand=True,
-                alignment=ft.MainAxisAlignment.CENTER,
-                vertical_alignment=ft.CrossAxisAlignment.START,
+                        scroll=ft.ScrollMode.AUTO,
+                    )
+                    if self._content is not None
+                    else None
+                ),
             ),
-            expand=True,
         )

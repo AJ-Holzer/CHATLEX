@@ -2,6 +2,7 @@ from typing import Optional
 
 import flet as ft  # type: ignore[import-untyped]
 
+from env.app.widgets.info import InfoAlert
 from env.app.widgets.links import LinkAlert
 
 
@@ -145,16 +146,70 @@ class URLButton:
         return self._button.build()
 
 
+class InfoButtonAlert:
+    def __init__(
+        self,
+        page: ft.Page,
+        label: str,
+        content: str,
+        icon: Optional[ft.IconValue] = None,
+    ) -> None:
+        self._page: ft.Page = page
+        self._label: str = label
+        self._content: str = content
+        self._icon: Optional[ft.IconValue] = icon
+
+        # Create info alert
+        self._help_alert: ft.AlertDialog = InfoAlert(
+            title=self._label,
+            content=self._content,
+        ).build()
+
+        # Create button to open alert
+        self._info_button: ActionButton = ActionButton(
+            page=self._page,
+            text=self._label,
+            icon=self._icon,
+            on_click=lambda _: self._page.open(self._help_alert),
+        )
+
+    def build(self) -> ft.Container:
+        return ft.Container(
+            content=ft.Row(
+                controls=[
+                    ft.Column(
+                        controls=[
+                            self._info_button.build(),
+                        ],
+                        alignment=ft.MainAxisAlignment.START,
+                        horizontal_alignment=ft.CrossAxisAlignment.START,
+                        expand=True,
+                    ),
+                ],
+                expand=True,
+                alignment=ft.MainAxisAlignment.CENTER,
+                vertical_alignment=ft.CrossAxisAlignment.START,
+            ),
+            expand=True,
+        )
+
+
 class SectionToggle:
     def __init__(
         self,
+        page: ft.Page,
         text: str,
         toggle_value: bool,
         on_click: ft.OptionalControlEventCallable,
+        help_title: Optional[str] = None,
+        help_content: Optional[str] = None,
     ) -> None:
+        self._page: ft.Page = page
         self._text: str = text
         self._toggle_value: bool = toggle_value
         self._on_click: ft.OptionalControlEventCallable = on_click
+        self._help_title: Optional[str] = help_title
+        self._help_content: Optional[str] = help_content
 
         # Create toggle
         self._toggle: ft.CupertinoSwitch = ft.CupertinoSwitch(
@@ -162,15 +217,31 @@ class SectionToggle:
             on_change=self._on_click,
         )
 
+        # Create help alert
+        self._help_alert: ft.AlertDialog = InfoAlert(
+            title=self._help_title,
+            content=self._help_content,
+        ).build()
+
         # Create label
-        self._label: ft.Text = ft.Text(value=self._text, expand=True)
+        self._label: ft.Text = ft.Text(
+            value=self._text,
+            expand=True,
+        )
 
     def build(self) -> ft.Container:
         return ft.Container(
             content=ft.Row(
                 controls=[
                     ft.Column(
-                        controls=[self._label],
+                        controls=[
+                            ft.Container(
+                                content=self._label,
+                                on_click=lambda _: self._page.open(
+                                    control=self._help_alert
+                                ),
+                            )
+                        ],
                         expand=True,
                     ),
                     ft.Column(

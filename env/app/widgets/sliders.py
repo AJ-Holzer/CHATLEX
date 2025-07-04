@@ -2,6 +2,8 @@ from typing import Optional
 
 import flet as ft  # type: ignore[import-untyped]
 
+from env.app.widgets.info import InfoAlert
+
 
 class DescriptiveSlider:
     def __init__(
@@ -15,6 +17,8 @@ class DescriptiveSlider:
         slider_label: Optional[str] = None,
         slider_divisions: Optional[int] = None,
         slider_default_value: Optional[ft.OptionalNumber] = None,
+        help_title: Optional[str] = None,
+        help_content: Optional[str] = None,
     ) -> None:
         self._page: ft.Page = page
         self._description: str = description
@@ -25,6 +29,8 @@ class DescriptiveSlider:
         self._slider_divisions: Optional[int] = slider_divisions
         self._slider_label: Optional[str] = slider_label
         self._slider_default_value: Optional[ft.OptionalNumber] = slider_default_value
+        self._help_title: Optional[str] = help_title
+        self._help_content: Optional[str] = help_content
 
         # Descriptive text above the slider
         self._description_label: ft.Text = ft.Text(
@@ -35,6 +41,12 @@ class DescriptiveSlider:
             no_wrap=False,
             max_lines=None,
         )
+
+        # Create help alert
+        self._help_alert: ft.AlertDialog = InfoAlert(
+            title=self._help_title,
+            content=self._help_content,
+        ).build()
 
         # Show reset button only if default value is set
         self._reset_button: ft.IconButton = ft.IconButton(
@@ -75,7 +87,14 @@ class DescriptiveSlider:
                         content=ft.Row(
                             controls=[
                                 ft.Column(
-                                    controls=[self._description_label],
+                                    controls=[
+                                        ft.Container(
+                                            content=self._description_label,
+                                            on_click=lambda _: self._page.open(
+                                                control=self._help_alert
+                                            ),
+                                        )
+                                    ],
                                     expand=True,
                                 ),
                                 ft.Column(

@@ -20,8 +20,52 @@ en:
   top_bar: "Settings"
   color_picker: "Choose a Theme Color"
 
+  # Info
+  infos:
+    focus_detection:
+      title: "Logout on lost Focus"
+      content: "Automatically logs you out when the app loses focus, \
+        helping protect your data when switching apps or multitasking."
+
+    top_bar_logout_action:
+      title: "TopBar Logout Action"
+      content: "For added security, tapping the title at the top \
+        of the screen will immediately log you out.\n\nThis feature provides a \
+        quick way to secure the app if you're in a hurry or \
+        someone unexpectedly approaches your device."
+
+    shake_detection:
+      title: "Shake Detection"
+      content: "Automatically logs you out if the phone is shaken—useful \
+        for preventing access if someone grabs your device unexpectedly.\n\n\
+        You can adjust the gravity threshold to control the sensor's \
+        sensitivity."
+
+  # About
+  about:
+    title: "About"
+    content: "CHATLEX is a privacy-first messaging app designed to keep your \
+      conversations secure and your data under your control.\n\n\
+      {WEIGHT:bold}{COLOR:primary}{UNDERLINE}\
+      End-to-End Encryption:{/UNDERLINE}{/COLOR}{/WEIGHT}\n\
+      Your messages and contacts are encrypted on your device.\n\n\
+      {WEIGHT:bold}{COLOR:primary}{UNDERLINE}\
+      No Servers:{/UNDERLINE}{/COLOR}{/WEIGHT}\n\
+      All data is stored locally. No central server collects or stores \
+      your messages.\n\n\
+      {WEIGHT:bold}{COLOR:primary}{UNDERLINE}\
+      Secure Key Exchange:\
+      {/UNDERLINE}{/COLOR}{/WEIGHT}\n\
+      Uses advanced encryption like Argon2, AES-CBC, and ECDHE.\n\n\
+      {WEIGHT:bold}{COLOR:primary}{UNDERLINE}\
+      Device Protection:\
+      {/UNDERLINE}{/COLOR}{/WEIGHT}\n\
+      Auto-logout features for lost focus and phone shake.\n\n\
+      CHATLEX is built with transparency and security in mind — \
+      because your privacy should never be optional."
+
   # Sections
-  appearance_section: "Appearance"
+  appearance_section: "Design"
   security_section: "Security"
   help_section: "Help"
 
@@ -46,7 +90,54 @@ de:
   top_bar: "Einstellungen"
   color_picker: "Wähle eine Themenfarbe"
 
+  # Info
+  infos:
+    focus_detection:
+      title: "Abmeldung bei Fokusverlust"
+      content: "Meldet dich automatisch ab, wenn die App den Fokus verliert — \
+        schützt deine Daten beim App-Wechsel oder Multitasking."
+
+    top_bar_logout_action:
+      title: "TopBar-Abmeldeaktion"
+      content: "Für zusätzliche Sicherheit meldet dich ein Tippen auf \
+        den Titel oben auf dem Bildschirm sofort ab.\n\n\
+        Diese Funktion bietet eine \
+        schnelle Möglichkeit, die App zu sichern, falls du es eilig hast oder \
+        sich jemand unerwartet deinem Gerät nähert."
+
+    shake_detection:
+      title: "Schüttelerkennung"
+      content: "Meldet dich automatisch ab, wenn das Gerät geschüttelt wird — \
+        nützlich, um unbefugten Zugriff zu verhindern, falls dir jemand das \
+        Gerät entreißt.\n\n\
+        Du kannst den Schwerkraft-Schwellwert anpassen, um die Empfindlichkeit \
+        des Sensors zu steuern."
+
+  # About
+  about:
+    title: "Über"
+    content: "CHATLEX ist eine datenschutzorientierte Messaging-App, \
+      die entwickelt wurde, um deine Gespräche zu sichern und deine Daten \
+      unter deiner Kontrolle zu behalten.\n\n\
+      {WEIGHT:bold}{COLOR:primary}{UNDERLINE}\
+      Ende-zu-Ende-Verschlüsselung:{/UNDERLINE}{/COLOR}{/WEIGHT}\n\
+      Deine Nachrichten und Kontakte werden auf deinem Gerät verschlüsselt.\n\n\
+      {WEIGHT:bold}{COLOR:primary}{UNDERLINE}\
+      Keine Server:{/UNDERLINE}{/COLOR}{/WEIGHT}\n\
+      Alle Daten werden lokal gespeichert. Kein zentraler Server sammelt oder \
+      speichert deine Nachrichten.\n\n\
+      {WEIGHT:bold}{COLOR:primary}{UNDERLINE}\
+      Sicherer Schlüsselaustausch:\
+      {/UNDERLINE}{/COLOR}{/WEIGHT}\n\
+      Verwendet moderne Verschlüsselung wie Argon2, AES-CBC und ECDHE.\n\n\
+      {WEIGHT:bold}{COLOR:primary}{UNDERLINE}\
+      Geräteschutz:\
+      {/UNDERLINE}{/COLOR}{/WEIGHT}\n\
+      Automatische Abmeldung bei Fokusverlust und Geräteschütteln.\n\n\
+      CHATLEX wurde mit Transparenz und Sicherheit entwickelt — \
+      denn deine Privatsphäre sollte niemals optional sein."
+
   # Sections
-  appearance_section: "Erscheinungsbild"
+  appearance_section: "Design"
   security_section: "Sicherheit"
   help_section: "Hilfe"

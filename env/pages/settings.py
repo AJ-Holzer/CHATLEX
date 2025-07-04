@@ -1,15 +1,14 @@
-import json
-import os
-from typing import Literal
-
 import flet as ft  # type: ignore[import-untyped]
 
-from env.app.widgets.buttons_and_toggles import (ActionButton, SectionToggle,
-                                                 URLButton)
+from env.app.widgets.buttons_and_toggles import (
+    ActionButton,
+    InfoButtonAlert,
+    SectionToggle,
+    URLButton,
+)
 from env.app.widgets.color_picker import ColorPicker
 from env.app.widgets.container import MasterContainer
 from env.app.widgets.dropdown import SectionDropDown
-from env.app.widgets.info import InfoButtonAlert
 from env.app.widgets.sections import Section
 from env.app.widgets.sliders import DescriptiveSlider
 from env.app.widgets.top_bars import SubPageTopBar
@@ -84,41 +83,37 @@ class SettingsPage:
 
         " === CONTROLS SECURITY SECTION === "
         # TODO: Use locales yml instead ("infos.yml", "about.yml")
-        for file_path in [
-            config.FILE_INFOS,
-            config.FILE_ABOUT,
-        ]:
-            if not os.path.exists(path=file_path):
-                raise FileNotFoundError(f"File {file_path} not found!")
-        # Load infos and their descriptions
-        with open(
-            file=config.FILE_INFOS,
-            mode="r",
-            encoding="UTF-8",
-        ) as i, open(
-            file=config.FILE_ABOUT,
-            mode="r",
-            encoding="UTF-8",
-        ) as a:
-            infos: dict[str, dict[Literal["content", "icon"], str]] = json.load(i)
-            about: dict[str, dict[Literal["content", "icon"], str]] = json.load(a)
         # Logout on lost focus
         self._toggle_lolf: SectionToggle = SectionToggle(
+            page=self._page,
             text=self._translator.t(key="settings_page.toggle_lolf"),
             toggle_value=self._storages.client_storage.get(
                 key=config.CS_LOGOUT_ON_LOST_FOCUS,
                 default=config.LOGOUT_ON_LOST_FOCUS_DEFAULT,
             ),
             on_click=self._toggle_logout_lost_focus,
+            help_title=self._translator.t(
+                key="settings_page.infos.focus_detection.title"
+            ),
+            help_content=self._translator.t(
+                key="settings_page.infos.focus_detection.content"
+            ),
         )
         # Logout on on shake detection
         self._toggle_shake_detection: SectionToggle = SectionToggle(
+            page=self._page,
             text=self._translator.t(key="settings_page.toggle_shake_detection"),
             toggle_value=self._storages.client_storage.get(
                 key=config.CS_SHAKE_DETECTION_ENABLED,
                 default=config.SHAKE_DETECTION_ENABLED_DEFAULT,
             ),
             on_click=self._toggle_logout_shake_detection,
+            help_title=self._translator.t(
+                key="settings_page.infos.shake_detection.title"
+            ),
+            help_content=self._translator.t(
+                key="settings_page.infos.shake_detection.content"
+            ),
         )
         # Gravity threshold slider for shake detection
         self._slider_gravity_threshold: DescriptiveSlider = DescriptiveSlider(
@@ -151,12 +146,19 @@ class SettingsPage:
         )
         # Logout on top bar label click
         self._toggle_tblc: SectionToggle = SectionToggle(
+            page=self._page,
             text=self._translator.t(key="settings_page.toggle_tblc"),
             toggle_value=self._storages.client_storage.get(
                 key=config.CS_LOGOUT_ON_TOP_BAR_LABEL_CLICK,
                 default=config.TOP_BAR_LOGOUT_ON_LABEL_CLICK_DEFAULT,
             ),
             on_click=self._toggle_logout_on_top_bar_label_click,
+            help_title=self._translator.t(
+                key="settings_page.infos.top_bar_logout_action.title"
+            ),
+            help_content=self._translator.t(
+                key="settings_page.infos.top_bar_logout_action.content"
+            ),
         )
 
         " === LOAD SECTIONS === "
@@ -193,20 +195,6 @@ class SettingsPage:
                 self._slider_gravity_threshold.build(),
             ],
         )
-        # TODO: Don't use help section. Make the label of the toggles and sliders clickable instead!
-        self._help_section: Section = Section(
-            title=self._translator.t(key="settings_page.help_section"),
-            content=[
-                # TODO: Use locales yml files instead!
-                InfoButtonAlert(
-                    page=self._page,
-                    label=label,
-                    content=data["content"],
-                    icon=data["icon"],
-                ).build()
-                for label, data in infos.items()
-            ],
-        )  # TODO: Add infos (about, why shaking, what is lost focus, ...)
 
         " === SUPPORT & ABOUT === "
         self._support_button: URLButton = URLButton(
@@ -217,14 +205,13 @@ class SettingsPage:
         )
         self._about_buttons: ft.Column = ft.Column(
             controls=[
-                # TODO: Use locales yml files instead!
+                # About button
                 InfoButtonAlert(
                     page=self._page,
-                    label=label,
-                    content=data["content"],
-                    icon=data["icon"],
+                    label=self._translator.t(key="settings_page.about.title"),
+                    content=self._translator.t(key="settings_page.about.content"),
+                    icon=ft.Icons.INFO_OUTLINE,
                 ).build()
-                for label, data in about.items()
             ]
         )
 
@@ -332,7 +319,6 @@ class SettingsPage:
                                 controls=[
                                     self._appearance_section.build(),
                                     self._security_section.build(),
-                                    self._help_section.build(),
                                     self._support_button.build(),
                                     self._about_buttons,
                                 ],
