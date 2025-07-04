@@ -1,6 +1,0 @@
-{
-  "About": {
-    "content": "CHATLEX is a privacy-first messaging app designed to keep your conversations secure and your data under your control.\n\n{WEIGHT:bold}{COLOR:primary}{UNDERLINE}End-to-End Encryption:{/UNDERLINE}{/COLOR}{/WEIGHT}\nYour messages and contacts are encrypted on your device.\n\n{WEIGHT:bold}{COLOR:primary}{UNDERLINE}No Servers:{/UNDERLINE}{/COLOR}{/WEIGHT}\nAll data is stored locally. No central server collects or stores your messages.\n\n{WEIGHT:bold}{COLOR:primary}{UNDERLINE}Secure Key Exchange:{/UNDERLINE}{/COLOR}{/WEIGHT}\nUses advanced encryption like Argon2, AES-CBC, and ECDHE.\n\n{WEIGHT:bold}{COLOR:primary}{UNDERLINE}Device Protection:{/UNDERLINE}{/COLOR}{/WEIGHT}\nAuto-logout features for lost focus and phone shake.\n\nCHATLEX is built with transparency and security in mind — because your privacy should never be optional.",
-    "icon": "INFO_OUTLINE"
-  }
-}
