@@ -129,6 +129,7 @@ class Config:
     LANGUAGE_NOT_PROVIDED: str = "LANG_NOT_PROVIDED"
     LANGUAGE_NO_STATES_PROVIDED: str = "LANG_STATES_NOT_PROVIDED"
     LANGUAGE_DEFAULT: str = "de"
+    LANGUAGE_AVAILABLE_LOCALES: list[str] = ["de", "en"]
 
 
 config = Config()

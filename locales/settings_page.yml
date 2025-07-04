@@ -3,6 +3,7 @@ en:
   title: "Settings"
 
   font_family_chooser: "Font Family"
+  language_chooser: "Language"
 
   font_size_slider:
     description: "Font Size"
@@ -41,6 +42,13 @@ en:
         You can adjust the gravity threshold to control the sensor's \
         sensitivity."
 
+    shake_gravity_threshold:
+      title: "Shake Gravity Threshold"
+      content: "Adjusts the minimum gravity force (G*10) required to trigger \
+        shake detection. Higher values make it less sensitive to movement, \
+        reducing false positives. Lower values make detection more responsive, \
+        but may react to minor vibrations or accidental motion."
+
   # About
   about:
     title: "About"
@@ -69,10 +77,14 @@ en:
   security_section: "Security"
   help_section: "Help"
 
+  # Restart hint
+  restart_hint: "Restart to apply changes!"
+
 de:
   title: "Einstellungen"
 
   font_family_chooser: "Schriftart"
+  language_chooser: "Sprache"
 
   font_size_slider:
     description: "Schriftgröße"
@@ -113,6 +125,15 @@ de:
         Du kannst den Schwerkraft-Schwellwert anpassen, um die Empfindlichkeit \
         des Sensors zu steuern."
 
+    shake_gravity_threshold:
+      title: "Schwerkraft-Schwellwert für Schütteln"
+      content: "Passt die minimale Schwerkraftkraft (G*10) an, die \
+        erforderlich ist, um die Schüttelerkennung auszulösen. Höhere Werte \
+        machen die Erkennung unempfindlicher gegenüber Bewegungen und \
+        reduzieren Fehlalarme. Niedrigere Werte machen die Erkennung \
+        empfindlicher, können jedoch auf kleinere Vibrationen oder \
+        unbeabsichtigte Bewegungen reagieren."
+
   # About
   about:
     title: "Über"
@@ -141,3 +162,6 @@ de:
   appearance_section: "Design"
   security_section: "Sicherheit"
   help_section: "Hilfe"
+
+  # Restart hint
+  restart_hint: "Neustart erforderlich, um Änderungen anzuwenden!"

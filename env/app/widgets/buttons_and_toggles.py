@@ -237,8 +237,10 @@ class SectionToggle:
                         controls=[
                             ft.Container(
                                 content=self._label,
-                                on_click=lambda _: self._page.open(
-                                    control=self._help_alert
+                                on_click=lambda _: (
+                                    self._page.open(control=self._help_alert)
+                                    if self._help_title and self._help_content
+                                    else None
                                 ),
                             )
                         ],

@@ -65,6 +65,7 @@ class SettingsPage:
             options=font_options,
             on_change=self._change_font_family,
         )
+        # Create font size slider
         self._font_size_slider: DescriptiveSlider = DescriptiveSlider(
             page=self._page,
             description=self._translator.t(
@@ -79,6 +80,18 @@ class SettingsPage:
             ),
             slider_divisions=abs(config.FONT_SIZE_MAX - config.FONT_SIZE_MIN),
             slider_default_value=config.APPEARANCE_FONT_SIZE_DEFAULT,
+        )
+        # Create language chooser
+        self._language_chooser: SectionDropDown = SectionDropDown(
+            value=self._storages.client_storage.get(
+                key=config.CS_LANGUAGE, default=config.LANGUAGE_DEFAULT
+            ),
+            label=self._translator.t(key="settings_page.language_chooser"),
+            options=[
+                ft.dropdown.Option(key=lang, text=lang.upper())
+                for lang in self._translator.available_locales
+            ],
+            on_change=self._change_language,
         )
 
         " === CONTROLS SECURITY SECTION === "
@@ -143,6 +156,12 @@ class SettingsPage:
             ),
             slider_default_value=config.SHAKE_DETECTION_THRESHOLD_GRAVITY_DEFAULT
             * config.SHAKE_DETECTION_THRESHOLD_GRAVITY_MULTIPLIER,
+            help_title=self._translator.t(
+                key="settings_page.infos.shake_gravity_threshold.title"
+            ),
+            help_content=self._translator.t(
+                key="settings_page.infos.shake_gravity_threshold.content"
+            ),
         )
         # Logout on top bar label click
         self._toggle_tblc: SectionToggle = SectionToggle(
@@ -184,6 +203,8 @@ class SettingsPage:
                 ),
                 # Font size
                 self._font_size_slider.build(),
+                # Language
+                self._language_chooser.build(),
             ],
         )
         self._security_section: Section = Section(
@@ -234,6 +255,24 @@ class SettingsPage:
             raise ValueError(f"Font size not valid! Got font_size='{e.data}'")
 
         self._themes.change_font_size(new_font_size=int(float(e.data)))
+
+    def _change_language(self, e: ft.ControlEvent) -> None:
+        if not e.data:
+            raise ValueError(
+                f"There is no drop down option when changing language. Got '{e}'!"
+            )
+        self._translator.change_language(new_language=e.data)
+
+        # Show restart hint
+        self._page.open(
+            ft.SnackBar(
+                content=ft.Text(
+                    self._translator.t(key="settings_page.restart_hint"),
+                    text_align=ft.TextAlign.CENTER,
+                    expand=True,
+                ),
+            )
+        )
 
     def _toggle_logout_lost_focus(self, e: ft.ControlEvent) -> None:
         value: bool = True if e.data == "true" else False
