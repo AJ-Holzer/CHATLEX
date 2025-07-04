@@ -51,7 +51,7 @@ Feel free to open an issue or start a discussion in the GitHub Repository.
 | Platforms               | Android                                                                                                                | ✅          |
 | Open Source             | Transparent codebase for public scrutiny and trust                                                                     | ✅          |
 | Key Derivation          | The code uses Argon2 to derive the master key and AES-CBC to derive a new key for each message to encrypt the messages | ✅          |
-| Encryption              | AES_256_CBC-265, ECDHE, Kyber                                                                                              |             |
+| Encryption              | AES_256_GCM-265, ECDHE, Kyber                                                                                              |             |
 | Data Transmission       | The data will be sent over the Tor network to anonymize the traffic                                                    |             |
 | Group Chats             | Group chats for chatting with multiple people - just like WhatsApp or Signal                                           |             |
 | File Sharing            | Sharing files up to 500 MB                                                                                             |             |

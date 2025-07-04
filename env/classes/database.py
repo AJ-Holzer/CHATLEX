@@ -1,7 +1,7 @@
 import sqlite3
 from typing import Optional
 
-from env.classes.encryption import AES_256_CBC
+from env.classes.encryption import AES_256_GCM
 from env.classes.paths import paths
 from env.config import config
 from env.func.converter import byte_to_str, str_to_byte
@@ -11,15 +11,15 @@ from env.typing.hashing import HKDFInfoKey
 
 # TODO: Add single functions to mute/block a user. Don't update the whole row (too much computing)!
 class SQLiteDatabase:
-    def __init__(self, aes_encryptor: AES_256_CBC) -> None:
+    def __init__(self, aes_encryptor: AES_256_GCM) -> None:
         self._db_path: str = paths.join_with_app_storage(path=config.DATABASE_FILE)
 
         # Initialize sql connection and cursor
         self._conn: sqlite3.Connection = sqlite3.connect(database=self._db_path)
         self._cur: sqlite3.Cursor = self._conn.cursor()
 
-        # Initialize AES_256_CBC encryptor
-        self._encryptor: AES_256_CBC = aes_encryptor
+        # Initialize AES_256_GCM encryptor
+        self._encryptor: AES_256_GCM = aes_encryptor
 
         # Create tables if they don't exist
         self._crate_tables()
